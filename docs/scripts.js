@@ -23,19 +23,22 @@ function localstorage_errors(trybody) {
 // DARK MODE
 // ---------
 
-const darkModeButton = document.getElementById('darkmode-button')
+const darkModeButtons = document.getElementsByClassName('darkmode-button')
 
 if (localstorage_errors(() => localStorage.getItem('lightmode')) == 'enabled') {
     document.body.classList.add('lightmode')
 }
 
-darkModeButton.addEventListener('click', () => {
-    document.body.classList.toggle('lightmode')
-    enabled = document.body.classList.contains('lightmode')
-    localstorage_errors(() => {
-        localStorage.setItem('lightmode', enabled ? 'enabled' : 'disabled')
+for (const darkModeButton of darkModeButtons) {
+    darkModeButton.addEventListener('click', () => {
+        document.body.classList.toggle('lightmode')
+        enabled = document.body.classList.contains('lightmode')
+        localstorage_errors(() => {
+            localStorage.setItem('lightmode', enabled ? 'enabled' : 'disabled')
+        })
     })
-})
+}
+
 
 // add class 'loaded' after 500ms, so that transitions don't trigger on page load
 document.addEventListener('DOMContentLoaded', () => {
