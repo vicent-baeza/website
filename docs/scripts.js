@@ -55,3 +55,12 @@ document.addEventListener('DOMContentLoaded', () => {
 currentYear = new Date().getFullYear()
 document.getElementById('footer-text').textContent = `© ${currentYear} Vicent Baeza`
 
+
+// -----------
+// LOCAL LINKS
+// -----------
+
+const protocol = window.location.protocol
+if (protocol == 'file:') { // files are local 
+    
+}
