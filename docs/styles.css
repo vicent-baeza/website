@@ -229,6 +229,14 @@ footer > .content > * {
     text-align: justify;
 }
 
+/* Text Styles */
+.italic {
+    font-style: italic;
+}
+.bold {
+    font-weight: 600;
+}
+
 /* UL */
 ul > li {
     margin-left: var(--sp6);

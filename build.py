@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 from bs4.formatter import HTMLFormatter
 from list_dict import ListDict
 
-VERSION = hashlib.sha256(str(time.time()).encode('utf-8')).hexdigest()[:32]
+VERSION = 1 #hashlib.sha256(str(time.time()).encode('utf-8')).hexdigest()[:32]
 
 
 
@@ -14,10 +14,27 @@ VERSION = hashlib.sha256(str(time.time()).encode('utf-8')).hexdigest()[:32]
 # -----------------
 warnings = ListDict[str, str]()
 tags = ListDict[str, str]()
+paths = ListDict[str, str]()
 
 # ---------------
 # PAGE GENERATION
 # ---------------
+
+def is_local_path(path: str) -> bool:
+    first_part = path.split('/')[0]
+    return '.' not in first_part
+
+def rpath(path: str) -> str:
+    """Adds paths to the paths ListDict.
+
+    Args:
+        path (str): the path
+
+    Returns:
+        str: the path
+    """
+    paths.append(path)
+    return path
 
 def path_prefix(path: str):
     parts = len(path.removeprefix('docs/').strip('/').split('/'))
@@ -136,12 +153,12 @@ def generate(path: str, title: str, content: str | list[str], scripts: str = "")
     # dynamic data
     warnings.add(path)
     tags.add(path)
+    paths.add(path)
 
 
 # --------
 # ELEMENTS
 # --------
-
 
 def tag(tag_name: str, content: str | list[str], params: str = '') -> str:
     if params != '':
@@ -157,6 +174,9 @@ def tagc(tag_name: str, classes: str, content: str | list[str] = '', params: str
 
 def div(classes: str, content: str | list[str] = '', params: str = '') -> str:
     return tagc('div', classes, content, params)
+
+def span(classes: str, content: str | list[str] = '', params: str = '') -> str:
+    return tagc('span', classes, content, params)
 
 def h1(text: str | list[str]):
     return tag('h1', text)
@@ -175,10 +195,16 @@ def a(href: str, text: str | list[str], classes = ''):
         classes = f'link {classes}'
     else:
         classes = 'link'
-    return tagc('a', classes, text, f'href="{href}"')
+    return tagc('a', classes, text, f'href="{rpath(href)}"')
 
 def i(classes: str):
     return tagc('i', classes)
+
+def bold(text: str | list[str]):
+    return span('bold', text)
+
+def italic(text: str | list[str]):
+    return span('italic', text)
 
 def ul(content: list[str], classes: str = '', params: str = '', li_classes: str = '', li_params: str = ''):
     list_items = [tagc('li', li_classes, x, li_params) for x in content]
@@ -203,7 +229,7 @@ def card(href: str, title: str, subtitle: str, datetext: str, date: str, content
         div('card-dot', '•') if datetext != '' else '',
         div('card-date', date),
         div('card-content', content) if content != '' else ''
-    ], f'onclick="location.href=\'{href}\';"')
+    ], f'onclick="location.href=\'{rpath(href)}\';"')
 
 def crumbs(path: str) -> str:
     parts = path.removeprefix('docs/').removesuffix('.html').strip('/').split('/')
@@ -250,7 +276,7 @@ generate("index", '', [
     card('education/degree', "Degree in Computer Engineering", 'University of Alicante', '', '09/2020 — 06/2024', ul([
         'Grade: 8.81/10, including 13 honors',
         'Graduated as part of the High Academic Performance group (ARA group), with a specialization in Computing.',
-        f'Received the {a('awards/extraordinary', 'Extraordinary Award in Computer Engineering')} for outstanding performance.',
+        f'Received the {a('awards/computer_engineering', 'Extraordinary Award in Computer Engineering')} for outstanding performance.',
     ])),
     card('education/tech_scouts', 'Tech Scouts: Computer Science', 'Harbour Space', '', '07/2019 — 07/2019', ul([
         'Intensive 3-week summer course for advanced math and computer science.',
@@ -345,7 +371,7 @@ generate("awards", 'Honors & awards', [
     card('awards/semcv', "Reached final round in the 2014 Valencian Olympiad in Mathematics", 'SEMCV', '', '05/2014'),
     card('awards/semcv', "Second Prize in the 2013 Valencian Olympiad in Mathematics", 'SEMCV', '', '06/2013'),
 ])
-generate("awards/extraordinary", "Extraordinary Award in Computer Engineering", [
+generate("awards/computer_engineering", "Extraordinary Award in Computer Engineering", [
 
 ])
 generate("awards/ioi", 'International Olympiad in Informatics', [
@@ -413,6 +439,15 @@ generate('projects/last_brew', "The Last Brew", [
 
 ])
 
+
+# -----------------
+# POST-BUILD CHECKS
+# -----------------
+sites = paths.keys()
+for site, site_paths in paths.items():
+    for site_path in site_paths:
+        if is_local_path(site_path) and site_path not in sites:
+            warnings[site].append(f"Invalid local path '{site_path}'")
 
 # ----------------
 # CONSOLE MESSAGES
