@@ -555,10 +555,10 @@ projects_content = []
 for project_type, project_type_projects in projects.items():
     if len(project_type_projects) == 0:
         continue
-    projects_content.append(f'{section(project_type)} projects')
+    projects_content.append(section(f'{project_type} projects'))
     for project in project_type_projects:
         projects_content.append(
-            card(project.path, project.title, project.institution, project.date, ul(project.keypoints) + taglist(project.tags))
+            card(project.path, project.title, project.institution, '', project.date, ul(project.keypoints) + taglist(project.tags))
         )
 generate('projects', 'Projects', projects_content)
 
@@ -567,35 +567,35 @@ for project_type, project_type_projects in projects.items():
         generate(project.path, project.title, project.content)
 
 
-generate("projects", 'Projects', [
-    section('Professional projects'),
-    card('projects/automation', "Automation & Data Scrapping Tools", 'Facephi', '', '09/2025 — Present', ul([
-        'Automation & data scrapping tools leveraging AI agents.',
-        'Extracted key information used to train production models.',
-    ]) + taglist(['Python', 'LangGraph', 'MCP'])),
-    card('projects/riskapp', "RiskApp CMS", 'Compliance CMS', '', '12/2023 — 09/2025', ul([
-        'Web application to automate corporate risk assessment.',
-        'Design of the entire app & complete implementation from scratch.',
-    ]) + taglist(['PHP', 'JS', 'SQL'])),
-    card('projects/whistleblowing', "Whistleblowing Channel", 'Compliance CMS', '', '07/2023 — 09/2025', ul([
-        'Whistleblowing Channel compliant with Spanish & EU whistleblowing regulations.',
-        'Planning, design, implementation & delivery of several key features.'
-    ]) + taglist(['PHP', 'JS', 'Vue.JS', 'SQL', 'NLP'])),
+# generate("projects", 'Projects', [
+#     section('Professional projects'),
+#     card('projects/automation', "Automation & Data Scrapping Tools", 'Facephi', '', '09/2025 — Present', ul([
+#         'Automation & data scrapping tools leveraging AI agents.',
+#         'Extracted key information used to train production models.',
+#     ]) + taglist(['Python', 'LangGraph', 'MCP'])),
+#     card('projects/riskapp', "RiskApp CMS", 'Compliance CMS', '', '12/2023 — 09/2025', ul([
+#         'Web application to automate corporate risk assessment.',
+#         'Design of the entire app & complete implementation from scratch.',
+#     ]) + taglist(['PHP', 'JS', 'SQL'])),
+#     card('projects/whistleblowing', "Whistleblowing Channel", 'Compliance CMS', '', '07/2023 — 09/2025', ul([
+#         'Whistleblowing Channel compliant with Spanish & EU whistleblowing regulations.',
+#         'Planning, design, implementation & delivery of several key features.'
+#     ]) + taglist(['PHP', 'JS', 'Vue.JS', 'SQL', 'NLP'])),
 
-    section('University projects'),
-    card('projects/kan', "Data Science Final Project", "Master's Degree in Data Science", '', '11/2024 — 06/2025', ul([
-        'Exploration and testing of the Kolmogorov-Arnold architecture for neural networks.',
-    ]) + taglist(['ML', 'CNNs', 'Kolmogorov-Arnold Networks'])),
-    card('projects/quantum', "Computer Engineering Final Project", "Degree in Computer Engineering", '', '09/2023 — 05/2024', ul([
-        'Research project exploring the applications of Quantum Computing in ML systems.',
-    ]) + taglist(['ML', 'Quantum Computing'])),
-    card('projects/last_brew', "The Last Brew", 'Degree in Computer Engineering', '', '07/2023 — 09/2023', ul([
-        '2D game fully programmed in Z80 Assembly for the Amstrad CPC 8-bit computer.',
-        'Fluid movement, collisions, projectiles, and multiple enemy types and behaviors.',
-    ]) + taglist(['Z80 Assembly', 'Amstrad CPC', 'CPCTelera'])),
+#     section('University projects'),
+#     card('projects/kan', "Data Science Final Project", "Master's Degree in Data Science", '', '11/2024 — 06/2025', ul([
+#         'Exploration and testing of the Kolmogorov-Arnold architecture for neural networks.',
+#     ]) + taglist(['ML', 'CNNs', 'Kolmogorov-Arnold Networks'])),
+#     card('projects/quantum', "Computer Engineering Final Project", "Degree in Computer Engineering", '', '09/2023 — 05/2024', ul([
+#         'Research project exploring the applications of Quantum Computing in ML systems.',
+#     ]) + taglist(['ML', 'Quantum Computing'])),
+#     card('projects/last_brew', "The Last Brew", 'Degree in Computer Engineering', '', '07/2023 — 09/2023', ul([
+#         '2D game fully programmed in Z80 Assembly for the Amstrad CPC 8-bit computer.',
+#         'Fluid movement, collisions, projectiles, and multiple enemy types and behaviors.',
+#     ]) + taglist(['Z80 Assembly', 'Amstrad CPC', 'CPCTelera'])),
 
-    #section('Side projects'),
-])
+#     #section('Side projects'),
+# ])
 
 
 
