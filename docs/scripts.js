@@ -61,6 +61,6 @@ document.getElementById('footer-text').textContent = `© ${currentYear} Vicent B
 // -----------
 
 const protocol = window.location.protocol
-if (protocol == 'file:') { // files are local 
+if (protocol == 'file:') { // files are local
     
 }

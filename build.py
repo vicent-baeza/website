@@ -1,12 +1,54 @@
-import time
-import hashlib
+# pylint: disable=C0114,C0116,C0115,C0303,W0611,R0902
 import os
+from datetime import date
+from dataclasses import dataclass
+from typing import Literal
 from bs4 import BeautifulSoup
 from bs4.formatter import HTMLFormatter
+from dateutil.relativedelta import relativedelta
+from minify_html import minify # pylint: disable=E0611
 from list_dict import ListDict
 
 VERSION = 1 #hashlib.sha256(str(time.time()).encode('utf-8')).hexdigest()[:32]
 
+
+# -----
+# UTILS
+# -----
+def is_local_path(path: str) -> bool:
+    first_part = path.split('/')[0]
+    return '.' not in first_part
+
+def tryparse_date(date_str: str) -> date | None:
+    if 'present' in date_str.lower():
+        return date.today()
+    date_parts = [x.strip() for x in date_str.strip().split('/')]
+    if len(date_parts) != 2:
+        warnings.append(f"Invalid date '{date_str}'")
+        return None
+    try:
+        month = int(date_parts[0])
+        year = int(date_parts[1])
+        return date(year, month, 1)
+    except ValueError:
+        warnings.append(f"Invalid date '{date_str}'")
+        return None
+    
+def datetext_as_datediff(two_dates: str, separator = '—') -> str:
+    date_parts = [x.strip() for x in two_dates.strip().split(separator)]
+    if len(date_parts) != 2:
+        return ''
+    date1 = tryparse_date(date_parts[0])
+    date2 = tryparse_date(date_parts[1])
+    if date1 is None or date2 is None:
+        return ''
+    d = relativedelta(date2, date1)
+    if d.years == 0 and d.months == 0:
+        return '1 mos'
+
+    years = '' if d.years == 0 else ('1 yr' if d.years == 1 else f'{d.years} yrs')
+    months = '' if d.months == 0 else ('1 mo' if d.months == 1 else f'{d.months} mos')
+    return ' '.join([years, months])
 
 
 # -----------------
@@ -15,14 +57,6 @@ VERSION = 1 #hashlib.sha256(str(time.time()).encode('utf-8')).hexdigest()[:32]
 warnings = ListDict[str, str]()
 tags = ListDict[str, str]()
 paths = ListDict[str, str]()
-
-# ---------------
-# PAGE GENERATION
-# ---------------
-
-def is_local_path(path: str) -> bool:
-    first_part = path.split('/')[0]
-    return '.' not in first_part
 
 def rpath(path: str) -> str:
     """Adds paths to the paths ListDict.
@@ -35,6 +69,11 @@ def rpath(path: str) -> str:
     """
     paths.append(path)
     return path
+
+# ---------------
+# PAGE GENERATION
+# ---------------
+
 
 def path_prefix(path: str):
     parts = len(path.removeprefix('docs/').strip('/').split('/'))
@@ -110,9 +149,16 @@ footer: str = """
 
 def generate(path: str, title: str, content: str | list[str], scripts: str = ""):    
     if isinstance(content, list):
-        if len(content) > 0 and 'class="section"' in content[-1]:
-            warnings.append('Empty section')
-
+        if len(content) > 0:
+            if 'class="section"' in content[-1]:
+                warnings.append('Empty section')
+            if '<h1' in content[-1]:
+                warnings.append('Empty <h1>')
+            if '<h2' in content[-1]:
+                warnings.append('Empty <h2>')
+            if '<h3' in content[-1]:
+                warnings.append('Empty <h3>')
+        
         content = "".join(content)
 
     if content == '':
@@ -141,9 +187,11 @@ def generate(path: str, title: str, content: str | list[str], scripts: str = "")
         </html>
     """
 
-    html = BeautifulSoup(html, features="html.parser").prettify(
-        formatter=HTMLFormatter(indent=4)
-    )
+    html = minify(html)
+
+    # html = BeautifulSoup(html, features="html.parser").prettify(
+    #     formatter=HTMLFormatter(indent=4)
+    # )
 
     os.makedirs(os.path.dirname(f"docs/{path}.html"), exist_ok=True)
 
@@ -164,7 +212,7 @@ def tag(tag_name: str, content: str | list[str], params: str = '') -> str:
     if params != '':
         params = ' ' + params
     if isinstance(content, list):
-        content = ''.join(content)
+        content = ''.join(content).strip()
     return f'<{tag_name}{params}>{content}</{tag_name}>'
 
 def tagc(tag_name: str, classes: str, content: str | list[str] = '', params: str = '') -> str:
@@ -200,13 +248,19 @@ def a(href: str, text: str | list[str], classes = ''):
 def i(classes: str):
     return tagc('i', classes)
 
-def bold(text: str | list[str]):
+def b(text: str | list[str]):
     return span('bold', text)
 
-def italic(text: str | list[str]):
+def it(text: str | list[str]):
+    """Italic"""
     return span('italic', text)
 
-def ul(content: list[str], classes: str = '', params: str = '', li_classes: str = '', li_params: str = ''):
+def u(text: str | list[str]):
+    return tag('u', text)
+
+def ul(content: str | list[str], classes: str = '', params: str = '', li_classes: str = '', li_params: str = ''):
+    if isinstance(content, str):
+        content = [content]
     list_items = [tagc('li', li_classes, x, li_params) for x in content]
     return tagc('ul', classes, list_items, params)
 
@@ -219,7 +273,10 @@ def section(name: str):
 def taglist(tag_names: list[str]):
     return div('tag-list', [div('tag', tag_name) for tag_name in tag_names])
 
-def card(href: str, title: str, subtitle: str, datetext: str, date: str, content: str = '', divider: bool = True):
+def card(href: str, title: str, subtitle: str, datetext: str, date_str: str, content: str = '', divider: bool = True):
+    if datetext == 'auto': # Automatic datetext calculation (as duration):
+        datetext = datetext_as_datediff(date_str)
+
     return div('card btn', [
         div('card-title', title),
         div('card-dot', '•') if subtitle != '' else '',
@@ -227,7 +284,7 @@ def card(href: str, title: str, subtitle: str, datetext: str, date: str, content
         div('card-divider' + ('' if divider else ' card-divider-hidden')),
         div('card-subtitle', datetext) if datetext != '' else '',
         div('card-dot', '•') if datetext != '' else '',
-        div('card-date', date),
+        div('card-date', date_str),
         div('card-content', content) if content != '' else ''
     ], f'onclick="location.href=\'{rpath(href)}\';"')
 
@@ -260,32 +317,7 @@ BR = "<br/>"
 generate("index", '', [
     h1("Vicent Baeza"),
     p("Software Engineer with a passion for math and computer science."),
-    p("Currently building automation & data scrapping tools @ Facephi."),
-    section('Work'),
-    card('work/facephi', 'Facephi', 'AI Engineer', '', '09/2025 — Present', ul([
-        'Built several automation & data scrapping tools leveraging AI agents.',
-    ])),
-    card('work/compliance_cms', 'Compliance CMS', 'Software Engineer', '', '07/2023 — 09/2025', ul([
-        'Single-handedly developed and maintained two full-stack web applications.',
-        'Planning, design, implementation & delivery of new features from scratch.',
-    ])),
-    section('Education'),
-    card('education/master', "Master's Degree in Data Science", 'University of Alicante', '', '09/2024 — 06/2025', ul([
-        'Grade: 9.05/10',
-    ])),
-    card('education/degree', "Degree in Computer Engineering", 'University of Alicante', '', '09/2020 — 06/2024', ul([
-        'Grade: 8.81/10, including 13 honors',
-        'Graduated as part of the High Academic Performance group (ARA group), with a specialization in Computing.',
-        f'Received the {a('awards/computer_engineering', 'Extraordinary Award in Computer Engineering')} for outstanding performance.',
-    ])),
-    card('education/tech_scouts', 'Tech Scouts: Computer Science', 'Harbour Space', '', '07/2019 — 07/2019', ul([
-        'Intensive 3-week summer course for advanced math and computer science.',
-        f'Invitation received for winning a Gold Medal in the {a('awards/oicat', 'Catalan Olympiad in Informatics')} in 2019.',
-    ])),
-    card('education/estalmat', 'ESTALMAT', 'Polytechnic University of Valencia', '', '07/2019 — 07/2019', ul([
-        '4-year weekly math program for promoting and developing math and reasoning skills.',
-        'Learned a lot of foundational concepts that fueled my current passion for math and computer science.',
-    ])),
+    p(f"Currently building automation & data scrapping tools at {a('work/facephi', 'Facephi.')}"),
 ])
 generate("about", 'About me', [
 
@@ -295,102 +327,246 @@ generate("about", 'About me', [
 # ----
 # WORK
 # ----
-generate("work", 'Work', [
-    card('work/facephi', 'Facephi', 'AI Engineer', '', '09/2025 — Present', ul([
+@dataclass
+class Job:
+    path: str
+    title: str
+    company: str
+    date: str
+    keypoints: list[str]
+    tags: list[str]
+    content: str | list[str]
+    alt_title: str | None = None
+
+jobs = [
+    Job('work/facephi', 'AI Engineer', 'Facephi', '09/2025 — Present', [
         'Built several automation & data scrapping tools leveraging AI agents.',
         'Extracted key information used to train production models.',
-    ]) + taglist(['Python', 'LangGraph', 'MCP'])),
-    card('work/compliance_cms', 'Compliance CMS', 'Software Engineer', '', '07/2023 — 09/2025', ul([
+    ], ['Python', 'LangGraph', 'GitHub Actions'], [
+
+    ]),
+    Job('work/compliance_cms', 'Software Engineer', 'Compliance CMS', '07/2023 — 09/2025', [
         'Single-handedly developed and maintained two full-stack web applications.',
         'Planning, design, implementation & delivery of new features from scratch.',
-    ]) + taglist(['PHP', 'JS', 'Vue.JS', 'SQL', 'NLP'])),
-])
-generate("work/facephi", "Facephi", [
+    ], ['PHP', 'JS', 'Vue.JS', 'SQL', 'NLP'], [
 
-])
-generate("work/compliance_cms", "Compliance CMS", [
+    ]),
+    Job('work/tutoring', 'Private Tutor', 'Self-employed', '02/2021 — 06/2022', [
+        'Programming and Computer Engineering lessons.',
+        'Taught Algorithms, Data Structures, Memory Management, and many other programming concepts.',
+    ], ['C++', 'Java', 'Python', 'MASM Assembly'], [
+        p("""
+            Gave Programming and Computer Engineering lessons to first, second and third year students from the University of Alicante.
+            Lesson content was tailored for every student's needs, and varied greatly from student to student.
+        """),
+        p('Taught topics include:'),
+        ul([
+            f'{b('Basic programming concepts:')} If-statements, Loops, Functions, Classes, Inheritance, etc.',
+            f'{b('Math:')} binary (2s complement), Calculus, Matrix Algebra, Discrete Math and Statistics',
+            f'{b('Built-in data structures:')} Vectors, Linked Lists, Sets, Dictionaries, Stacks, Queues and Priority Queues',
+            f"{b('Graph algorithms:')} BFS, DFS, A* search, Dijkstra's, Kruskal's, Beam Search and Iterative Deepening",
+            f'{b('Theory of computation:')} Finite-State Machines, Context-Free Grammars & Turing Machines',
+            f'{b('Optimization & efficiency:')} Big-O Notation, Algorithm Analysis, Parallel Processing & Multithreading',
+            f'{b('Competitive Programming:')} Dynamic Programming, Greedy Algorithms, Divide & Conquer and Branch & Cut',
+            f'{b('Advanced data structures:')} Heaps, BSTs, AVL trees, Union Finds, Segment Trees, Tries and Graphs',
+            f'{b('Computer Architecture:')} Memory Management, Pipelining & MASM Assembly (32-bit)',
+        ], classes='text-list'),
+        BR,
+        p('Depending on the student, the lessons were given in C++, Java, Python, or a combination of the three.')
+    ], alt_title='Private Tutoring')
+]
 
+generate('work', 'Work', [
+    card(job.path, job.title, job.company, '', job.date, ul(job.keypoints) + taglist(job.tags))
+    for job in jobs
 ])
-
+for job in jobs:
+    generate(job.path, job.alt_title or job.title, job.content)
 
 # ---------
 # EDUCATION
 # ---------
-generate("education", 'Education', [
-    card('education/master', "Master's Degree in Data Science", 'University of Alicante', '', '09/2024 — 06/2025', ul([
+@dataclass
+class Education:
+    path: str
+    title: str
+    institution: str
+    date: str
+    keypoints: list[str]
+    content: str | list[str]
+
+educations = [
+    Education('education/master', "Master's Degree in Data Science", 'University of Alicante', '09/2024 — 06/2025', [
         'Grade: 9.05/10',
-    ])),
-    card('education/degree', "Degree in Computer Engineering", 'University of Alicante', '', '09/2020 — 06/2024', ul([
+    ], [
+
+    ]),
+    Education('education/degree', 'Degree in Computer Engineering', 'University of Alicante', '09/2020 — 06/2024', [
         'Grade: 8.81/10, including 13 honors',
         'Graduated as part of the High Academic Performance group (ARA group), with a specialization in Computing.',
         f'Received the {a('awards/computer_engineering', 'Extraordinary Award in Computer Engineering')} for outstanding performance.',
-    ])),
-    card('education/tech_scouts', 'Tech Scouts: Computer Science', 'Harbour Space', '', '07/2019 — 07/2019', ul([
+    ], [
+
+    ]),
+    Education('education/tech_scouts', 'Tech Scouts: Computer Science', 'Harbour Space', '07/2019 — 07/2019', [
         'Intensive 3-week summer course for advanced math and computer science.',
         f'Invitation received for winning a Gold Medal in the {a('awards/oicat', 'Catalan Olympiad in Informatics')} in 2019.',
-    ])),
-    card('education/estalmat', 'ESTALMAT', 'Polytechnic University of Valencia', '', '09/2015 — 05/2019', ul([
+    ], [
+
+    ]),
+    Education('education/estalmat', 'ESTALMAT', 'Polytechnic University of Valencia', '09/2015 — 05/2019', [
         '4-year weekly math program for promoting and developing math and reasoning skills.',
         'Learned a lot of foundational concepts that fueled my current passion for math and computer science.',
-    ])),
+    ], [
+        p("""
+            ESTALMAT is a Spanish program for the promotion and development of math and reasoning skills among children and teenagers.
+            Promoted by the Spanish Royal Academy of Exact, Physical and Natural Sciences, the program offers extracurricular intensive math classes. 
+            Although the program is very exclusive (only ~25 places per year and region), it gives everyone a fair chance and is completely free.
+            The first and second year the sessions are weekly; while for the third and fourth years the sessions are once every two weeks.
+        """),
+        p(f"""
+            I managed to qualify for the Valencian Community's ESTALMAT back in 2015, after participating in the 
+            {a('awards/semcv', 'Valencian Olympiad in Mathematics')}, which sparking my eventual passion for maths and computer science.
+        """),
+        p("""
+            I remember my time at ESTALMAT very fondly. It was truly a remarkable experience, filled with amazing teachers and students alike.
+        """)
+    ]),
+]
+generate('education', 'Education', [
+    card(education.path, education.title, education.institution, '', education.date, ul(education.keypoints))
+    for education in educations
 ])
-generate("education/master", "Master's Degree in Data Science", [
-
-])
-generate("education/degree", "Degree in Computer Engineering", [
-
-])
-generate("education/tech_scouts", "Tech Scouts: Computer Science", [
-
-])
-generate("education/estalmat", "ESTALMAT", [
-
-])
+for education in educations:
+    generate(education.path, education.title, education.content)
 
 
 # ------
-# AWARDS
+# HONORS
 # ------
-generate("awards", 'Honors & awards', [
-    card('awards/computer_engineering', "Extraordinary Award in Computer Engineering", 'University of Alicante', '', '11/2024', ul([
+@dataclass
+class Awards:
+    path: str
+    title: str
+    institution: str
+    date: str
+    keypoints: list[str]
+    content: str | list[str]
+
+awards = [
+    Awards('awards/computer_engineering', 'Extraordinary Award in Computer Engineering', 'University of Alicante', '11/2024', [
         f'Awarded to the three students with the highest overall grades in the {a('education/degree', 'Degree in Computer Engineering')}',
-    ])),
-    card('awards/oicat', "Gold Medal in the 2020 Catalan Olympiad in Informatics", 'OICat', '', '09/2020'),
-    card('awards/oie', "Silver Medal in the 2020 Spanish Olympiad in Informatics", 'OIE', '', '04/2020'),
-    card('awards/ioi', "Participation in the 2019 International Olympiad in Informatics", 'IOI', '', '08/2019', ul([
-        "Participated as part of the Spanish team",
-        f"Awarded for obtaining a Gold Medal in the {a("awards/oie","Spanish Olympiad in Informatics")}"
-    ])),
-    card('awards/oicat', "Gold Medal in the 2019 Catalan Olympiad in Informatics", 'OICat', '', '06/2020'),
-    card('awards/oie', "Gold Medal in the 2019 Spanish Olympiad in Informatics", 'OIE', '', '04/2020'),
-    card('awards/oie', "Gold Medal in the 2018 Catalan Olympiad in Informatics", 'OIE', '', '06/2019'),
-    card('awards/semcv', "Third Prize in the 2018 Valencian Olympiad in Mathematics", 'SEMCV', '', '05/2018'),
-    card('awards/semcv', "Reached final round in the 2017 Valencian Olympiad in Mathematics", 'SEMCV', '', '05/2017'),
-    card('awards/semcv', "Reached final round in the 2016 Valencian Olympiad in Mathematics", 'SEMCV', '', '05/2016'),
-    card('awards/semcv', "Reached final round in the 2015 Valencian Olympiad in Mathematics", 'SEMCV', '', '05/2015'),
-    card('awards/semcv', "Reached final round in the 2014 Valencian Olympiad in Mathematics", 'SEMCV', '', '05/2014'),
-    card('awards/semcv', "Second Prize in the 2013 Valencian Olympiad in Mathematics", 'SEMCV', '', '06/2013'),
-])
-generate("awards/computer_engineering", "Extraordinary Award in Computer Engineering", [
+    ], [
 
-])
-generate("awards/ioi", 'International Olympiad in Informatics', [
+    ]),
+    Awards('awards/ioi', 'International Olympiad in Informatics', 'IOI', '08/2019', [
+        'Participated as part of the Spanish team',
+        f'Awarded for obtaining a Gold Medal in the {a('awards/oie','Spanish Olympiad in Informatics')}'
+    ], [
 
-])
-generate("awards/oie", 'Spanish Olympiad in Informatics', [
+    ]),
+    Awards('awards/oie', 'Spanish Olympiad in Informatics', 'OIE', '04/2020', [
+        'Silver Medal in the 2020 Spanish Olympiad in Informatics',
+        'Gold Medal in the 2019 Spanish Olympiad in Informatics',
+        'Silver Medal in the 2018 Spanish Olympiad in Informatics',
+    ], [
 
-])
-generate("awards/oicat", 'Catalan Olympiad in Informatics', [
+    ]),
+    Awards('awards/oicat', 'Catalan Olympiad in Informatics', 'OICat', '06/2020', [
+        'Gold Medal in the 2020 Catalan Olympiad in Informatics',
+        'Gold Medal in the 2019 Catalan Olympiad in Informatics',
+        'Gold Medal in the 2018 Catalan Olympiad in Informatics',
+    ], [
 
-])
-generate("awards/semcv", "Valencian Community's Olympiad in Mathematics", [
+    ]),
+    Awards('awards/semcv', "Valencian Community's Olympiad in Mathematics", 'SEMCV', '05/2017', [
+        'Third Prize in the 2018 Valencian Olympiad in Mathematics',
+        'Reached final round in the 2014, 2015, 2016 & 2017 Valencian Olympiads in Mathematics',
+        'Second Prize in the 2013 Valencian Olympiad in Mathematics',
+    ], [
 
+    ]),
+]
+generate('awards', 'Contests, Honors & Awards', [
+    card(award.path, award.title, award.institution, '', award.date, ul(award.keypoints))
+    for award in awards
 ])
+for award in awards:
+    generate(award.path, award.title, award.content)
 
 
 # --------
 # PROJECTS
 # --------
+@dataclass
+class Project:
+    path: str
+    title: str
+    institution: str
+    date: str
+    keypoints: str | list[str]
+    tags: list[str]
+    content: str | list[str]
+
+projects = {
+    'professional': [
+        Project('projects/automation', 'Automation & Data Scrapping Tools', 'Facephi', '09/2025 — Present', [
+            'Exploration and testing of the Kolmogorov-Arnold architecture for neural networks.',
+        ], ['Python', 'LangGraph', 'GitHub Actions'], [
+
+        ]),
+        Project('projects/automation', 'Automation & Data Scrapping Tools', 'Compliance CMS', '12/2023 — 09/2025', [
+            'Web application to automate corporate risk assessment.',
+            'Design of the entire app & complete implementation from scratch.',
+        ], ['PHP', 'JS', 'SQL'], [
+
+        ]),
+        Project('projects/automation', 'Automation & Data Scrapping Tools', 'Compliance CMS', '07/2023 — 09/2025', [
+            'Whistleblowing Channel compliant with Spanish & EU whistleblowing regulations.',
+            'Planning, design, implementation & delivery of several key features.'
+        ], ['PHP', 'JS', 'Vue.JS', 'SQL'], [
+
+        ]),
+    ],
+    'university': [
+        Project('projects/kan', 'Data Science Final Project', "Master's Degree in Data Science", '11/2024 — 06/2025', [
+            'Exploration and testing of the Kolmogorov-Arnold architecture for neural networks.',
+        ], ['ML', 'CNNs', 'Kolmogorov-Arnold Networks'], [
+
+        ]),
+        Project('projects/quantum', 'Computer Engineering Final Project', 'Degree in Computer Engineering', '09/2023 — 05/2024', [
+            'Research project exploring the applications of Quantum Computing in ML systems.',
+        ], ['ML', 'Quantum Computing'], [
+
+        ]),
+        Project('projects/last_brew', "The Last Brew", 'Degree in Computer Engineering', '07/2023 — 09/2023', [
+            '2D game fully programmed in Z80 Assembly for the Amstrad CPC 8-bit computer.',
+            'Fluid movement, collisions, projectiles, and multiple enemy types and behaviors.',
+        ], ['Z80 Assembly', 'Amstrad CPC', 'CPCTelera'], [
+
+        ]),
+    ],
+    'side': [
+
+    ]
+}
+
+projects_content = []
+for project_type, project_type_projects in projects.items():
+    if len(project_type_projects) == 0:
+        continue
+    projects_content.append(f'{section(project_type)} projects')
+    for project in project_type_projects:
+        projects_content.append(
+            card(project.path, project.title, project.institution, project.date, ul(project.keypoints) + taglist(project.tags))
+        )
+generate('projects', 'Projects', projects_content)
+
+for project_type, project_type_projects in projects.items():
+    for project in project_type_projects:
+        generate(project.path, project.title, project.content)
+
+
 generate("projects", 'Projects', [
     section('Professional projects'),
     card('projects/automation', "Automation & Data Scrapping Tools", 'Facephi', '', '09/2025 — Present', ul([
@@ -420,24 +596,7 @@ generate("projects", 'Projects', [
 
     #section('Side projects'),
 ])
-generate('projects/automation', "Automation & Data Scrapping Tools", [
 
-])
-generate('projects/riskapp', "RiskApp CMS", [
-
-])
-generate('projects/whistleblowing', "Whistleblowing Channel", [
-
-])
-generate('projects/kan', "Data Science Final Project", [
-
-])
-generate('projects/quantum', "Computer Engineering Final Project", [
-
-])
-generate('projects/last_brew', "The Last Brew", [
-
-])
 
 
 # -----------------

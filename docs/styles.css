@@ -31,6 +31,7 @@
     --font-title: 'SpaceGrotesk';
 
     --p: 1rem var(--font);
+    --b: 500 1rem var(--font);
     --h1: 600 1.6rem var(--font-title);
     --h2: 500 1.3rem var(--font-title);
     --h3: 500 1.1rem var(--font-title);
@@ -233,13 +234,20 @@ footer > .content > * {
 .italic {
     font-style: italic;
 }
-.bold {
-    font-weight: 600;
+b, .bold {
+    font: var(--b);
+    color: var(--text);
+}
+p {
+    margin-bottom: var(--sp2);
 }
 
 /* UL */
 ul > li {
     margin-left: var(--sp6);
+}
+ul.text-list > li {
+    margin-bottom: var(--sp2);
 }
 
 /* H1, H2, H3 & sections */
