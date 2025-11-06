@@ -316,12 +316,12 @@ def crumbs(path: str) -> str:
         return ''
     if len(parts) == 1 and parts[0] == 'index':
         return ''
-    link = path_prefix(path)
+    link = path_prefix(path).removesuffix('/')
     content = []
-    content.append(a('index.html', 'home', 'crumb-text'))
+    content.append(a(f'{link}/', 'home', 'crumb-text'))
     content.append(i('ri-arrow-right-s-line crumb-divider'))
     for part in parts[:-1]:
-        link = f'{link.removesuffix('/')}/{part}'
+        link = f'{link}/{part}'
         content.append(a(link, part, 'crumb-text'))
         content.append(i('ri-arrow-right-s-line crumb-divider'))
 
@@ -437,7 +437,7 @@ educations = [
             Although the course itself can be pricey, I managed to get it for free as part of the prize for winning a Gold Medal in the {a('awards/oicat', '2019 Catalan Olympiad in Informatics')}.
         """),
         p("""
-            The course, located at the Harbour Space's Barcelona Campus, is tailored depending on your level (Beginner, Intermediate or Advanced). 
+            The course, located at Harbour Space's Barcelona Campus, is tailored depending on your level (Beginner, Intermediate or Advanced). 
             A first-day exam is taken by all students in order to determine the best level for each.
             Although back then I struggled a bit in math, I managed to get the Advanced level in both computer science and math.
         """),
@@ -467,7 +467,7 @@ educations = [
         p("""
             Besides all the concrete knowledge that the course provides, the most valuable aspect of it is that 
             it fundamentally changed how I aproached math and computer science problems.
-            Instead of relying mostly in intuition, the approach that the course prioritized was much more formal and structured, 
+            Instead of relying mostly on intuition, the approach that the course prioritized was much more formal and structured, 
             which really helped me progress and get deeper into computer science.
         """),
         p("""
