@@ -1,7 +1,6 @@
 // -----------------
 // UTILITY FUNCTIONS
 // -----------------
-
 function trycatch(trybody, errorhandler, defaultReturn = undefined) {
     try {
         return trybody()
@@ -11,7 +10,6 @@ function trycatch(trybody, errorhandler, defaultReturn = undefined) {
         return defaultReturn
     }
 }
-
 function localstorage_errors(trybody) {
     return trycatch(trybody, () => {
         console.warn("LOCAL STORAGE ERRROR!")
@@ -22,13 +20,10 @@ function localstorage_errors(trybody) {
 // ---------
 // DARK MODE
 // ---------
-
 const darkModeButtons = document.getElementsByClassName('darkmode-button')
-
 if (localstorage_errors(() => localStorage.getItem('lightmode')) == 'enabled') {
     document.body.classList.add('lightmode')
 }
-
 for (const darkModeButton of darkModeButtons) {
     darkModeButton.addEventListener('click', () => {
         document.body.classList.toggle('lightmode')
@@ -38,8 +33,6 @@ for (const darkModeButton of darkModeButtons) {
         })
     })
 }
-
-
 // add class 'loaded' after 500ms, so that transitions don't trigger on page load
 document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => {
@@ -51,16 +44,47 @@ document.addEventListener('DOMContentLoaded', () => {
 // --------------
 // DYNAMIC FOOTER
 // --------------
-
 currentYear = new Date().getFullYear()
 document.getElementById('footer-text').textContent = `© ${currentYear} Vicent Baeza`
 
 
-// -----------
-// LOCAL LINKS
-// -----------
+// -----------------
+// FULLSCREEN IMAGES
+// -----------------
+const fullscreen = document.getElementById('fullscreen')
+const fullscreen_img = fullscreen.getElementsByTagName('img')[0]
+const fullscreen_card_title = document.getElementById('fullscreen-card-title')
+const fullscreen_card_date = document.getElementById('fullscreen-card-date')
+const fullscreen_card_content = document.getElementById('fullscreen-card-content')
+console.log(fullscreen_img)
 
-const protocol = window.location.protocol
-if (protocol == 'file:') { // files are local
-    
+// make images fullscreen on click
+const card_images = document.querySelectorAll('.card > img')
+for(const card_image of card_images) {
+    const parent = card_image.parentElement
+    const card_title = parent.getElementsByClassName('card-title')[0]
+    const card_date = parent.getElementsByClassName('card-date')[0]
+    const card_content = parent.getElementsByClassName('img-fullscreen-content')[0]
+    console.log(parent)
+    console.log(card_title)
+    console.log(card_date)
+    console.log(card_content)
+    parent.onclick = function(e){
+        console.log('CLICKED IMAGE')
+        fullscreen.style.zIndex = 1000
+        fullscreen.style.display = 'flex'
+        fullscreen_img.src = card_image.src
+        fullscreen_card_title.innerHTML = card_title.innerHTML
+        fullscreen_card_date.innerHTML = card_date.innerHTML
+        fullscreen_card_content.innerHTML = card_content.innerHTML
+        document.body.classList.add("stop-scrolling");
+    }
 }
+
+// hide fullscreen div on click
+fullscreen.onclick = function(e) {
+    fullscreen.style.zIndex = -1000
+    fullscreen.style.display = 'none'
+    document.body.classList.remove("stop-scrolling");
+}
+

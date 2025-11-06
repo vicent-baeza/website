@@ -183,12 +183,21 @@ def generate(path: str, title: str, content: str | list[str], scripts: str = "")
             </div>
             <div class="unselectable" style="color: #00000000">.</div>
             {footer}
+            <div id='fullscreen'>
+                <div id='fullscreen-image'>
+                    <img src='images/estalmat.jpg' alt="Estalmat Certificate" class='card-content'>
+                </div>
+                <div id='fullscreen-card' class='card card-hl'>
+                    <div id='fullscreen-card-title' class="card-title">Estalmat Participation Certificate</div>
+                    <div id='fullscreen-card-date' class="card-date">05/2017</div>
+                    <div id='fullscreen-card-content' class='card-content'>
+                </div>
+            </div>
         </body>
         </html>
     """
 
     html = minify(html)
-
     # html = BeautifulSoup(html, features="html.parser").prettify(
     #     formatter=HTMLFormatter(indent=4)
     # )
@@ -263,6 +272,18 @@ def ul(content: str | list[str], classes: str = '', params: str = '', li_classes
         content = [content]
     list_items = [tagc('li', li_classes, x, li_params) for x in content]
     return tagc('ul', classes, list_items, params)
+
+def img(classes: str, src: str, alt_text: str, inner_content: str | list[str] = ''):
+    return tagc('img', classes, inner_content, f'src="{src}" alt="{alt_text}"')
+
+def card_img(title: str, date_str: str, image_src: str, image_fullscreen_html_content: str | list[str]):
+    return div('card cursor-pointer', [
+        div('card-title', title),
+        div('card-divider'),
+        div('card-date', date_str),
+        img('card-content', image_src, title),
+        div('img-fullscreen-content', image_fullscreen_html_content),
+    ])
 
 def section(name: str):
     return div('section', [
@@ -430,7 +451,27 @@ educations = [
         """),
         p("""
             I remember my time at ESTALMAT very fondly. It was truly a remarkable experience, filled with amazing teachers and students alike.
-        """)
+        """),
+        div('big-img',
+            card_img(
+                'ESTALMAT Participation Certificate',
+                '05/2017',
+                '../images/estalmat.jpg',
+                [
+                    BR,
+                    p('Digital scan of the certificate (in Spanish).'),
+                    p('English translation:'),
+                    p("""The President of the Royal Academy of Exact, Physical & Natural Sciences 
+                        and in their name the Coordinator of the Project ESTALMAT - Valencian Community
+                        issues the following diploma for Vicent Baeza Esteve for having participated 
+                        satisfactorily in the activities proposed in the Project of Detection and 
+                        Stimulation of Early Mathematical Talent (ESTALMAT) during the years 2015/16 
+                        and 2016/17. Valencia, 20th of May 2017
+                    """)
+                ],
+            )
+        )
+        
     ]),
 ]
 generate('education', 'Education', [
@@ -465,24 +506,21 @@ awards = [
     ], [
 
     ]),
-    Awards('awards/oie', 'Spanish Olympiad in Informatics', 'OIE', '04/2020', [
-        'Silver Medal in the 2020 Spanish Olympiad in Informatics',
-        'Gold Medal in the 2019 Spanish Olympiad in Informatics',
-        'Silver Medal in the 2018 Spanish Olympiad in Informatics',
+    Awards('awards/oie', 'Spanish Olympiad in Informatics', 'OIE', '2018 - 2020', [
+        'Gold Medal in the 2019 edition',
+        'Silver Medal in the 2018 & 2020 editions',
     ], [
 
     ]),
-    Awards('awards/oicat', 'Catalan Olympiad in Informatics', 'OICat', '06/2020', [
-        'Gold Medal in the 2020 Catalan Olympiad in Informatics',
-        'Gold Medal in the 2019 Catalan Olympiad in Informatics',
-        'Gold Medal in the 2018 Catalan Olympiad in Informatics',
+    Awards('awards/oicat', 'Catalan Olympiad in Informatics', 'OICat', '2018 - 2020', [
+        'Gold Medal in the 2018, 2019 & 2020 editions',
     ], [
 
     ]),
-    Awards('awards/semcv', "Valencian Community's Olympiad in Mathematics", 'SEMCV', '05/2017', [
-        'Third Prize in the 2018 Valencian Olympiad in Mathematics',
-        'Reached final round in the 2014, 2015, 2016 & 2017 Valencian Olympiads in Mathematics',
-        'Second Prize in the 2013 Valencian Olympiad in Mathematics',
+    Awards('awards/semcv', "Valencian Olympiad in Mathematics", 'SEMCV', '2013 - 2017', [
+        'Third Prize in the 2018 edition',
+        'Second Prize in the 2013 edition',
+        'Reached final round in the 2014, 2015, 2016 & 2017 editions',
     ], [
 
     ]),
@@ -550,7 +588,6 @@ projects = {
 
     ]
 }
-
 projects_content = []
 for project_type, project_type_projects in projects.items():
     if len(project_type_projects) == 0:
@@ -565,39 +602,6 @@ generate('projects', 'Projects', projects_content)
 for project_type, project_type_projects in projects.items():
     for project in project_type_projects:
         generate(project.path, project.title, project.content)
-
-
-# generate("projects", 'Projects', [
-#     section('Professional projects'),
-#     card('projects/automation', "Automation & Data Scrapping Tools", 'Facephi', '', '09/2025 — Present', ul([
-#         'Automation & data scrapping tools leveraging AI agents.',
-#         'Extracted key information used to train production models.',
-#     ]) + taglist(['Python', 'LangGraph', 'MCP'])),
-#     card('projects/riskapp', "RiskApp CMS", 'Compliance CMS', '', '12/2023 — 09/2025', ul([
-#         'Web application to automate corporate risk assessment.',
-#         'Design of the entire app & complete implementation from scratch.',
-#     ]) + taglist(['PHP', 'JS', 'SQL'])),
-#     card('projects/whistleblowing', "Whistleblowing Channel", 'Compliance CMS', '', '07/2023 — 09/2025', ul([
-#         'Whistleblowing Channel compliant with Spanish & EU whistleblowing regulations.',
-#         'Planning, design, implementation & delivery of several key features.'
-#     ]) + taglist(['PHP', 'JS', 'Vue.JS', 'SQL', 'NLP'])),
-
-#     section('University projects'),
-#     card('projects/kan', "Data Science Final Project", "Master's Degree in Data Science", '', '11/2024 — 06/2025', ul([
-#         'Exploration and testing of the Kolmogorov-Arnold architecture for neural networks.',
-#     ]) + taglist(['ML', 'CNNs', 'Kolmogorov-Arnold Networks'])),
-#     card('projects/quantum', "Computer Engineering Final Project", "Degree in Computer Engineering", '', '09/2023 — 05/2024', ul([
-#         'Research project exploring the applications of Quantum Computing in ML systems.',
-#     ]) + taglist(['ML', 'Quantum Computing'])),
-#     card('projects/last_brew', "The Last Brew", 'Degree in Computer Engineering', '', '07/2023 — 09/2023', ul([
-#         '2D game fully programmed in Z80 Assembly for the Amstrad CPC 8-bit computer.',
-#         'Fluid movement, collisions, projectiles, and multiple enemy types and behaviors.',
-#     ]) + taglist(['Z80 Assembly', 'Amstrad CPC', 'CPCTelera'])),
-
-#     #section('Side projects'),
-# ])
-
-
 
 # -----------------
 # POST-BUILD CHECKS
