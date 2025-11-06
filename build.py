@@ -430,10 +430,49 @@ educations = [
 
     ]),
     Education('education/tech_scouts', 'Tech Scouts: Computer Science', 'Harbour Space', '07/2019 — 07/2019', [
-        'Intensive 3-week summer course for advanced math and computer science.',
+        'Intensive 3-week summer course focusing computer science and advanced mathematics.',
         f'Invitation received for winning a Gold Medal in the {a('awards/oicat', 'Catalan Olympiad in Informatics')} in 2019.',
     ], [
-
+        p(f"""The Computer Science course of Tech Scouts is an intensive 3-week summer course. 
+            Although the course itself can be pricey, I managed to get it for free as part of the prize for winning a Gold Medal in the {a('awards/oicat', '2019 Catalan Olympiad in Informatics')}.
+        """),
+        p("""
+            The course, located at the Harbour Space's Barcelona Campus, is tailored depending on your level (Beginner, Intermediate or Advanced). 
+            A first-day exam is taken by all students in order to determine the best level for each.
+            Although back then I struggled a bit in math, I managed to get the Advanced level in both computer science and math.
+        """),
+        p("""
+            The classes themselves were extremely productive and engaging, and were exclusively taught by experts in computer science and mathematics. 
+            Every class starts introducing fundamental and really interesting concepts, and then really nails them down by going trough curated problems.
+            There were also many take-home problems, which were optional and would be corrected after-the-fact.
+        """),
+        p("""
+            The things I believe were the most helpful were the advanced algorithms and data structures. 
+            Before I didn't have a formal education on computer science, and was more or less self-taught.
+            By the time I finished the course, I had learned a broad range of advanced data structures and algorithms, 
+            which greatly helped me in future contests and really broadened my horizon in computer science.
+        """),
+        p("""
+            Some of the things I learned thanks to the course:
+        """),
+        ul([
+            'Binary Search Trees: AVLs, Red-black, Treaps, etc.',
+            'Range Queries: Binary Index Trees, Segment Trees, Sparse Tables, etc.',
+            'Union Finds (Disjoint Sets)',
+            'Tries & Suffix Trees',
+            'SQRT Decomposition',
+            'Persistent Data Structures',
+        ]),
+        BR,
+        p("""
+            Besides all the concrete knowledge that the course provides, the most valuable aspect of it is that 
+            it fundamentally changed how I aproached math and computer science problems.
+            Instead of relying mostly in intuition, the approach that the course prioritized was much more formal and structured, 
+            which really helped me progress and get deeper into computer science.
+        """),
+        p("""
+            Overall, a great and memorable formative experience.
+        """)
     ]),
     Education('education/estalmat', 'ESTALMAT', 'Polytechnic University of Valencia', '09/2015 — 05/2019', [
         '4-year weekly math program for promoting and developing math and reasoning skills.',
@@ -441,7 +480,9 @@ educations = [
     ], [
         p("""
             ESTALMAT is a Spanish program for the promotion and development of math and reasoning skills among children and teenagers.
-            Promoted by the Spanish Royal Academy of Exact, Physical and Natural Sciences, the program offers extracurricular intensive math classes. 
+            Promoted by the Spanish Royal Academy of Exact, Physical and Natural Sciences, the program offers extracurricular intensive math classes.
+          """),
+        p(""" 
             Although the program is very exclusive (only ~25 places per year and region), it gives everyone a fair chance and is completely free.
             The first and second year the sessions are weekly; while for the third and fourth years the sessions are once every two weeks.
         """),
@@ -471,7 +512,6 @@ educations = [
                 ],
             )
         )
-        
     ]),
 ]
 generate('education', 'Education', [

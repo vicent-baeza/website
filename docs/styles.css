@@ -142,7 +142,8 @@ body.loaded, body.loaded * {
 .content {
     display: block;
     margin: auto;
-    width: 80vw;
+    width: 60vh;
+    min-width: 800px;
     /*width: var(--content-max-width);*/
     min-height: 100%;
 }
