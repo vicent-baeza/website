@@ -50,6 +50,9 @@ def datetext_as_datediff(two_dates: str, separator = '—') -> str:
     months = '' if d.months == 0 else ('1 mo' if d.months == 1 else f'{d.months} mos')
     return ' '.join([years, months])
 
+def path_prefix(path: str):
+    parts = len(path.removeprefix('docs/').strip('/').split('/'))
+    return '../' * (parts - 1)
 
 # -----------------
 # DYNAMIC PAGE DATA
@@ -70,153 +73,10 @@ def rpath(path: str) -> str:
     paths.append(path)
     return path
 
-# ---------------
-# PAGE GENERATION
-# ---------------
-
-
-def path_prefix(path: str):
-    parts = len(path.removeprefix('docs/').strip('/').split('/'))
-    return '../' * (parts - 1)
-
-def head(path: str, page_title: str = "", scripts: str = ""):
-    if page_title != "":
-        page_title = f"{page_title} | VBaeza"
-    else:
-        page_title = "VBaeza"
-    pref = path_prefix(path)
-    return f"""
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <link rel="stylesheet" href="{pref}styles.css?v={VERSION}">
-            <link rel="stylesheet" href="{pref}fonts/remixicon/remixicon.css">
-            <link rel="icon" href="{pref}images/icon-dark.png">
-            <title>{page_title}</title>
-            <script defer src="{pref}scripts.js?v={VERSION}"></script>
-            {scripts}
-        </head>
-    """
-
-
-def header(path) -> str:
-    pref = path_prefix(path)
-    return f"""
-        <header>
-            <div class="content">
-                <a href="{pref if pref != '' else '/'}" class="header-title">VBaeza</a>
-                <div class="header-tabs unselectable">
-                    <a href="{pref}work" class="highlight">
-                        <i class="ri-folder-fill ri-lg"></i> Work
-                    </a>
-                    <a href="{pref}about" class="highlight">
-                        <i class="ri-user-3-fill ri-lg"></i> About me
-                    </a>
-                </div>
-                <div class="header-buttons">   
-                    <span class="btn highlight light darkmode-button" title="Light Theme">
-                        <i class="ri-sun-fill ri-lg"></i>
-                    </span>
-                    <span class="btn highlight dark darkmode-button" title="Dark Theme">
-                        <i class="ri-moon-fill ri-lg"></i>
-                    </span>
-                </div>
-            </div>
-        </header>
-    """
-
-footer: str = """
-    <footer>
-        <div class="content">
-            <span id='footer-text' class="footer-text">
-                © 2025 Vicent Baeza
-            </span>
-            <div class="footer-buttons">   
-                <a href="https://linkedin.com/in/vbaeza/" target="_blank" class="btn highlight" title="LinkedIn">
-                    <i class="ri-linkedin-box-fill ri-lg"></i>
-                </a>
-                <a href="mailto:vicentbaeza7@gmail.com" target="_blank" class="btn highlight" title="Email">
-                    <i class="ri-mail-fill ri-lg"></i>
-                </a>
-                <a href="https://github.com/vicent-baeza" target="_blank" class="btn highlight" title="GitHub">
-                    <i class="ri-github-fill ri-lg"></i>
-                </a>
-            </div>    
-        </div>                
-    </footer>
-"""
-
-
-def generate(path: str, title: str, content: str | list[str], scripts: str = ""):    
-    if isinstance(content, list):
-        if len(content) > 0:
-            if 'class="section"' in content[-1]:
-                warnings.append('Empty section')
-            if '<h1' in content[-1]:
-                warnings.append('Empty <h1>')
-            if '<h2' in content[-1]:
-                warnings.append('Empty <h2>')
-            if '<h3' in content[-1]:
-                warnings.append('Empty <h3>')
-        
-        content = "".join(content)
-
-    if content == '':
-        warnings.append('Empty content')
-        content = BR + h3('⚠️ Under construction, check back later! ⚠️')
-
-    if title != '':
-        content = h1(title) + content
-
-    content = crumbs(path) + content
-
-    html = f"""
-        <!DOCTYPE html>
-        <html lang="en">
-        {head(path, title, scripts)}
-        <body>
-            {header(path)}
-            <div class='page-content'>
-                <div class="content">
-                    {content}
-                </div>
-            </div>
-            <div class="unselectable" style="color: #00000000">.</div>
-            {footer}
-            <div id='fullscreen'>
-                <div id='fullscreen-image'>
-                    <img src='images/estalmat.jpg' alt="Estalmat Certificate" class='card-content'>
-                </div>
-                <div id='fullscreen-card' class='card card-hl'>
-                    <div id='fullscreen-card-title' class="card-title">Estalmat Participation Certificate</div>
-                    <div id='fullscreen-card-date' class="card-date">05/2017</div>
-                    <div id='fullscreen-card-content' class='card-content'>
-                </div>
-            </div>
-        </body>
-        </html>
-    """
-
-    html = minify(html)
-    # html = BeautifulSoup(html, features="html.parser").prettify(
-    #     formatter=HTMLFormatter(indent=4)
-    # )
-
-    os.makedirs(os.path.dirname(f"docs/{path}.html"), exist_ok=True)
-
-    with open(f"docs/{path}.html", "w", encoding="utf-8") as f:
-        f.write(html)
-
-    # dynamic data
-    warnings.add(path)
-    tags.add(path)
-    paths.add(path)
-
 
 # --------
 # ELEMENTS
 # --------
-
 def tag(tag_name: str, content: str | list[str], params: str = '') -> str:
     if params != '':
         params = ' ' + params
@@ -332,6 +192,156 @@ def crumbs(path: str) -> str:
 BR = "<br/>"
 
 
+# ---------------
+# PAGE GENERATION
+# ---------------
+@dataclass
+class HeaderTabs():
+    href: str
+    name: str
+    icon: str
+
+header_tabs = [
+    HeaderTabs('work', 'Work', 'ri-folder-fill'),
+    HeaderTabs('projects', 'Projects', 'ri-hammer-fill'),
+    HeaderTabs('education', 'Education', 'ri-graduation-cap-fill'),
+    HeaderTabs('awards', 'Awards', 'ri-trophy-fill'),
+    HeaderTabs('about', 'About me', 'ri-user-3-fill'),
+]
+
+def head(path: str, page_title: str = "", scripts: str = ""):
+    if page_title != "":
+        page_title = f"{page_title} | VBaeza"
+    else:
+        page_title = "VBaeza"
+    pref = path_prefix(path)
+    return f"""
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <link rel="stylesheet" href="{pref}styles.css?v={VERSION}">
+            <link rel="stylesheet" href="{pref}fonts/remixicon/remixicon.css">
+            <link rel="icon" href="{pref}images/icon-dark.png">
+            <title>{page_title}</title>
+            <script defer src="{pref}scripts.js?v={VERSION}"></script>
+            {scripts}
+        </head>
+    """
+
+
+def header(path) -> str:
+    pref = path_prefix(path)
+    tabs = '\n'.join([
+        f'<a href="{pref}{rpath(tab.href)}" class="highlight"><i class="{tab.icon} ri-lg"></i> {tab.name}</a>'
+        for tab in header_tabs
+    ])
+    return f"""
+        <header>
+            <div class="content">
+                <a href="{pref if pref != '' else '/'}" class="header-title">VBaeza</a>
+                <div class="header-tabs unselectable">
+                    {tabs}
+                </div>
+                <div class="header-buttons">   
+                    <span class="btn highlight light darkmode-button" title="Light Theme">
+                        <i class="ri-sun-fill ri-lg"></i>
+                    </span>
+                    <span class="btn highlight dark darkmode-button" title="Dark Theme">
+                        <i class="ri-moon-fill ri-lg"></i>
+                    </span>
+                </div>
+            </div>
+        </header>
+    """
+
+footer: str = """
+    <footer>
+        <div class="content">
+            <span id='footer-text' class="footer-text">
+                © 2025 Vicent Baeza
+            </span>
+            <div class="footer-buttons">   
+                <a href="https://linkedin.com/in/vbaeza/" target="_blank" class="btn highlight" title="LinkedIn">
+                    <i class="ri-linkedin-box-fill ri-lg"></i>
+                </a>
+                <a href="mailto:vicentbaeza7@gmail.com" target="_blank" class="btn highlight" title="Email">
+                    <i class="ri-mail-fill ri-lg"></i>
+                </a>
+                <a href="https://github.com/vicent-baeza" target="_blank" class="btn highlight" title="GitHub">
+                    <i class="ri-github-fill ri-lg"></i>
+                </a>
+            </div>    
+        </div>                
+    </footer>
+"""
+
+
+def generate(path: str, title: str, content: str | list[str], scripts: str = ""):    
+    if isinstance(content, list):
+        if len(content) > 0:
+            if 'class="section"' in content[-1]:
+                warnings.append('Empty section')
+            if '<h1' in content[-1]:
+                warnings.append('Empty <h1>')
+            if '<h2' in content[-1]:
+                warnings.append('Empty <h2>')
+            if '<h3' in content[-1]:
+                warnings.append('Empty <h3>')
+        
+        content = "".join(content)
+
+    if content == '':
+        warnings.append('Empty content')
+        content = BR + h3('⚠️ Under construction, check back later! ⚠️')
+
+    if title != '':
+        content = h1(title) + content
+
+    content = crumbs(path) + content
+
+    html = f"""
+        <!DOCTYPE html>
+        <html lang="en">
+        {head(path, title, scripts)}
+        <body>
+            {header(path)}
+            <div class='page-content'>
+                <div class="content">
+                    {content}
+                </div>
+            </div>
+            <div class="unselectable" style="color: #00000000">.</div>
+            {footer}
+            <div id='fullscreen'>
+                <div id='fullscreen-image'>
+                    <img src='images/estalmat.jpg' alt="Estalmat Certificate" class='card-content'>
+                </div>
+                <div id='fullscreen-card' class='card card-hl'>
+                    <div id='fullscreen-card-title' class="card-title">Estalmat Participation Certificate</div>
+                    <div id='fullscreen-card-date' class="card-date">05/2017</div>
+                    <div id='fullscreen-card-content' class='card-content'>
+                </div>
+            </div>
+        </body>
+        </html>
+    """
+
+    html = minify(html)
+    # html = BeautifulSoup(html, features="html.parser").prettify(
+    #     formatter=HTMLFormatter(indent=4)
+    # )
+
+    os.makedirs(os.path.dirname(f"docs/{path}.html"), exist_ok=True)
+
+    with open(f"docs/{path}.html", "w", encoding="utf-8") as f:
+        f.write(html)
+
+    # dynamic data
+    warnings.add(path)
+    tags.add(path)
+    paths.add(path)
+
+
 # ----------
 # MAIN PAGES
 # ----------
@@ -369,7 +379,7 @@ jobs = [
     Job('work/compliance_cms', 'Software Engineer', 'Compliance CMS', '07/2023 — 09/2025', [
         'Single-handedly developed and maintained two full-stack web applications.',
         'Planning, design, implementation & delivery of new features from scratch.',
-    ], ['PHP', 'JS', 'Vue.JS', 'SQL', 'NLP'], [
+    ], ['PHP', 'JS', 'Vue.JS', 'SQL'], [
 
     ]),
     Job('work/tutoring', 'Private Tutor', 'Self-employed', '02/2021 — 06/2022', [
@@ -535,6 +545,11 @@ class Awards:
     content: str | list[str]
 
 awards = [
+    Awards('awards/first_ascent', 'First Ascent Spain', 'Bending Spoons', '09/2025', [
+        'Awarded to the top 20 participants in Spain',
+    ], [
+
+    ]),
     Awards('awards/computer_engineering', 'Extraordinary Award in Computer Engineering', 'University of Alicante', '11/2024', [
         f'Awarded to the three students with the highest overall grades in the {a('education/degree', 'Degree in Computer Engineering')}',
     ], [
@@ -546,23 +561,108 @@ awards = [
     ], [
 
     ]),
-    Awards('awards/oie', 'Spanish Olympiad in Informatics', 'OIE', '2018 - 2020', [
+    Awards('awards/oie', 'Spanish Olympiad in Informatics', 'OIE', '2018 — 2020', [
         'Gold Medal in the 2019 edition',
         'Silver Medal in the 2018 & 2020 editions',
     ], [
 
     ]),
-    Awards('awards/oicat', 'Catalan Olympiad in Informatics', 'OICat', '2018 - 2020', [
+    Awards('awards/oicat', 'Catalan Olympiad in Informatics', 'OICat', '2018 — 2020', [
         'Gold Medal in the 2018, 2019 & 2020 editions',
     ], [
 
     ]),
-    Awards('awards/semcv', "Valencian Olympiad in Mathematics", 'SEMCV', '2013 - 2017', [
+    Awards('awards/semcv', "Valencian Olympiad in Mathematics", 'SEMCV', '2013 — 2018', [
         'Third Prize in the 2018 edition',
         'Second Prize in the 2013 edition',
         'Reached final round in the 2014, 2015, 2016 & 2017 editions',
     ], [
-
+        p("""
+            Organized by the Al-Khwarizmi society (SEMCV), the Valencian Community's Olympiad in Mathematics
+            is a yearly competition in which students solve complex mathematical problems. 
+            Any Valencian student in 5th or 6th grade of primary education or in secondary education can participate.
+        """),
+        p("""
+            The competition is organized in 3 phases (Local, Provincial and Regional) and 3 levels depending on age. The Local phase is the first, and just consists of a advanced math test. 
+            This is the phase that by far gets the most participation, with thousands of students enrolling each year. 
+            After that, the top 30 students of each level for each province (Alacant, València and Castelló) participate in the Provincial phase, 
+            and the top 8 students for each level from each province go through to the Regional phase.
+        """),
+        p("""
+            Although the first phase is really short and simple (just a 2-hour exam), both the Provincial and Regional phases are much more drawn out,
+            having many activities, several individual and team tests, lasting multiple days each.
+        """),
+        p("""
+            This competition, despite being relatively unknown at the time, was my very first experience with extracurricular math activities, 
+            and helped steered my trajectory and made me realize my passion for mathematics and, eventually, computer science. 
+            I remember these competitions very fondly, not only because of the competitions themselves, 
+            but also because of the many friends and colleagues that I was able to meet thanks to them.
+        """),
+        p("I participated from 2013 through to 2018, managing to achieve the following:"),
+        ul([
+            "Second Prize in the 2013 edition",
+            "Third Prize in the 2018 edition",
+            "Reached the Regional Phase of the competition in the 2014, 2015, 2016, and 2017 editions",
+        ]),
+        BR,
+        div('halfs', [
+            card_img('2013 Diploma', '06/2013', '../images/mat2013.jpg', [
+                BR,
+                p('Digital scan of the certificate (in Catalan).'),
+                p('English translation:'),
+                p("Olympiad in Mathematics"),
+                p("Al-Khwarizmi Society for the Mathematical Education of the Valencian Community"),
+                p("Diploma to Vicent Baeza Esteve for their participation in the Olympiad in Mathematics. Regional Phase"),
+                p("Benidorm, 8th of June 2013"), 
+                p("Provincial Coordinator"),
+            ]),
+            card_img('2014 Diploma', '06/2014', '../images/mat2014.jpg', [
+                BR,
+                p('Digital scan of the certificate (in Catalan).'),
+                p('English translation:'),
+                p("Olympiad in Mathematics"),
+                p("The Al-Khwarizmi Society for the Mathematical Education of the Valencian Community grants the following"),
+                p("Diploma"),
+                p("To: VICENT BAEZA ESTEVE"),
+                p("Of the school: CEIP PLA DE BARRAQUES (EL CAMPELLO)"),
+                p("For their participation in the regional phase of the XXV Valencian Olympiad in Mathematics"),
+                p("Xest Educational Complex, 1st of June 2014"),
+                p("General Manager of the SEMCV"),
+            ]),
+            card_img('2016 Diploma', '05/2016', '../images/mat2016.jpg', [
+                BR,
+                p('Digital scan of the certificate (in Catalan).'),
+                p('English translation:'),
+                p("Olympiad in Mathematics"),
+                p("Al-Khwarizmi Society for the Mathematical Education of the Valencian Community"),
+                p("Diploma to Vicent Baeza Esteve for their participation in the Olympiad in Mathematics. Regional Phase"),
+                p("Alicante, 29th of May 2016"),
+                p("Provincial Coordinator"),
+            ]),
+            card_img('2017 Diploma', '05/2017', '../images/mat2017.jpg', [
+                BR,
+                p('Digital scan of the certificate (in Catalan).'),
+                p('English translation:'),
+                p("Olympiad in Mathematics"),
+                p("The Al-Khwarizmi Society for the Mathematical Education of the Valencian Community grants the following"),
+                p("DIPLOMA"),
+                p("To: VICENT BAEZA ESTEVE"),
+                p("Of the school: ENRIC VALOR - EL CAMPELLO"),
+                p("For their participation in the Regional Phase of the XXVIII Valencian Olympiad in Mathematics"),
+                p("Xest Educational Complex, 28th of March 2017"),
+                p("The Provincial Coordinators"),
+            ]),
+            card_img('2018 Diploma', '06/2018', '../images/mat2018.jpg', [
+                BR,
+                p('Digital scan of the certificate (in Catalan).'),
+                p('English translation:'),
+                p("2018 Olympiad in Mathematics"),
+                p("Regional Phase"),
+                p("DIPLOMA"),
+                p("On behalf of: VICENT BAEZA ESTEVE"),
+                p("Al-Khwarizmi Society for the Mathematical Education of the Valencian Community (SEMCV)"),
+            ]),
+        ])
     ]),
 ]
 generate('awards', 'Contests, Honors & Awards', [
@@ -646,11 +746,21 @@ for project_type, project_type_projects in projects.items():
 # -----------------
 # POST-BUILD CHECKS
 # -----------------
-sites = paths.keys()
+sites = list(paths.keys())
+sites.append('/')
+site_link_counts = {site: 0 for site in sites}
+site_link_counts['/'] += 1
+site_link_counts['index'] += 1
 for site, site_paths in paths.items():
     for site_path in site_paths:
-        if is_local_path(site_path) and site_path not in sites:
-            warnings[site].append(f"Invalid local path '{site_path}'")
+        if is_local_path(site_path):
+            if site_path not in sites:
+                warnings[site].append(f"Invalid local path '{site_path}'")
+            else:
+                site_link_counts[site_path] += 1
+for site, link_count in site_link_counts.items():
+    if link_count == 0:
+        warnings[site].append("Not linked in any other site")
 
 # ----------------
 # CONSOLE MESSAGES
