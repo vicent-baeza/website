@@ -603,7 +603,7 @@ awards = [
                 p("has been awarded the GOLD MEDAL in the final of the 2020 Catalan Olympiad in Informatics"), 
                 p("Barcelona, 5th of September 2020"),
             ]),
-            card_img('2020 Gold Medal', '09/2020', '../images/oicat2020medal.png', [
+            card_img('2020 Gold Medal', '09/2020', '../images/oicat2020medal.jpg', [
                 BR,
                 p('Photo of the Gold Medal')
             ]),
@@ -618,7 +618,7 @@ awards = [
                 p("has been awarded the GOLD MEDAL in the final of the 2019 Catalan Olympiad in Informatics"), 
                 p("Barcelona, 15th of June 2019"),
             ]),
-            card_img('2019 Gold Medal', '06/2019', '../images/oicat2019medal.png', [
+            card_img('2019 Gold Medal', '06/2019', '../images/oicat2019medal.jpg', [
                 BR,
                 p('Photo of the Gold Medal')
             ]),
