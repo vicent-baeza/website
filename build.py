@@ -772,12 +772,12 @@ site_link_counts['/'] += 1
 site_link_counts['index'] += 1
 for site, site_paths in paths.items():
     for site_path in site_paths:
-        path = '/' if site_path == '/' else site_path.strip('/')
-        if is_local_path(path):
-            if path not in sites:
-                warnings[site].append(f"Invalid local path '{path}'")
+        path_fixed = '/' if site_path == '/' else site_path.strip('/')
+        if is_local_path(path_fixed):
+            if path_fixed not in sites:
+                warnings[site].append(f"Invalid local path '{path_fixed}'")
             else:
-                site_link_counts[path] += 1
+                site_link_counts[path_fixed] += 1
 for site, link_count in site_link_counts.items():
     if link_count == 0:
         warnings[site].append("Not linked in any other site")
