@@ -533,7 +533,7 @@ for education in educations:
 
 
 # ------
-# HONORS
+# AWARDS
 # ------
 @dataclass
 class Awards:
@@ -589,7 +589,40 @@ awards = [
             Despite the short timeframe, the few times I participated were very fun and memorable. 
             I made some friends there, and it also granted me access to the {a('/education/tech_scouts', 'Harbour Space Tech Scouts')} summer course, 
             which I wouldn't have been able to attend otherwise. Overall, a very worthwhile experience!
-        """)
+        """),
+        BR,
+        div('halfs', [
+            card_img('2020 Diploma', '09/2020', '../images/oicat2020.jpg', [
+                BR,
+                p('Digital scan of the certificate (in Catalan).'),
+                p('English translation:'),
+                p("Catalan Olympiad in Informatics 2020"),
+                p("Certificate"),
+                p("This document certifies that"),
+                p("Vicent Baeza Esteve"), 
+                p("has been awarded the GOLD MEDAL in the final of the 2020 Catalan Olympiad in Informatics"), 
+                p("Barcelona, 5th of September 2020"),
+            ]),
+            card_img('2020 Gold Medal', '09/2020', '../images/oicat2020medal.png', [
+                BR,
+                p('Photo of the Gold Medal')
+            ]),
+            card_img('2019 Diploma', '06/2019', '../images/oicat2019.jpg', [
+                BR,
+                p('Digital scan of the certificate (in Catalan).'),
+                p('English translation:'),
+                p("Catalan Olympiad in Informatics 2019"),
+                p("Certificate"),
+                p("This document certifies that"),
+                p("Vicent Baeza Esteve"), 
+                p("has been awarded the GOLD MEDAL in the final of the 2019 Catalan Olympiad in Informatics"), 
+                p("Barcelona, 15th of June 2019"),
+            ]),
+            card_img('2019 Gold Medal', '06/2019', '../images/oicat2019medal.png', [
+                BR,
+                p('Photo of the Gold Medal')
+            ]),
+        ])
     ]),
     Awards('awards/semcv', "Valencian Olympiad in Mathematics", 'SEMCV', '2013 — 2018', [
         'Third Prize in the 2018 edition',
