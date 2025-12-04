@@ -565,24 +565,73 @@ awards = [
         'Gold Medal in the 2019 edition',
         'Silver Medal in the 2018 & 2020 editions',
     ], [
-
+        p("""
+            The Spanish Olympiad in Informatics (OIE) is a yearly competition in which students from all around Spain 
+            participate to test their competitive programming skills.
+        """),
+        p(f"""
+            The olympiad is divided into two days, in which participants have to solve several problems. 
+            The top 4 participants across both days classify for the {a('/awards/ioi', 'International Olympiad in Informatics')},
+            in which they represent Spain in the international stage.
+        """),
+        p("""
+            The olympiad (at least when I participated) was an online event hosted on Hackerrank,
+            which was a shame, since it didn't allow participants and get to know eachother.
+            I'm happy to report that the olympiad has fixed this issue since, as now the event seems to be fully on-site.
+        """),
+        p("""
+            Although the olympiad was pretty forgettable (since it was purely online and barely lasted a couple days), 
+            the study sessions building up to it were quite the experience. The olympiad back then didn't have many
+            learning resources either, but thanks to it I learned many fundamental concepts, and really got to refine my
+            programming and competitive programming skills.
+        """),
+        p(f"""
+            In 2019 I managed to classify for the {a('/awards/ioi', 'International Olympiad in Informatics')}, 
+            which was a really memorable experience by itself.
+        """),
+        BR,
+         div('halfs', [
+            card_img('2018 Diploma', '06/2018', '../images/oie2018.jpg', [
+                BR,
+                p('Digital scan of the certificate (in Spanish).'),
+                p('English translation:'),
+                p('The organizing committee of the'),
+                p('SPANISH OLYMPIAD IN INFORMATICS'),
+                p("accredits that"),
+                p("Vicent Baeza"),
+                p("has obtained the SILVER classification"), 
+                p("in the 2018 Spanish Olympiad in Informatics"),
+                p("Barcelona, 16th of June 2018")
+            ]),
+            card_img('2019 Diploma', '04/2019', '../images/oie2019.jpg', [
+                BR,
+                p('Digital scan of the certificate (in Spanish).'),
+                p('English translation:'),
+                p('The organizing committee of the'),
+                p('SPANISH OLYMPIAD IN INFORMATICS'),
+                p("accredits that"),
+                p("Vicent Baeza"),
+                p("has obtained the GOLD classification"), 
+                p("Barcelona, 27th of June 2019")
+            ]),
+        ])
     ]),
     Awards('awards/oicat', 'Catalan Olympiad in Informatics', 'OICat', '2018 — 2020', [
         'Gold Medal in the 2018, 2019 & 2020 editions',
     ], [
         p("""
-            The Catalan Olympiad in Informatics is a yearly competition in which students from 
+            The Catalan Olympiad in Informatics (OICat) is a yearly competition in which students from 
             Catalonia and the Valencian Community can participate. 
         """),
         p("""
-            The Olympiad features a wide range of problems, from purely logical problems to algorithmic and programming challenges.
+            The olympiad features a wide range of problems, from purely logical problems to algorithmic and programming challenges.
             The programming challenges are mostly done in C++, although C, Java and Python are also accepted programming languages. 
             Some programming challenges require image processing, and those can only be done in Python.
         """),
         p(f"""
-            Although the Olympiad is a relatively short event (as it only lasts a single day), it is a great experience, as it allows students interested in
+            Although the olympiad is a relatively short event (as it only lasts a single day), it is a great experience, as it allows students interested in
             competitive programming to meet eachother and build friendships and connections. 
-            The organization that organizes the Olympiad also provides many training and educational courses on problem solving and
+            The organization that organizes the olympiad also provides many training and educational courses on problem solving and
             competitive programming, that can serve as learning resources and eventual preparation for the bigger {a('/awards/oie','Spanish Olympiad in Informatics')}.
         """),
         p(f"""
@@ -592,21 +641,6 @@ awards = [
         """),
         BR,
         div('halfs', [
-            card_img('2020 Diploma', '09/2020', '../images/oicat2020.jpg', [
-                BR,
-                p('Digital scan of the certificate (in Catalan).'),
-                p('English translation:'),
-                p("Catalan Olympiad in Informatics 2020"),
-                p("Certificate"),
-                p("This document certifies that"),
-                p("Vicent Baeza Esteve"), 
-                p("has been awarded the GOLD MEDAL in the final of the 2020 Catalan Olympiad in Informatics"), 
-                p("Barcelona, 5th of September 2020"),
-            ]),
-            card_img('2020 Gold Medal', '09/2020', '../images/oicat2020medal.jpg', [
-                BR,
-                p('Photo of the Gold Medal')
-            ]),
             card_img('2019 Diploma', '06/2019', '../images/oicat2019.jpg', [
                 BR,
                 p('Digital scan of the certificate (in Catalan).'),
@@ -622,6 +656,21 @@ awards = [
                 BR,
                 p('Photo of the Gold Medal')
             ]),
+            card_img('2020 Diploma', '09/2020', '../images/oicat2020.jpg', [
+                BR,
+                p('Digital scan of the certificate (in Catalan).'),
+                p('English translation:'),
+                p("Catalan Olympiad in Informatics 2020"),
+                p("Certificate"),
+                p("This document certifies that"),
+                p("Vicent Baeza Esteve"), 
+                p("has been awarded the GOLD MEDAL in the final of the 2020 Catalan Olympiad in Informatics"), 
+                p("Barcelona, 5th of September 2020"),
+            ]),
+            card_img('2020 Gold Medal', '09/2020', '../images/oicat2020medal.jpg', [
+                BR,
+                p('Photo of the Gold Medal')
+            ]),
         ])
     ]),
     Awards('awards/semcv', "Valencian Olympiad in Mathematics", 'SEMCV', '2013 — 2018', [
@@ -630,7 +679,7 @@ awards = [
         'Reached final round in the 2014, 2015, 2016 & 2017 editions',
     ], [
         p("""
-            Organized by the Al-Khwarizmi society (SEMCV), the Valencian Community's Olympiad in Mathematics
+            Organized by the Al-Khwarizmi society, the Valencian Community's Olympiad in Mathematics (SEMCV)
             is a yearly competition in which students solve complex mathematical problems. 
             Any Valencian student in 5th or 6th grade of primary education or in secondary education can participate.
         """),
