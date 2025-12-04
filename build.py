@@ -393,7 +393,7 @@ jobs = [
         p('Taught topics include:'),
         ul([
             f'{b('Basic programming concepts:')} If-statements, Loops, Functions, Classes, Inheritance, etc.',
-            f'{b('Math:')} binary (2s complement), Calculus, Matrix Algebra, Discrete Math and Statistics',
+            f'{b('Math:')} Binary (2s complement), Calculus, Matrix Algebra, Discrete Math and Statistics',
             f'{b('Built-in data structures:')} Vectors, Linked Lists, Sets, Dictionaries, Stacks, Queues and Priority Queues',
             f"{b('Graph algorithms:')} BFS, DFS, A* search, Dijkstra's, Kruskal's, Beam Search and Iterative Deepening",
             f'{b('Theory of computation:')} Finite-State Machines, Context-Free Grammars & Turing Machines',
@@ -551,13 +551,13 @@ awards = [
 
     ]),
     Awards('awards/computer_engineering', 'Extraordinary Award in Computer Engineering', 'University of Alicante', '11/2024', [
-        f'Awarded to the three students with the highest overall grades in the {a('education/degree', 'Degree in Computer Engineering')}',
+        f'Awarded to the three students with the highest overall grades in the {a('/education/degree', 'Degree in Computer Engineering')}',
     ], [
 
     ]),
     Awards('awards/ioi', 'International Olympiad in Informatics', 'IOI', '08/2019', [
         'Participated as part of the Spanish team',
-        f'Awarded for obtaining a Gold Medal in the {a('awards/oie','Spanish Olympiad in Informatics')}'
+        f'Awarded for obtaining a Gold Medal in the {a('/awards/oie', 'Spanish Olympiad in Informatics')}'
     ], [
 
     ]),
@@ -570,7 +570,26 @@ awards = [
     Awards('awards/oicat', 'Catalan Olympiad in Informatics', 'OICat', '2018 — 2020', [
         'Gold Medal in the 2018, 2019 & 2020 editions',
     ], [
-
+        p("""
+            The Catalan Olympiad in Informatics is a yearly competition in which students from 
+            Catalonia and the Valencian Community can participate. 
+        """),
+        p("""
+            The Olympiad features a wide range of problems, from purely logical problems to algorithmic and programming challenges.
+            The programming challenges are mostly done in C++, although C, Java and Python are also accepted programming languages. 
+            Some programming challenges require image processing, and those can only be done in Python.
+        """),
+        p(f"""
+            Although the Olympiad is a relatively short event (as it only lasts a single day), it is a great experience, as it allows students interested in
+            competitive programming to meet eachother and build friendships and connections. 
+            The organization that organizes the Olympiad also provides many training and educational courses on problem solving and
+            competitive programming, that can serve as learning resources and eventual preparation for the bigger {a('/awards/oie','Spanish Olympiad in Informatics')}.
+        """),
+        p(f"""
+            Despite the short timeframe, the few times I participated were very fun and memorable. 
+            I made some friends there, and it also granted me access to the {a('/education/tech_scouts', 'Harbour Space Tech Scouts')} summer course, 
+            which I wouldn't have been able to attend otherwise. Overall, a very worthwhile experience!
+        """)
     ]),
     Awards('awards/semcv', "Valencian Olympiad in Mathematics", 'SEMCV', '2013 — 2018', [
         'Third Prize in the 2018 edition',
@@ -693,13 +712,13 @@ projects = {
         ], ['Python', 'LangGraph', 'GitHub Actions'], [
 
         ]),
-        Project('projects/automation', 'Automation & Data Scrapping Tools', 'Compliance CMS', '12/2023 — 09/2025', [
+        Project('projects/riskapp', 'RiskApp CMS', 'Compliance CMS', '12/2023 — 09/2025', [
             'Web application to automate corporate risk assessment.',
             'Design of the entire app & complete implementation from scratch.',
         ], ['PHP', 'JS', 'SQL'], [
 
         ]),
-        Project('projects/automation', 'Automation & Data Scrapping Tools', 'Compliance CMS', '07/2023 — 09/2025', [
+        Project('projects/whistleblowing', 'Whistleblowing Channel', 'Compliance CMS', '07/2023 — 09/2025', [
             'Whistleblowing Channel compliant with Spanish & EU whistleblowing regulations.',
             'Planning, design, implementation & delivery of several key features.'
         ], ['PHP', 'JS', 'Vue.JS', 'SQL'], [
@@ -753,11 +772,12 @@ site_link_counts['/'] += 1
 site_link_counts['index'] += 1
 for site, site_paths in paths.items():
     for site_path in site_paths:
-        if is_local_path(site_path):
-            if site_path not in sites:
-                warnings[site].append(f"Invalid local path '{site_path}'")
+        path = '/' if site_path == '/' else site_path.strip('/')
+        if is_local_path(path):
+            if path not in sites:
+                warnings[site].append(f"Invalid local path '{path}'")
             else:
-                site_link_counts[site_path] += 1
+                site_link_counts[path] += 1
 for site, link_count in site_link_counts.items():
     if link_count == 0:
         warnings[site].append("Not linked in any other site")
