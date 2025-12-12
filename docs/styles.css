@@ -38,6 +38,7 @@
     --section: 800 0.8rem var(--font);
     --title-tabs: 600 1rem var(--font-title);
     --title: 700 1.3rem var(--font-title);
+    --font-shortcut: 700 0.9rem var(--font-title);
 
     --spm: 0.1rem;
     --sp1: 0.25rem;
@@ -125,17 +126,39 @@ body.loaded, body.loaded * {
 }
 .highlight {
     padding: 5px;
-    padding-bottom: 4px;
-    border-radius: 4px;
+    /*padding-bottom: 4px;*/
     text-align: center;
+    border: 1px solid transparent;
 }
 .highlight:hover {
     background: var(--bg-hl);
     color: var(--primary) !important;
+    border: 1px solid var(--border-muted) !important;
 }
+.shortcut {
+    border: 1px solid var(--border-muted);
+    width: 1.3rem;
+    text-align: center;
+    display: inline-block;
+    border-radius: 2px;
+    font: var(--font-shortcut);
+    color: var(--text-muted);
+    background: var(--bg-hl);
+}
+.shortcut:hover {
+    border: 1px solid var(--border) !important;
+}
+
+
 .page-content {
     margin-bottom: calc(var(--footer-height) + var(--content-v-margin)) !important;
 }
+* > .shortcut {
+    align-items: center;
+    text-align: center;
+}
+
+
 /* Global Layout Styles */
 .content {
     display: block;
@@ -178,7 +201,7 @@ header > .content > * {
 }
 .header-tabs > a {
     color: var(--text);
-    margin: 0 0.3rem;
+    margin: 0 0.2rem;
 }
 .header-buttons {
     width: 120px;
@@ -186,7 +209,6 @@ header > .content > * {
 }
 .header-buttons > .btn, .header-buttons > a {
     float: right;
-    margin-left: 0.7rem;
     color: var(--text);
 }
 
@@ -328,7 +350,7 @@ a.crumb-text:hover {
     margin-top: var(--sp2);
     font: var(--p);
 }
-:hover > * > * > .tag, :hover > * > .tag, :hover > .tag, .tag:hover {
+:hover > * > .tag, :hover > .tag, .tag:hover {
     background-color: var(--bg-hl);
 }
 
@@ -338,7 +360,6 @@ a.crumb-text:hover {
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    border-radius: var(--sp3);
     padding: var(--sp3);
     border: 1px solid #00000000;
     flex-wrap: wrap
@@ -393,7 +414,6 @@ a.crumb-text:hover {
 .halfs > * {
     width: 50%;
     height: 400px;
-    border-radius: var(--sp3);
     border: 1px solid #00000000;
 }
 .big-img {
@@ -409,7 +429,6 @@ a.crumb-text:hover {
     object-position: center;
     object-fit: cover;
     overflow: hidden;
-    border-radius: var(--sp2);
     border: 1px solid var(--border-muted);
     margin-bottom: var(--sp1);
 }
@@ -463,7 +482,6 @@ a.crumb-text:hover {
     object-position: center;
     object-fit: contain;
     overflow: hidden;
-    border-radius: var(--sp2);
     border: 1px solid var(--border-muted);
     margin-bottom: var(--sp1);
 }

@@ -616,8 +616,8 @@ awards = [
             ]),
         ])
     ]),
-    Awards('awards/oicat', 'Catalan Olympiad in Informatics', 'OICat', '2018 — 2020', [
-        'Gold Medal in the 2018, 2019 & 2020 editions',
+    Awards('awards/oicat', 'Catalan Olympiad in Informatics', 'OICat', '2019 — 2020', [
+        'Gold Medal in the 2019 & 2020 editions',
     ], [
         p("""
             The Catalan Olympiad in Informatics (OICat) is a yearly competition in which students from 
@@ -635,8 +635,8 @@ awards = [
             competitive programming, that can serve as learning resources and eventual preparation for the bigger {a('/awards/oie','Spanish Olympiad in Informatics')}.
         """),
         p(f"""
-            Despite the short timeframe, the few times I participated were very fun and memorable. 
-            I made some friends there, and it also granted me access to the {a('/education/tech_scouts', 'Harbour Space Tech Scouts')} summer course, 
+            Despite the short timeframe, both times I participated were very fun and memorable. 
+            I made some friends there, and it also granted me access to the 2019 {a('/education/tech_scouts', 'Harbour Space Tech Scouts')} summer course, 
             which I wouldn't have been able to attend otherwise. Overall, a very worthwhile experience!
         """),
         BR,
