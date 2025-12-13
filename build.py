@@ -206,7 +206,7 @@ header_tabs = [
     HeaderTabs('projects', 'Projects', 'ri-hammer-fill'),
     HeaderTabs('education', 'Education', 'ri-graduation-cap-fill'),
     HeaderTabs('awards', 'Awards', 'ri-trophy-fill'),
-    HeaderTabs('about', 'About me', 'ri-user-3-fill'),
+    #HeaderTabs('about', 'About me', 'ri-user-3-fill'),
 ]
 
 def head(path: str, page_title: str = "", scripts: str = ""):
@@ -348,7 +348,7 @@ def generate(path: str, title: str, content: str | list[str], scripts: str = "")
 generate("index", '', [
     h1("Vicent Baeza"),
     p("Software Engineer with a passion for math and computer science."),
-    p(f"Currently building automation & data scrapping tools at {a('work/facephi', 'Facephi.')}"),
+    p(f"Currently building automation & data scrapping tools at {a('work/facephi', 'Facephi')}."),
 ])
 generate("about", 'About me', [
 

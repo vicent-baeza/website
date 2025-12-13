@@ -263,12 +263,14 @@ b, .bold {
     color: var(--text);
 }
 p {
-    margin-bottom: var(--sp2);
+    line-height: var(--sp6);
+    margin-bottom: var(--sp4);
 }
 
 /* UL */
 ul > li {
     margin-left: var(--sp6);
+    line-height: var(--sp6);
 }
 ul.text-list > li {
     margin-bottom: var(--sp2);
@@ -292,8 +294,8 @@ h3 {
     line-height: 1.1rem;
 }
 h1, h2, h3, .section {
-    margin-top: var(--sp6);
-    margin-bottom: var(--sp1);
+    margin-top: var(--sp2);
+    margin-bottom: var(--sp4);
 }
 .section {
     display: flex;
@@ -341,16 +343,14 @@ a.crumb-text:hover {
 }
 .tag {
     background-color: var(--bg);
-    border-radius: 16px;
     border: 1px solid var(--border-muted);
-    padding-left: var(--sp2);
-    padding-right: var(--sp2);
-    padding: var(4px);
+    padding-left: var(--sp1);
+    padding-right: var(--sp1);
     margin-left: var(--sp1);
     margin-top: var(--sp2);
     font: var(--p);
 }
-:hover > * > .tag, :hover > .tag, .tag:hover {
+:hover > * > .tag-list > .tag, :hover > * > .tag, :hover > .tag, .tag:hover {
     background-color: var(--bg-hl);
 }
 
