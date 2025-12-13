@@ -294,7 +294,7 @@ h3 {
     line-height: 1.1rem;
 }
 h1, h2, h3, .section {
-    margin-top: var(--sp2);
+    margin-top: var(--sp8);
     margin-bottom: var(--sp4);
 }
 .section {
@@ -307,7 +307,7 @@ h1, h2, h3, .section {
     font: var(--section);
     letter-spacing: 0.075rem;
     flex-grow: 0;
-    margin-right: var(--sp1)
+    margin-right: var(--sp2)
 }
 .section > .section-divider {
     background-color: var(--border);
