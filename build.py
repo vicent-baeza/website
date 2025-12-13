@@ -535,6 +535,13 @@ educations = [
             I managed to qualify for the Valencian Community's ESTALMAT back in 2015, after participating in the 
             {a('awards/semcv', 'Valencian Olympiad in Mathematics')}, which sparking my eventual passion for maths and computer science.
         """),
+        div('big-img',
+            card_img_nohover(
+                '../images/estalmatReunion.jpg',
+                f'Some members of ESTALMAT 2015-2019, reunited. {a('https://semcv.org/faseautonomica/olimpiades-autonomiques-anteriors/988-xxix-olimpiada-matematica-2018', 'Source')}',
+                'ESTALMAT 2015-2019 reunion.',
+            )
+        ),
         p("""
             I remember my time at ESTALMAT very fondly. It was truly a remarkable experience, filled with amazing teachers and students alike.
         """),
@@ -588,7 +595,45 @@ awards = [
     Awards('awards/computer_engineering', 'Extraordinary Award in Computer Engineering', 'University of Alicante', '11/2024', [
         f'Awarded to the three students with the highest overall grades in the {a('/education/degree', 'Degree in Computer Engineering')}',
     ], [
-
+        p(f"""
+            The Extraordinary Award ({it('Premio Extraordinario')} in Spanish) is a prestigious award given by the University of Alicante to the
+            students that graduated with the highest overall grades for that school year. The award demostrates outstanding performance and commitment to academic excellence.
+        """),
+        p_no_margin(f"""
+            There is a separate award for each bachelor's and master's offered by the university.
+            For each degree, one award is given for every 50 students that graduated that year. 
+            In the case of the {a('/education/degree', 'Degree in Computer Engineering')}, 3 awards were given in 2024, as more that 100 students graduated that year.
+        """),
+        div('big-img',
+            card_img_nohover(
+                '../images/premioExtraordinarioFoto.jpg',
+                f'Awardees of the 2024 Extraordinary Award in Computer Engineering. {a('https://eps.ua.es/es/graduacion/graduacion-2024.html', 'Source')}',
+                'Awardees of the 2024 Extraordinary Award in Computer Engineering',
+            )
+        ),
+        p("""
+            I managed to get the 2nd award, with an average grade over the whole degree of 8.81/10. 
+            The other awarded students were Eric Ayllón Palazón and Diego Luchmun Corbalán, also pictured in the above photo.
+        """),
+        div('big-img',
+            card_img_vw('Certificate for the Extraordinary Award', '01/2025', '../images/premioExtraordinario.jpg', [
+                BR,
+                p('Digital scan of the certificate (in Spanish & Catalan)'),
+                p('Some personal details have been redacted.'),
+                p('English translation:'),
+                p('University of Alicante'),
+                p('Amparo Navarro Faure'),
+                p('President of the University of Alicante'),
+                p('I certify:'),
+                p('That Vicent Baeza Esteve'),
+                p('born on the day [REDACTED] in El Campello'),
+                p('province of Alicante, with Spanish nationality'),
+                p('with national identity number (or passport) [REDACTED]'),
+                p('has obtained, in this university, as of November 29th, 2024'),
+                p('the extraordinary award in Computer Engineering '),
+                p('Whereupon to all extent and consequence, I hereby issue this certificate, in Alicante, January 28th 2025'),
+            ], 50),
+        ),
     ]),
     Awards('awards/ioi', 'International Olympiad in Informatics', 'IOI', '08/2019', [
         'Participated as part of the Spanish team',
@@ -610,7 +655,7 @@ awards = [
             card_img_nohover(
                 '../images/ioiStadium.jpg',
                 f'National Gymnastics Arena in Baku, Azerbaijan. {a('https://olimpiada-informatica.org/content/resultados-ioi-2019-en-bak%C3%BA-azerbaiy%C3%A1n', 'Source')}',
-                'National Gymnastics Arena',
+                'National Gymnastics Arena in Baku, Azerbaijan',
             )
         ),
         p_no_margin("""
@@ -620,7 +665,7 @@ awards = [
             card_img_nohover(
                 '../images/ioiVillage.jpg',
                 f'Athletes\' Village in Baku, Azerbaijan. {a('https://bakuathletesvillage.com/', 'Source')}',
-                'Athletes\' Village',
+                'Athletes\' Village in Baku, Azerbaijan',
             )
         ),
         p("""
@@ -715,7 +760,7 @@ awards = [
             card_img_nohover(
                 '../images/oicat2019photo.jpg',
                 f'Participants (including me!) solving problems in the 2019 OICat. {a('https://olimpiada-informatica.cat/oicat-2019/', 'Source')}',
-                'OICat participants',
+                'OICat participants solving problems',
             )
         ),
         p(f"""
@@ -794,10 +839,17 @@ awards = [
             After that, the top 30 students of each level for each province (Alacant, València and Castelló) participate in the Provincial phase, 
             and the top 8 students for each level from each province go through to the Regional phase.
         """),
-        p("""
+        p_no_margin("""
             Although the first phase is really short and simple (just a 2-hour exam), both the Provincial and Regional phases are much more drawn out,
             having many activities, several individual and team tests, lasting multiple days each.
         """),
+        div('big-img',
+            card_img_nohover(
+                '../images/mat2018prize.jpg',
+                f'Receiving the Third Prize in 2018 in Viver, Valencia. {a('https://semcv.org/faseautonomica/olimpiades-autonomiques-anteriors/988-xxix-olimpiada-matematica-2018', 'Source')}',
+                'Receiving the Third Prize in 2018 in Viver, Valencia',
+            )
+        ),
         p("""
             This competition, despite being relatively unknown at the time, was my very first experience with extracurricular math activities, 
             and helped steered my trajectory and made me realize my passion for mathematics and, eventually, computer science. 
