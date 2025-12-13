@@ -12,6 +12,8 @@ from list_dict import ListDict
 # UTILS
 # -----
 def is_local_path(path: str) -> bool:
+    if path.startswith('http'):
+        return False
     first_part = path.split('/')[0]
     return '.' not in first_part
 
@@ -116,6 +118,9 @@ def h3(text: str | list[str]):
 def p(text: str | list[str]):
     return tag('p', text)
 
+def p_no_margin(text: str | list[str]):
+    return tagc('p', 'no-margin', text)
+
 def a(href: str, text: str | list[str], classes = ''):
     if classes != '':
         classes = f'link {classes}'
@@ -142,16 +147,37 @@ def ul(content: str | list[str], classes: str = '', params: str = '', li_classes
     list_items = [tagc('li', li_classes, x, li_params) for x in content]
     return tagc('ul', classes, list_items, params)
 
-def img(classes: str, src: str, alt_text: str, inner_content: str | list[str] = ''):
-    return tagc('img', classes, inner_content, f'src="{src}" alt="{alt_text}"')
+def img(classes: str, src: str, alt_text: str, inner_content: str | list[str] = '', extra_params: str = ''):
+    return tagc('img', classes, inner_content, f'src="{src}" alt="{alt_text}" {extra_params}')
 
-def card_img(title: str, date_str: str, image_src: str, image_fullscreen_html_content: str | list[str]):
-    return div('card cursor-pointer', [
+def card_img(title: str, date_str: str, image_src: str, image_fullscreen_html_content: str | list[str], extra_classes: str = ''):
+    return div(f'card cursor-pointer {extra_classes}', [
         div('card-title', title),
         div('card-divider'),
         div('card-date', date_str),
         img('card-content', image_src, title),
         div('img-fullscreen-content', image_fullscreen_html_content),
+    ])
+
+def card_img_vw(title: str, date_str: str, image_src: str, image_fullscreen_html_content: str | list[str], image_max_height_vw: int = 50):
+    return div('card cursor-pointer', [
+        div('card-title', title),
+        div('card-divider'),
+        div('card-date', date_str),
+        img('card-content', image_src, title, extra_params=f'style="max-height:{image_max_height_vw}vw"'),
+        div('img-fullscreen-content', image_fullscreen_html_content),
+    ])
+
+def card_img_nohover(image_src: str, image_text: str, image_alt_text: str):
+    return div('card no-hover', [
+        img('card-content', image_src, image_alt_text),
+        div('card-center', image_text),
+    ])
+
+def card_img_nohover_vw(image_src: str, image_text: str, image_alt_text: str, image_max_height_vw: int = 50):
+    return div('card no-hover', [
+        img('card-content', image_src, image_alt_text, extra_params=f'style="max-height:{image_max_height_vw}vw"'),
+        div('card-center', image_text),
     ])
 
 def section(name: str):
@@ -568,7 +594,55 @@ awards = [
         'Participated as part of the Spanish team',
         f'Awarded for obtaining a Gold Medal in the {a('/awards/oie', 'Spanish Olympiad in Informatics')}'
     ], [
-
+        p("""
+            The International Olympiad in Informatics (IOI) is a yearly competition in which students from all around the world 
+            test their competitive programming skills. It is one of the most prestigious competitions in the world of competitive programming, and to participate you have to get selected through your country's olympiad process.
+        """),
+        p(f"""
+            In Spain, in order to participate in the IOI you have to win a Gold Medal in the {a('/awards/oie', 'Spanish Olympiad in Informatics')}. 
+            Despite my somewhat lackluster knowledge of algorithms and data structures at the time, I managed to win a Gold Medal in 2019 and got to participate in the IOI as part of the Spanish team.
+        """),
+        p_no_margin("""
+            The 2019 IOI was hosted in Baku, Azerbaijan. The whole event lasted almost a week, and was composed of many experiences and events around the city, where we could meet other participants and mingle. 
+            Of course, there also was quite a bit of problem-solving, compressed into two 3-hour sessions hosted at the Baku National Gymnastics Arena.
+        """),
+        div('big-img',
+            card_img_nohover(
+                '../images/ioiStadium.jpg',
+                f'National Gymnastics Arena in Baku, Azerbaijan. {a('https://olimpiada-informatica.org/content/resultados-ioi-2019-en-bak%C3%BA-azerbaiy%C3%A1n', 'Source')}',
+                'National Gymnastics Arena',
+            )
+        ),
+        p_no_margin("""
+            During the whole week, we were housed in the Athlete's Village, a very large aparment complex completely booked for the IOI.
+        """),
+        div('big-img',
+            card_img_nohover(
+                '../images/ioiVillage.jpg',
+                f'Athletes\' Village in Baku, Azerbaijan. {a('https://bakuathletesvillage.com/', 'Source')}',
+                'Athletes\' Village',
+            )
+        ),
+        p("""
+            Although I did not perform very well, primarily due to my aforementioned weak problem-solving skills at the time, it was a very enriching and memorable experience.
+            Even after all these years, I vividly remember certain parts of the experience, 
+            such a game of Giant Tetris being played in the hall of the Village, 
+            the Japanese team trying to hand out stapleless staplers to every participant, 
+            or playing One Night Ultimate Werewolf at the airport at midnight with the Swiss team while waiting to catch our return flight.
+            A great time indeed.
+        """),
+        div('big-img',
+            card_img_vw(
+                'IOI Participation Certificate',
+                '08/2019',
+                '../images/ioi.jpg',
+                [
+                    BR,
+                    p('Digital scan of the certificate.')
+                ],
+                50
+            )
+        )
     ]),
     Awards('awards/oie', 'Spanish Olympiad in Informatics', 'OIE', '2018 — 2020', [
         'Gold Medal in the 2019 edition',
@@ -632,17 +706,39 @@ awards = [
             The Catalan Olympiad in Informatics (OICat) is a yearly competition in which students from 
             Catalonia and the Valencian Community can participate. 
         """),
-        p("""
+        p_no_margin("""
             The olympiad features a wide range of problems, from purely logical problems to algorithmic and programming challenges.
             The programming challenges are mostly done in C++, although C, Java and Python are also accepted programming languages. 
-            Some programming challenges require image processing, and those can only be done in Python.
+            Some challenges require image processing, and those can only be done in Python.
         """),
+        div('big-img',
+            card_img_nohover(
+                '../images/oicat2019photo.jpg',
+                f'Participants (including me!) solving problems in the 2019 OICat. {a('https://olimpiada-informatica.cat/oicat-2019/', 'Source')}',
+                'OICat participants',
+            )
+        ),
         p(f"""
             Although the olympiad is a relatively short event (as it only lasts a single day), it is a great experience, as it allows students interested in
             competitive programming to meet eachother and build friendships and connections. 
             The organization that organizes the olympiad also provides many training and educational courses on problem solving and
             competitive programming, that can serve as learning resources and eventual preparation for the bigger {a('/awards/oie','Spanish Olympiad in Informatics')}.
         """),
+        p_no_margin("""
+            I managed to get a Gold Medal (the hightest prize possible) in the 2019 and the 2020 editions of the olympiad: 
+        """),
+        div('halfs', [
+            card_img_nohover_vw(
+                '../images/oicat2019winners.jpg',
+                f'2019 OICat winners. {a('https://olimpiada-informatica.cat/oicat-2019/', 'Source')}',
+                '2019 OICat winners',
+            ),
+            card_img_nohover_vw(
+                '../images/oicat2020winners.jpg',
+                f'2020 OICat winners. {a('https://olimpiada-informatica.cat/oicat-2020/', 'Source')}',
+                '2020 OICat winners',
+            )
+        ]),
         p(f"""
             Despite the short timeframe, both times I participated were very fun and memorable. 
             I made some friends there, and it also granted me access to the 2019 {a('/education/tech_scouts', 'Harbour Space Tech Scouts')} summer course, 

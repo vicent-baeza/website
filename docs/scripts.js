@@ -59,7 +59,7 @@ const fullscreen_card_content = document.getElementById('fullscreen-card-content
 console.log(fullscreen_img)
 
 // make images fullscreen on click
-const card_images = document.querySelectorAll('.card > img')
+const card_images = document.querySelectorAll('.card.cursor-pointer > img')
 for(const card_image of card_images) {
     const parent = card_image.parentElement
     const card_title = parent.getElementsByClassName('card-title')[0]

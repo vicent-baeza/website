@@ -401,6 +401,22 @@ a.crumb-text:hover {
     margin-top: var(--sp2);
     margin-right: var(--sp1);
 }
+.card > .card-center {
+    text-align: center;
+    align-items: center;
+    width:100%;
+}
+.card.no-hover {
+    padding: var(--sp1);
+    margin-bottom: var(--sp4);
+}
+.card.no-hover:hover {
+    border: 1px solid transparent;
+    background-color: transparent;
+}
+.no-hover:hover > * > .tag-list > .tag, .no-hover > * > .tag, .no-hover > .tag, .no-hover:hover {
+    background-color: transparent !important;
+}
 
 /* Images */
 .halfs {
@@ -427,7 +443,7 @@ a.crumb-text:hover {
     width: 100%;
     max-height: calc(100% - 1.1rem - 2*var(--sp3) - 2px);
     object-position: center;
-    object-fit: cover;
+    object-fit: contain;
     overflow: hidden;
     border: 1px solid var(--border-muted);
     margin-bottom: var(--sp1);
@@ -435,6 +451,13 @@ a.crumb-text:hover {
 .img-fullscreen-content {
     display: none;
 }
+.card.h30vw > img {
+    max-height: calc(30vw - 1.1rem - 2*var(--sp3) - 2px);
+}
+.card.h50vw > img {
+    max-height: calc(50vw - 1.1rem - 2*var(--sp3) - 2px);
+}
+
 
 /* Fullscreen Image */
 #fullscreen {
@@ -508,4 +531,13 @@ ul.timeline:before {
 /* Misc */
 .cursor-pointer {
     cursor: pointer;
+}
+.no-margin {
+    margin: 0px !important
+}
+.h30vw {
+    max-height: 30vw !important;
+}
+.h50vw {
+    max-height: 50vw !important;
 }
