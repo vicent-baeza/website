@@ -1,15 +1,11 @@
 # pylint: disable=C0114,C0116,C0115,C0303,W0611,R0902
 import os
+import hashlib
 from datetime import date
 from dataclasses import dataclass
-from typing import Literal
-from bs4 import BeautifulSoup
-from bs4.formatter import HTMLFormatter
 from dateutil.relativedelta import relativedelta
 from minify_html import minify # pylint: disable=E0611
 from list_dict import ListDict
-
-VERSION = 1 #hashlib.sha256(str(time.time()).encode('utf-8')).hexdigest()[:32]
 
 
 # -----
@@ -53,6 +49,19 @@ def datetext_as_datediff(two_dates: str, separator = '—') -> str:
 def path_prefix(path: str):
     parts = len(path.removeprefix('docs/').strip('/').split('/'))
     return '../' * (parts - 1)
+
+def hash_file(path: str, buffer_size : int = 65536) -> str:
+    file_hash = hashlib.sha256()
+    with open(path, 'rb') as f:
+        while True:
+            data = f.read(buffer_size)
+            if not data:
+                break
+            file_hash.update(data)
+    return file_hash.hexdigest()
+
+CSS_HASH = 1 #hash_file('docs/styles.css')
+JS_HASH = 1 #hash_file('docs/scripts.js')
 
 # -----------------
 # DYNAMIC PAGE DATA
@@ -219,11 +228,11 @@ def head(path: str, page_title: str = "", scripts: str = ""):
         <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <link rel="stylesheet" href="{pref}styles.css?v={VERSION}">
+            <link rel="stylesheet" href="{pref}styles.css?v={CSS_HASH}">
             <link rel="stylesheet" href="{pref}fonts/remixicon/remixicon.css">
             <link rel="icon" href="{pref}images/icon-dark.png">
             <title>{page_title}</title>
-            <script defer src="{pref}scripts.js?v={VERSION}"></script>
+            <script defer src="{pref}scripts.js?v={JS_HASH}"></script>
             {scripts}
         </head>
     """
@@ -790,7 +799,8 @@ class Project:
 projects = {
     'professional': [
         Project('projects/automation', 'Automation & Data Scrapping Tools', 'Facephi', '09/2025 — Present', [
-            'Exploration and testing of the Kolmogorov-Arnold architecture for neural networks.',
+            'Built several automation & data scrapping tools leveraging AI agents.',
+            'Extracted key information used to train production models.',
         ], ['Python', 'LangGraph', 'GitHub Actions'], [
 
         ]),
