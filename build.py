@@ -607,8 +607,8 @@ awards = [
         div('big-img',
             card_img_nohover(
                 '../images/premioExtraordinarioFoto.jpg',
-                f'Awardees of the 2024 Extraordinary Award in Computer Engineering. {a('https://eps.ua.es/es/graduacion/graduacion-2024.html', 'Source')}',
-                'Awardees of the 2024 Extraordinary Award in Computer Engineering',
+                f'Honorees of the 2024 Extraordinary Award in Computer Engineering. {a('https://eps.ua.es/es/graduacion/graduacion-2024.html', 'Source')}',
+                'Honorees of the 2024 Extraordinary Award in Computer Engineering',
             )
         ),
         p("""
