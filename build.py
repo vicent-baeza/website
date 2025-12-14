@@ -1,4 +1,4 @@
-# pylint: disable=C0114,C0116,C0115,C0303,W0611,R0902
+# pylint: disable=C0114,C0116,C0115,C0303,W0611,R0902,W0603
 import os
 import hashlib
 from datetime import date
@@ -311,7 +311,7 @@ footer: str = """
 """
 
 
-def generate(path: str, title: str, content: str | list[str], scripts: str = ""):    
+def generate(path: str, title: str, content: str | list[str], scripts: str = ""):
     if isinstance(content, list):
         if len(content) > 0:
             if 'class="section"' in content[-1]:
@@ -371,10 +371,11 @@ def generate(path: str, title: str, content: str | list[str], scripts: str = "")
     with open(f"docs/{path}.html", "w", encoding="utf-8") as f:
         f.write(html)
 
-    # dynamic data
+    # reset dynamic data
     warnings.add(path)
     tags.add(path)
     paths.add(path)
+
 
 
 # ----------
@@ -481,21 +482,35 @@ educations = [
         p(f"""The Computer Science course of Tech Scouts is an intensive 3-week summer course. 
             Although the course itself can be pricey, I managed to get it for free as part of the prize for winning a Gold Medal in the {a('awards/oicat', '2019 Catalan Olympiad in Informatics')}.
         """),
-        p("""
-            The course, located at Harbour Space's Barcelona Campus, is tailored depending on your level (Beginner, Intermediate or Advanced). 
+        p_no_margin("""
+            The course, which was hosted in the St. Paul's School Campus in Barcelona, is tailored depending on your level (Beginner, Intermediate or Advanced). 
             A first-day exam is taken by all students in order to determine the best level for each.
             Although back then I struggled a bit in math, I managed to get the Advanced level in both computer science and math.
         """),
-        p("""
+        div('big-img',
+            card_img_nohover(
+                '../images/techScoutsCampus.jpg',
+                f'St Paul\'s School Campus, Barcelona. {a('https://www.stpauls.es/ca/', 'Source')}',
+                'St Paul\'s School Campus, Barcelona',
+            )
+        ),
+        p_no_margin("""
             The classes themselves were extremely productive and engaging, and were exclusively taught by experts in computer science and mathematics. 
-            Every class starts introducing fundamental and really interesting concepts, and then really nails them down by going trough curated problems.
+            Every class starts introducing fundamental concepts, and then thoroughly nails them down by going trough curated problems one by one.
             There were also many take-home problems, which were optional and would be corrected after-the-fact.
         """),
+        div('big-img',
+            card_img_nohover(
+                '../images/techScouts.jpg',
+                f'Tech Scouts 2019 inauguration. {a('https://www.youtube.com/watch?v=ubKpdt0o-Vc', 'Source')}',
+                'Tech Scouts 2019 inauguration',
+            )
+        ),
         p("""
             The things I believe were the most helpful were the advanced algorithms and data structures. 
             Before I didn't have a formal education on computer science, and was more or less self-taught.
-            By the time I finished the course, I had learned a broad range of advanced data structures and algorithms, 
-            which greatly helped me in future contests and really broadened my horizon in computer science.
+            By the time I finished the course, however, I had learned a broad range of advanced data structures and algorithms, 
+            which greatly benefited me in future contests and helped broaden my horizon when studying computer science.
         """),
         p("""
             Some of the things I learned thanks to the course:
@@ -531,7 +546,7 @@ educations = [
             Although the program is very exclusive (only ~25 places per year and region), it gives everyone a fair chance and is completely free.
             The first and second year the sessions are weekly; while for the third and fourth years the sessions are once every two weeks.
         """),
-        p(f"""
+        p_no_margin(f"""
             I managed to qualify for the Valencian Community's ESTALMAT back in 2015, after participating in the 
             {a('awards/semcv', 'Valencian Olympiad in Mathematics')}, which sparking my eventual passion for maths and computer science.
         """),
@@ -648,8 +663,8 @@ awards = [
             Despite my somewhat lackluster knowledge of algorithms and data structures at the time, I managed to win a Gold Medal in 2019 and got to participate in the IOI as part of the Spanish team.
         """),
         p_no_margin("""
-            The 2019 IOI was hosted in Baku, Azerbaijan. The whole event lasted almost a week, and was composed of many experiences and events around the city, where we could meet other participants and mingle. 
-            Of course, there also was quite a bit of problem-solving, compressed into two 3-hour sessions hosted at the Baku National Gymnastics Arena.
+            The 2019 IOI was hosted in Baku, Azerbaijan. The whole event lasted a whole week, and was composed of many experiences and events around the city, where we could meet other participants and mingle. 
+            Of course, there also was quite a bit of problem-solving, compressed into two 5-hour sessions hosted at the Baku National Gymnastics Arena.
         """),
         div('big-img',
             card_img_nohover(
