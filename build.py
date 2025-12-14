@@ -1,4 +1,4 @@
-# pylint: disable=C0114,C0116,C0115,C0303,W0611,R0902,W0603
+# pylint: disable=C0114,C0116,C0115,C0303,W0611,R0902,W0603,C0103
 import os
 import hashlib
 from datetime import date
@@ -6,7 +6,6 @@ from dataclasses import dataclass
 from dateutil.relativedelta import relativedelta
 from minify_html import minify # pylint: disable=E0611
 from list_dict import ListDict
-
 
 # -----
 # UTILS
@@ -16,6 +15,13 @@ def is_local_path(path: str) -> bool:
         return False
     first_part = path.split('/')[0]
     return '.' not in first_part
+
+def remove_path_double_dots(path: str) -> str:
+    """Converts paths like '/path', '../path' and '../../path' to 'path'"""
+    path = path.removeprefix('/')
+    while path.startswith('..'):
+        path = path.removeprefix('..').removeprefix('/')
+    return path
 
 def tryparse_date(date_str: str) -> date | None:
     if 'present' in date_str.lower():
@@ -71,6 +77,14 @@ JS_HASH = 1 #hash_file('docs/scripts.js')
 warnings = ListDict[str, str]()
 tags = ListDict[str, str]()
 paths = ListDict[str, str]()
+files = ListDict[str, str]()
+
+class Site:
+    def __init__(self, path: str, title: str):
+        files.add(path)
+        self.path = path
+        self.title = title
+
 
 def rpath(path: str) -> str:
     """Adds paths to the paths ListDict.
@@ -148,6 +162,7 @@ def ul(content: str | list[str], classes: str = '', params: str = '', li_classes
     return tagc('ul', classes, list_items, params)
 
 def img(classes: str, src: str, alt_text: str, inner_content: str | list[str] = '', extra_params: str = ''):
+    files.append(src)
     return tagc('img', classes, inner_content, f'src="{src}" alt="{alt_text}" {extra_params}')
 
 def card_img(title: str, date_str: str, image_src: str, image_fullscreen_html_content: str | list[str], extra_classes: str = ''):
@@ -349,7 +364,7 @@ def generate(path: str, title: str, content: str | list[str], scripts: str = "")
             {footer}
             <div id='fullscreen'>
                 <div id='fullscreen-image'>
-                    <img src='images/estalmat.jpg' alt="Estalmat Certificate" class='card-content'>
+                    <img src='images/estalmat/diploma.jpg' alt="Estalmat Certificate" class='card-content'>
                 </div>
                 <div id='fullscreen-card' class='card card-hl'>
                     <div id='fullscreen-card-title' class="card-title">Estalmat Participation Certificate</div>
@@ -377,7 +392,6 @@ def generate(path: str, title: str, content: str | list[str], scripts: str = "")
     paths.add(path)
 
 
-
 # ----------
 # MAIN PAGES
 # ----------
@@ -394,16 +408,15 @@ generate("about", 'About me', [
 # ----
 # WORK
 # ----
-@dataclass
-class Job:
-    path: str
-    title: str
-    company: str
-    date: str
-    keypoints: list[str]
-    tags: list[str]
-    content: str | list[str]
-    alt_title: str | None = None
+class Job(Site):
+    def __init__(self, path: str, title: str, company: str, job_date: str, keypoints: list[str], job_tags: list[str], content: str | list[str], alt_title: str | None = None):
+        super().__init__(path, title)
+        self.company = company
+        self.date = job_date
+        self.keypoints = keypoints
+        self.tags = job_tags
+        self.content = content
+        self.alt_title = alt_title
 
 jobs = [
     Job('work/facephi', 'AI Engineer', 'Facephi', '09/2025 — Present', [
@@ -453,14 +466,13 @@ for job in jobs:
 # ---------
 # EDUCATION
 # ---------
-@dataclass
-class Education:
-    path: str
-    title: str
-    institution: str
-    date: str
-    keypoints: list[str]
-    content: str | list[str]
+class Education(Site):
+    def __init__(self, path: str, title: str, institution: str, _date: str, keypoints: list[str], content: str | list[str]):
+        super().__init__(path, title)
+        self.institution = institution
+        self.date = _date
+        self.keypoints = keypoints
+        self.content = content
 
 educations = [
     Education('education/master', "Master's Degree in Data Science", 'University of Alicante', '09/2024 — 06/2025', [
@@ -489,7 +501,7 @@ educations = [
         """),
         div('big-img',
             card_img_nohover(
-                '../images/techScoutsCampus.jpg',
+                '../images/techScouts/campus.jpg',
                 f'St Paul\'s School Campus, Barcelona. {a('https://www.stpauls.es/ca/', 'Source')}',
                 'St Paul\'s School Campus, Barcelona',
             )
@@ -501,7 +513,7 @@ educations = [
         """),
         div('big-img',
             card_img_nohover(
-                '../images/techScouts.jpg',
+                '../images/techScouts/inauguration.jpg',
                 f'Tech Scouts 2019 inauguration. {a('https://www.youtube.com/watch?v=ubKpdt0o-Vc', 'Source')}',
                 'Tech Scouts 2019 inauguration',
             )
@@ -552,7 +564,7 @@ educations = [
         """),
         div('big-img',
             card_img_nohover(
-                '../images/estalmatReunion.jpg',
+                '../images/estalmat/reunion.jpg',
                 f'Some members of ESTALMAT 2015-2019, reunited. {a('https://semcv.org/faseautonomica/olimpiades-autonomiques-anteriors/988-xxix-olimpiada-matematica-2018', 'Source')}',
                 'ESTALMAT 2015-2019 reunion.',
             )
@@ -564,7 +576,7 @@ educations = [
             card_img(
                 'ESTALMAT Participation Certificate',
                 '05/2017',
-                '../images/estalmat.jpg',
+                '../images/estalmat/diploma.jpg',
                 [
                     BR,
                     p('Digital scan of the certificate (in Spanish).'),
@@ -592,14 +604,13 @@ for education in educations:
 # ------
 # AWARDS
 # ------
-@dataclass
-class Awards:
-    path: str
-    title: str
-    institution: str
-    date: str
-    keypoints: list[str]
-    content: str | list[str]
+class Awards(Site):
+    def __init__(self, path: str, title: str, institution: str, _date: str, keypoints: list[str], content: str | list[str]):
+        super().__init__(path, title)
+        self.institution = institution
+        self.date = _date
+        self.keypoints = keypoints
+        self.content = content
 
 awards = [
     Awards('awards/first_ascent', 'First Ascent Spain', 'Bending Spoons', '09/2025', [
@@ -621,7 +632,7 @@ awards = [
         """),
         div('big-img',
             card_img_nohover(
-                '../images/premioExtraordinarioFoto.jpg',
+                '../images/degree/award/photo.jpg',
                 f'Honorees of the 2024 Extraordinary Award in Computer Engineering. {a('https://eps.ua.es/es/graduacion/graduacion-2024.html', 'Source')}',
                 'Honorees of the 2024 Extraordinary Award in Computer Engineering',
             )
@@ -631,7 +642,7 @@ awards = [
             The other awarded students were Eric Ayllón Palazón and Diego Luchmun Corbalán, also pictured in the above photo.
         """),
         div('big-img',
-            card_img_vw('Certificate for the Extraordinary Award', '01/2025', '../images/premioExtraordinario.jpg', [
+            card_img_vw('Certificate for the Extraordinary Award', '01/2025', '../images/degree/award/diploma.jpg', [
                 BR,
                 p('Digital scan of the certificate (in Spanish & Catalan)'),
                 p('Some personal details have been redacted.'),
@@ -668,7 +679,7 @@ awards = [
         """),
         div('big-img',
             card_img_nohover(
-                '../images/ioiStadium.jpg',
+                '../images/ioi/stadium.jpg',
                 f'National Gymnastics Arena in Baku, Azerbaijan. {a('https://olimpiada-informatica.org/content/resultados-ioi-2019-en-bak%C3%BA-azerbaiy%C3%A1n', 'Source')}',
                 'National Gymnastics Arena in Baku, Azerbaijan',
             )
@@ -678,7 +689,7 @@ awards = [
         """),
         div('big-img',
             card_img_nohover(
-                '../images/ioiVillage.jpg',
+                '../images/ioi/village.jpg',
                 f'Athletes\' Village in Baku, Azerbaijan. {a('https://bakuathletesvillage.com/', 'Source')}',
                 'Athletes\' Village in Baku, Azerbaijan',
             )
@@ -695,7 +706,7 @@ awards = [
             card_img_vw(
                 'IOI Participation Certificate',
                 '08/2019',
-                '../images/ioi.jpg',
+                '../images/ioi/diploma.jpg',
                 [
                     BR,
                     p('Digital scan of the certificate.')
@@ -734,7 +745,7 @@ awards = [
         """),
         BR,
          div('halfs', [
-            card_img('2018 Diploma', '06/2018', '../images/oie2018.jpg', [
+            card_img('2018 Diploma', '06/2018', '../images/oie/diploma2018.jpg', [
                 BR,
                 p('Digital scan of the certificate (in Spanish).'),
                 p('English translation:'),
@@ -746,7 +757,7 @@ awards = [
                 p("in the 2018 Spanish Olympiad in Informatics"),
                 p("Barcelona, 16th of June 2018")
             ]),
-            card_img('2019 Diploma', '04/2019', '../images/oie2019.jpg', [
+            card_img('2019 Diploma', '04/2019', '../images/oie/diploma2019.jpg', [
                 BR,
                 p('Digital scan of the certificate (in Spanish).'),
                 p('English translation:'),
@@ -773,7 +784,7 @@ awards = [
         """),
         div('big-img',
             card_img_nohover(
-                '../images/oicat2019photo.jpg',
+                '../images/oicat/photo2019.jpg',
                 f'Participants (including me!) solving problems in the 2019 OICat. {a('https://olimpiada-informatica.cat/oicat-2019/', 'Source')}',
                 'OICat participants solving problems',
             )
@@ -789,12 +800,12 @@ awards = [
         """),
         div('halfs', [
             card_img_nohover_vw(
-                '../images/oicat2019winners.jpg',
+                '../images/oicat/winners2019.jpg',
                 f'2019 OICat winners. {a('https://olimpiada-informatica.cat/oicat-2019/', 'Source')}',
                 '2019 OICat winners',
             ),
             card_img_nohover_vw(
-                '../images/oicat2020winners.jpg',
+                '../images/oicat/winners2020.jpg',
                 f'2020 OICat winners. {a('https://olimpiada-informatica.cat/oicat-2020/', 'Source')}',
                 '2020 OICat winners',
             )
@@ -806,7 +817,7 @@ awards = [
         """),
         BR,
         div('halfs', [
-            card_img('2019 Diploma', '06/2019', '../images/oicat2019.jpg', [
+            card_img('2019 Diploma', '06/2019', '../images/oicat/diploma2019.jpg', [
                 BR,
                 p('Digital scan of the certificate (in Catalan).'),
                 p('English translation:'),
@@ -817,11 +828,11 @@ awards = [
                 p("has been awarded the GOLD MEDAL in the final of the 2019 Catalan Olympiad in Informatics"), 
                 p("Barcelona, 15th of June 2019"),
             ]),
-            card_img('2019 Gold Medal', '06/2019', '../images/oicat2019medal.jpg', [
+            card_img('2019 Gold Medal', '06/2019', '../images/oicat/medal2019.jpg', [
                 BR,
                 p('Photo of the Gold Medal')
             ]),
-            card_img('2020 Diploma', '09/2020', '../images/oicat2020.jpg', [
+            card_img('2020 Diploma', '09/2020', '../images/oicat/diploma2020.jpg', [
                 BR,
                 p('Digital scan of the certificate (in Catalan).'),
                 p('English translation:'),
@@ -832,7 +843,7 @@ awards = [
                 p("has been awarded the GOLD MEDAL in the final of the 2020 Catalan Olympiad in Informatics"), 
                 p("Barcelona, 5th of September 2020"),
             ]),
-            card_img('2020 Gold Medal', '09/2020', '../images/oicat2020medal.jpg', [
+            card_img('2020 Gold Medal', '09/2020', '../images/oicat/medal2020.jpg', [
                 BR,
                 p('Photo of the Gold Medal')
             ]),
@@ -860,7 +871,7 @@ awards = [
         """),
         div('big-img',
             card_img_nohover(
-                '../images/mat2018prize.jpg',
+                '../images/semcv/prize2018.jpg',
                 f'Receiving the Third Prize in 2018 in Viver, Valencia. {a('https://semcv.org/faseautonomica/olimpiades-autonomiques-anteriors/988-xxix-olimpiada-matematica-2018', 'Source')}',
                 'Receiving the Third Prize in 2018 in Viver, Valencia',
             )
@@ -879,7 +890,7 @@ awards = [
         ]),
         BR,
         div('halfs', [
-            card_img('2013 Diploma', '06/2013', '../images/mat2013.jpg', [
+            card_img('2013 Diploma', '06/2013', '../images/semcv/diploma2013.jpg', [
                 BR,
                 p('Digital scan of the certificate (in Catalan).'),
                 p('English translation:'),
@@ -889,7 +900,7 @@ awards = [
                 p("Benidorm, 8th of June 2013"), 
                 p("Provincial Coordinator"),
             ]),
-            card_img('2014 Diploma', '06/2014', '../images/mat2014.jpg', [
+            card_img('2014 Diploma', '06/2014', '../images/semcv/diploma2014.jpg', [
                 BR,
                 p('Digital scan of the certificate (in Catalan).'),
                 p('English translation:'),
@@ -902,7 +913,7 @@ awards = [
                 p("Xest Educational Complex, 1st of June 2014"),
                 p("General Manager of the SEMCV"),
             ]),
-            card_img('2016 Diploma', '05/2016', '../images/mat2016.jpg', [
+            card_img('2016 Diploma', '05/2016', '../images/semcv/diploma2016.jpg', [
                 BR,
                 p('Digital scan of the certificate (in Catalan).'),
                 p('English translation:'),
@@ -912,7 +923,7 @@ awards = [
                 p("Alicante, 29th of May 2016"),
                 p("Provincial Coordinator"),
             ]),
-            card_img('2017 Diploma', '05/2017', '../images/mat2017.jpg', [
+            card_img('2017 Diploma', '05/2017', '../images/semcv/diploma2017.jpg', [
                 BR,
                 p('Digital scan of the certificate (in Catalan).'),
                 p('English translation:'),
@@ -925,7 +936,7 @@ awards = [
                 p("Xest Educational Complex, 28th of March 2017"),
                 p("The Provincial Coordinators"),
             ]),
-            card_img('2018 Diploma', '06/2018', '../images/mat2018.jpg', [
+            card_img('2018 Diploma', '06/2018', '../images/semcv/diploma2018.jpg', [
                 BR,
                 p('Digital scan of the certificate (in Catalan).'),
                 p('English translation:'),
@@ -949,15 +960,14 @@ for award in awards:
 # --------
 # PROJECTS
 # --------
-@dataclass
-class Project:
-    path: str
-    title: str
-    institution: str
-    date: str
-    keypoints: str | list[str]
-    tags: list[str]
-    content: str | list[str]
+class Project(Site):
+    def __init__(self, path: str, title: str, institution: str, _date: str, keypoints: list[str], _tags: list[str], content: str | list[str]):
+        super().__init__(path, title)
+        self.institution = institution
+        self.date = _date
+        self.keypoints = keypoints
+        self.tags = _tags
+        self.content = content
 
 projects = {
     'professional': [
@@ -1020,6 +1030,8 @@ for project_type, project_type_projects in projects.items():
 # -----------------
 # POST-BUILD CHECKS
 # -----------------
+
+# check site links
 sites = list(paths.keys())
 sites.append('/')
 site_link_counts = {site: 0 for site in sites}
@@ -1037,17 +1049,27 @@ for site, link_count in site_link_counts.items():
     if link_count == 0:
         warnings[site].append("Not linked in any other site")
 
+# check files
+for site, site_files in files.items():
+    for site_file in site_files:
+        file_path_fixed = remove_path_double_dots(site_file)
+        if is_local_path(file_path_fixed):
+            if not os.path.isfile(f'docs/{file_path_fixed}'):
+                warnings[site].append(f"Invalid local file '{file_path_fixed}'")
 # ----------------
 # CONSOLE MESSAGES
 # ----------------
 print('Pages successfully built!')
-warning_texts = []
+any_warnings = False
 for page, page_warnings in warnings.items():
     if len(page_warnings) > 0:
-        warning_texts.append(f'⚠️  {page}: {', '.join(page_warnings)}')
+        any_warnings = True
+        if len(page_warnings) == 1:
+            print(f'⚠️  {page}: {page_warnings[0]}')
+        else:
+            print(f'⚠️  {page}:')
+            for page_warning in page_warnings:
+                print(f'  - {page_warning}')
 
-if len(warning_texts) == 0:
+if not any_warnings:
     print('✅ No warnings')
-else:
-    for warning_text in warning_texts:
-        print(warning_text)
