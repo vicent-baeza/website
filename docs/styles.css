@@ -352,9 +352,16 @@ a.crumb-text:hover {
     margin-left: var(--sp1);
     margin-top: var(--sp2);
     font: var(--p);
+    color: var(--text-muted) !important;
 }
 :hover > * > .tag-list > .tag, :hover > * > .tag, :hover > .tag, .tag:hover {
     background-color: var(--bg-hl);
+}
+.titlecard + .tag-list > .tag:first-child, h1 > .tag-list > .tag:first-child {
+    margin-left: 0;
+}
+.titlecard + .tag-list > .tag, h1 > .tag-list > .tag {
+    background-color: var(--bg) !important;
 }
 
 /* Card */
@@ -584,6 +591,9 @@ ul.timeline:before {
 }
 .no-margin {
     margin: 0px !important
+}
+.no-margin-bottom {
+    margin-bottom: 0 !important;
 }
 .h30vw {
     max-height: 30vw !important;

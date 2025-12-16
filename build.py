@@ -123,11 +123,17 @@ def span(classes: str, content: str | list[str] = '', params: str = '') -> str:
 def h1(text: str | list[str]):
     return tag('h1', text)
 
-def h2(text: str | list[str]):
-    return tag('h2', text)
+def h2(text: str | list[str], element_id: str | None = None):
+    params = f'id="{element_id}"' if element_id else ''
+    return tag('h2', text, params)
 
-def h3(text: str | list[str]):
-    return tag('h3', text)
+def h3(text: str | list[str], element_id: str | None = None):
+    params = f'id="{element_id}"' if element_id else ''
+    return tag('h3', text, params)
+
+def h3_nomargin_bottom(text: str | list[str], element_id: str | None = None):
+    params = f'id="{element_id}"' if element_id else ''
+    return tagc('h3', 'no-margin-bottom', text, params)
 
 def p(text: str | list[str]):
     return tag('p', text)
@@ -195,25 +201,26 @@ def card_img_nohover_vw(image_src: str, image_text: str, image_alt_text: str, im
         div('card-center', image_text),
     ])
 
-def titlecard(image_src: str, image_alt_text: str, ul_subtitle: str, ul_text: str, dl_subtitle: str, dl_text: str, ur_subtitle: str, ur_text: str, dr_subtitle: str, dr_text: str) -> str:
+def titlecard(image_src: str, image_alt_text: str, ul_subtitle: str, ul_text: str, dl_subtitle: str, dl_text: str, ur_subtitle: str, ur_text: str, dr_subtitle: str, dr_text: str, _tags: list[str] | None = None) -> str:
     def titlecard_block(pos: str, subtitle: str, text: str) -> str:
         return div(f'titlecard-{pos}', [div('titlecard-subtitle', subtitle), div('titlecard-text', text)])
-    return div('titlecard', [
+    return div('titlecard no-margin-bottom' if _tags else 'titlecard', [
         img('', image_src, image_alt_text),
         titlecard_block('ul', ul_subtitle, ul_text),
         titlecard_block('ur', ur_subtitle, ur_text),
         titlecard_block('dl', dl_subtitle, dl_text),
         titlecard_block('dr', dr_subtitle, dr_text),
-    ])
+    ]) + (taglist(_tags) if _tags else '')
 
-def job_titlecard(image_src: str, image_alt_text: str, role: str, location: str, period: str, company_website: str):
-    return titlecard(image_src, image_alt_text, 'ROLE', role, 'LOCATION', location, 'PERIOD', period, 'COMPANY WEBSITE', company_website)
+def job_titlecard(image_src: str, image_alt_text: str, role: str, location: str, period: str, company_website: str, _tags: list[str] | None = None):
+    if _tags is None:
+        return titlecard(image_src, image_alt_text, 'ROLE', role, 'LOCATION', location, 'PERIOD', period, 'COMPANY WEBSITE', company_website)
+    return titlecard(image_src, image_alt_text, 'ROLE', role, 'LOCATION', location, 'PERIOD', period, 'COMPANY WEBSITE', company_website, _tags)
+def olympiad_titlecard(image_src: str, image_alt_text: str, contest: str, location: str, period: str, website: str, _tags: list[str] | None = None):
+    return titlecard(image_src, image_alt_text, 'CONTEST', contest, 'LOCATION', location, 'PERIOD', period, 'WEBSITE', website, _tags)
 
-def olympiad_titlecard(image_src: str, image_alt_text: str, contest: str, location: str, period: str, website: str):
-    return titlecard(image_src, image_alt_text, 'CONTEST', contest, 'LOCATION', location, 'PERIOD', period, 'WEBSITE', website)
-
-def education_titlecard(image_src: str, image_alt_text: str, institution: str, location: str, period: str, website: str):
-    return titlecard(image_src, image_alt_text, 'INSTITUTION', institution, 'LOCATION', location, 'PERIOD', period, 'WEBSITE', website)
+def education_titlecard(image_src: str, image_alt_text: str, institution: str, location: str, period: str, website: str, _tags: list[str] | None = None):
+    return titlecard(image_src, image_alt_text, 'INSTITUTION', institution, 'LOCATION', location, 'PERIOD', period, 'WEBSITE', website, _tags)
 
 
 def section(name: str):
@@ -223,7 +230,7 @@ def section(name: str):
     ])
 
 def taglist(tag_names: list[str]):
-    return div('tag-list', [div('tag', tag_name) for tag_name in tag_names])
+    return div('tag-list', [div('tag unselectable', tag_name) for tag_name in tag_names])
 
 def card(href: str, title: str, subtitle: str, datetext: str, date_str: str, content: str = '', divider: bool = True):
     if datetext == 'auto': # Automatic datetext calculation (as duration):
@@ -347,7 +354,7 @@ footer: str = """
 """
 
 
-def generate(path: str, title: str, content: str | list[str], scripts: str = ""):
+def generate(path: str, title: str, content: str | list[str], scripts: str = "", tab_title: str | None = None):
     if isinstance(content, list):
         if len(content) > 0:
             if 'class="section"' in content[-1]:
@@ -373,7 +380,7 @@ def generate(path: str, title: str, content: str | list[str], scripts: str = "")
     html = f"""
         <!DOCTYPE html>
         <html lang="en">
-        {head(path, title, scripts)}
+        {head(path, tab_title or title, scripts)}
         <body>
             {header(path)}
             <div class='page-content'>
@@ -430,7 +437,7 @@ generate("about", 'About me', [
 # WORK
 # ----
 class Job(Site):
-    def __init__(self, path: str, title: str, company: str, job_date: str, keypoints: list[str], job_tags: list[str], content: str | list[str], alt_title: str | None = None):
+    def __init__(self, path: str, title: str, company: str, job_date: str, keypoints: list[str], job_tags: list[str], content: str | list[str], alt_title: str | None = None, alt_tab_title: str | None = None):
         super().__init__(path, title)
         self.company = company
         self.date = job_date
@@ -438,6 +445,7 @@ class Job(Site):
         self.tags = job_tags
         self.content = content
         self.alt_title = alt_title
+        self.alt_tab_title = alt_tab_title
 
 jobs = [
     Job('work/facephi', 'AI Engineer', 'Facephi', '09/2025 — Present', [
@@ -450,7 +458,80 @@ jobs = [
         'Single-handedly developed and maintained two full-stack web applications.',
         'Planning, design, implementation & delivery of new features from scratch.',
     ], ['PHP', 'JS', 'Vue.JS', 'SQL'], [
-        
+        job_titlecard('../images/compliance_cms/logo.jpg', 'ComplianceCMS Logo', 'Software Engineer', 'Alicante, Spain', '07/2023 — 09/2025', a('https://compliancecms.com/', 'compliancecms.com'), ['PHP', 'JS', 'Vue.JS', 'SQL']),
+        h3("About the company"),
+        p("""
+            Compliance CMS is a small Spanish consultancy firm. If offers comprehensive services in many areas of Spanish & EU law, but mainly specializes in Criminal Compliance & Corporate Risk Mitigation.
+            Although the company is quite small (less than 10 employees), it manages to boast a diverse array of clients, from multinational corporations to small businesses.
+        """),
+        h3("My experience at the company"),
+        p(f"""
+            When I first joined Compliance CMS, it was, to put it bluntly, overwhelming. 
+            Not only was it my first professional job, but I was the {it('whole')} IT team, as the company's previous programmer walked out, and didn't have any other technical person until I came aboard.
+            That meant that {it('everything')} IT-related fell on me: programming, UI & UX, databases, security..., you name it.
+            To top it all off, despite it starting as a summer job, I continued working there while studying for my {a('/education/degree', 'Computer Engineering degree')}, which made it significantly more stressful and challenging.
+        """),
+        p("""
+            Despite all that pressure, it was also extremely enriching, and I'm glad I managed to pull through. 
+            Being on my own really pushed me to grow above and beyond, making me learn a lot about subjects that I had barely scratched before.
+            I don't know where I would be today if I hadn't had that kind of challenge early on in my professional career.
+        """),
+        p("""
+            It's also important to add that, despite the work itself being difficult, the people people there were everything but that. Everyone was really friendy, helpful and hard-working.
+        """),
+        h3("Whistleblowing Channel", 'whistleblowing'),
+        p("""
+            The first project I tackled was fixing and improving the company's whistleblowing channel. The channel was implemented as a Vue.JS web application, with a PHP back-end that stored the data in an SQL database in a standalone server.
+            As the company was quite small, the traffic was quite limited, so this was more than enough for it to run smoothly.
+        """),
+        p("""
+            Most of the work that I did to improve the Whistleblowing Channel was implementing new features and general maintenance,
+            both to improve the client experience and to make it easier to manage it. It was also quite a challenge to do os while having to comply with both Spanish & EU law, as there are very stringent regulations that added tons of complexity.
+        """),
+        p("""
+            As the tool is closed-source, I will refrain from delving too much into specifics, but some key achievements were the following:
+        """),
+        ul([
+            "Automatic reminders, data blocking & data deletion in accordance with Spanish law.",
+            "Integration with a telecom service to automatically register telephone calls in the channel.",
+            "A deterministic NLP system for the automatic censoring of personal data when required by law."
+        ]),
+        h3("RiskApp CMS", 'riskapp'),
+        p(f"""
+            While working on the whistleblowing channel, improving & automating how the company assessed corporate risk.
+            At the time I joined, the system for doing assessing corportate risk was a confusing, unmanageable mess of an Excel sheet.
+            It was remarkably difficult to make event the most minor of changes, let alone check that everything is correct or to justify {it('why')} a particular risk recieved the assessment that it did.
+        """),
+        p("""
+            Therefore, it was a no-brainer to try to put the system in a web application, in a similar manner to the whistleblowing channel, 
+            so as to greatly improve expandability, testability, audit capability, and to automate the most tedious and repetitive parts of the risk assessment process.
+            The planning, design, implementation, delivery & maintainance of this application, which eventually became known as the RiskApp CMS, fell completely on my hands.
+        """),
+        p("""
+            It  was almost-completely built using solely PHP. 
+            As it needed to be robust, performant, and be able to handle complex business logic, I decided to develop a simple-yet-effective interface, that refreshed completely everytime but didn't need to depend on complex javascript frameworks or other big dependencies.
+        """),
+        p("""
+            As a result, altough I needed to put in a bit of extra legwork at the beginning, the resulting application was really easy to expand, maintain, and understand.
+            With a bit of clever performance optimizations, it was also extremely performant, despite the complex computations and cross-referenceing of data that it needed to do.
+        """),
+        p("""
+            The only real limitation of this approach was that the interface, while extremely functional and responsive, was quite basic, with mostly static components that completely refreshed the page every time you wanted to switch.
+            Still, I'm really proud of what I managed to build in two short years, completely from scratch no less!
+        """),
+        p("""
+            As with the whistleblowing channel, I can't go into the nitty-gritty of the application, as it is also closed-source. However, here are some key features of it:
+        """),
+        ul([
+            "All risk assessments generate a human-readable explanation of the calculation, to check that the system is working as intended.",
+            "Automatic storage and display of previous assessments, having a sorted history of every previously calculated risk.",
+            "Integrated audit capabilities that record in real time all changes that might affect risk calculation.",
+        ]),
+        h3("Closing thoughts"),
+        p("""
+            I remember my time at Compliance CMS really fondly. Although the work was quite overwhelming at times, it made me grow and greatly helped me refine my skills.
+            The challenge of being the only developer in the whole company made me learn about many topics, further enriching my tenure at the company, and made me become the generalist I am today.
+        """),
     ]),
     Job('work/tutoring', 'Private Tutor', 'Self-employed', '02/2021 — 06/2022', [
         'Programming and Computer Engineering lessons.',
@@ -458,23 +539,23 @@ jobs = [
     ], ['C++', 'Java', 'Python', 'MASM Assembly'], [
         p("""
             Gave Programming and Computer Engineering lessons to first, second and third year students from the University of Alicante.
-            Lesson content was tailored for every student's needs, and varied greatly from student to student.
+            Lesson content was tailored to every student's needs, and varied greatly from student to student.
         """),
         p('Taught topics include:'),
         ul([
-            f'{b('Basic programming concepts:')} If-statements, Loops, Functions, Classes, Inheritance, etc.',
+            f'{b('Basic Programming Concepts:')} If-statements, Loops, Functions, Classes, Inheritance, etc.',
             f'{b('Math:')} Binary (2s complement), Calculus, Matrix Algebra, Discrete Math and Statistics',
-            f'{b('Built-in data structures:')} Vectors, Linked Lists, Sets, Dictionaries, Stacks, Queues and Priority Queues',
-            f"{b('Graph algorithms:')} BFS, DFS, A* search, Dijkstra's, Kruskal's, Beam Search and Iterative Deepening",
-            f'{b('Theory of computation:')} Finite-State Machines, Context-Free Grammars & Turing Machines',
-            f'{b('Optimization & efficiency:')} Big-O Notation, Algorithm Analysis, Parallel Processing & Multithreading',
+            f'{b('Basic Data Structures:')} Vectors, Linked Lists, Sets, Dictionaries, Stacks, Queues and Priority Queues',
+            f"{b('Graph Algorithms:')} BFS, DFS, A* search, Dijkstra's, Kruskal's, Beam Search and Iterative Deepening",
+            f'{b('Theory of computation:')} Finite-State Machines, Context-Free Grammars and Turing Machines',
+            f'{b('Optimization & Efficiency:')} Big-O Notation, Algorithm Analysis, Parallel Processing and Multithreading',
             f'{b('Competitive Programming:')} Dynamic Programming, Greedy Algorithms, Divide & Conquer and Branch & Cut',
-            f'{b('Advanced data structures:')} Heaps, BSTs, AVL trees, Union Finds, Segment Trees, Tries and Graphs',
-            f'{b('Computer Architecture:')} Memory Management, Pipelining & MASM Assembly (32-bit)',
+            f'{b('Advanced Data Structures:')} Heaps, BSTs, AVL trees, Union Finds, Segment Trees, Tries and Graphs',
+            f'{b('Computer Architecture:')} Memory Management, Pipelining and MASM Assembly (32-bit)',
         ], classes='text-list'),
         BR,
         p('Depending on the student, the lessons were given in C++, Java, Python, or a combination of the three.')
-    ], alt_title='Private Tutoring')
+    ], alt_title='Private Tutoring' + taglist(['C++', 'Java', 'Python', 'MASM Assembly']), alt_tab_title='Private Tutoring')
 ]
 
 generate('work', 'Work', [
@@ -482,7 +563,7 @@ generate('work', 'Work', [
     for job in jobs
 ])
 for job in jobs:
-    generate(job.path, job.alt_title or job.title, job.content)
+    generate(job.path, job.alt_title or job.company, job.content, tab_title=job.alt_tab_title or job.alt_title or job.title)
 
 # ---------
 # EDUCATION
@@ -510,11 +591,11 @@ educations = [
     ]),
     Education('education/tech_scouts', 'Tech Scouts: Computer Science', 'Harbour Space', '07/2019 — 07/2019', [
         'Intensive 3-week summer course focusing computer science and advanced mathematics.',
-        f'Invitation received for winning a Gold Medal in the {a('awards/oicat', 'Catalan Olympiad in Informatics')} in 2019.',
+        f'Invitation received for winning a Gold Medal at the {a('awards/oicat', 'Catalan Olympiad in Informatics')} in 2019.',
     ], [
         education_titlecard('../images/techScouts/logo.jpg', 'Harbour Space Logo', 'Harbour Space', 'Barcelona, Spain', '07/2019', a('https://harbour.space/', 'harbour.space')),
         p(f"""The Computer Science course of Tech Scouts is an intensive 3-week summer course. 
-            Although the course itself can be pricey, I managed to get it for free as part of the prize for winning a Gold Medal in the {a('awards/oicat', '2019 Catalan Olympiad in Informatics')}.
+            Although the course itself can be pricey, I managed to get it for free as part of the prize for winning a Gold Medal at the {a('awards/oicat', '2019 Catalan Olympiad in Informatics')}.
         """),
         p_no_margin("""
             The course, which was hosted in the St. Paul's School Campus in Barcelona, is tailored depending on your level (Beginner, Intermediate or Advanced). 
@@ -694,7 +775,7 @@ awards = [
             test their competitive programming skills. It is one of the most prestigious competitions in the world of competitive programming, and to participate you have to get selected through your country's olympiad process.
         """),
         p(f"""
-            In Spain, in order to participate in the IOI you have to win a Gold Medal in the {a('/awards/oie', 'Spanish Olympiad in Informatics')}. 
+            In Spain, in order to participate in the IOI you have to win a Gold Medal at the {a('/awards/oie', 'Spanish Olympiad in Informatics')}. 
             Despite my somewhat lackluster knowledge of algorithms and data structures at the time, I managed to win a Gold Medal in 2019 and got to participate in the IOI as part of the Spanish team.
         """),
         p_no_margin("""
@@ -988,7 +1069,7 @@ for award in awards:
 # PROJECTS
 # --------
 class Project(Site):
-    def __init__(self, path: str, title: str, institution: str, _date: str, keypoints: list[str], _tags: list[str], content: str | list[str]):
+    def __init__(self, path: str, title: str, institution: str, _date: str, keypoints: list[str], _tags: list[str], content: str | list[str] | None = None):
         super().__init__(path, title)
         self.institution = institution
         self.date = _date
@@ -996,7 +1077,7 @@ class Project(Site):
         self.tags = _tags
         self.content = content
 
-projects = {
+projects : dict[str, list[Project]] = {
     'professional': [
         Project('projects/automation', 'Automation & Data Scrapping Tools', 'Facephi', '09/2025 — Present', [
             'Built several automation & data scrapping tools leveraging AI agents.',
@@ -1004,18 +1085,14 @@ projects = {
         ], ['Python', 'LangGraph', 'GitHub Actions'], [
 
         ]),
-        Project('projects/riskapp', 'RiskApp CMS', 'Compliance CMS', '12/2023 — 09/2025', [
+        Project('work/compliance_cms#riskapp', 'RiskApp CMS', 'Compliance CMS', '12/2023 — 09/2025', [
             'Web application to automate corporate risk assessment.',
             'Design of the entire app & complete implementation from scratch.',
-        ], ['PHP', 'JS', 'SQL'], [
-
-        ]),
-        Project('projects/whistleblowing', 'Whistleblowing Channel', 'Compliance CMS', '07/2023 — 09/2025', [
+        ], ['PHP', 'JS', 'SQL']),
+        Project('work/compliance_cms#whistleblowing', 'Whistleblowing Channel', 'Compliance CMS', '07/2023 — 09/2025', [
             'Whistleblowing Channel compliant with Spanish & EU whistleblowing regulations.',
             'Planning, design, implementation & delivery of several key features.'
-        ], ['PHP', 'JS', 'Vue.JS', 'SQL'], [
-
-        ]),
+        ], ['PHP', 'JS', 'Vue.JS', 'SQL']),
     ],
     'university': [
         Project('projects/kan', 'Data Science Final Project', "Master's Degree in Data Science", '11/2024 — 06/2025', [
@@ -1052,7 +1129,8 @@ generate('projects', 'Projects', projects_content)
 
 for project_type, project_type_projects in projects.items():
     for project in project_type_projects:
-        generate(project.path, project.title, project.content)
+        if project.content is not None:
+            generate(project.path, project.title, project.content)
 
 # -----------------
 # POST-BUILD CHECKS
@@ -1066,7 +1144,8 @@ site_link_counts['/'] += 1
 site_link_counts['index'] += 1
 for site, site_paths in paths.items():
     for site_path in site_paths:
-        path_fixed = '/' if site_path == '/' else site_path.strip('/')
+        path_fixed = '/' if site_path == '/' else site_path.strip('/') # remove start & end slashes, but keep them if path is '/'
+        path_fixed = path_fixed.split('#', maxsplit=1)[0] # remove everything after '#': a/b#c -> a/b
         if is_local_path(path_fixed):
             if path_fixed not in sites:
                 warnings[site].append(f"Invalid local path '{path_fixed}'")
