@@ -163,7 +163,7 @@ def ul(content: str | list[str], classes: str = '', params: str = '', li_classes
 
 def img(classes: str, src: str, alt_text: str, inner_content: str | list[str] = '', extra_params: str = ''):
     files.append(src)
-    return tagc('img', classes, inner_content, f'src="{src}" alt="{alt_text}" {extra_params}')
+    return tagc('img', classes + ' unselectable', inner_content, f'src="{src}" alt="{alt_text}" {extra_params}')
 
 def card_img(title: str, date_str: str, image_src: str, image_fullscreen_html_content: str | list[str], extra_classes: str = ''):
     return div(f'card cursor-pointer {extra_classes}', [
@@ -194,6 +194,24 @@ def card_img_nohover_vw(image_src: str, image_text: str, image_alt_text: str, im
         img('card-content', image_src, image_alt_text, extra_params=f'style="max-height:{image_max_height_vw}vw"'),
         div('card-center', image_text),
     ])
+
+def titlecard(image_src: str, image_alt_text: str, ul_subtitle: str, ul_text: str, dl_subtitle: str, dl_text: str, ur_subtitle: str, ur_text: str, dr_subtitle: str, dr_text: str) -> str:
+    def titlecard_block(pos: str, subtitle: str, text: str) -> str:
+        return div(f'titlecard-{pos}', [div('titlecard-subtitle', subtitle), div('titlecard-text', text)])
+    return div('titlecard', [
+        img('', image_src, image_alt_text),
+        titlecard_block('ul', ul_subtitle, ul_text),
+        titlecard_block('ur', ur_subtitle, ur_text),
+        titlecard_block('dl', dl_subtitle, dl_text),
+        titlecard_block('dr', dr_subtitle, dr_text),
+    ])
+
+def job_titlecard(image_src: str, image_alt_text: str, role: str, location: str, period: str, company_website: str):
+    return titlecard(image_src, image_alt_text, 'ROLE', role, 'LOCATION', location, 'PERIOD', period, 'COMPANY WEBSITE', company_website)
+
+def olympiad_titlecard(image_src: str, image_alt_text: str, contest: str, location: str, period: str, website: str):
+    return titlecard(image_src, image_alt_text, 'CONTEST', contest, 'LOCATION', location, 'PERIOD', period, 'WEBSITE', website)
+
 
 def section(name: str):
     return div('section', [
@@ -665,6 +683,7 @@ awards = [
         'Participated as part of the Spanish team',
         f'Awarded for obtaining a Gold Medal in the {a('/awards/oie', 'Spanish Olympiad in Informatics')}'
     ], [
+        olympiad_titlecard('../images/ioi/logo.jpg', 'IOI Logo', 'International Olympiad in Informatics', 'Baku, Azerbaijan', '2019', a('https://ioinformatics.org', 'ioinformatics.org')),
         p("""
             The International Olympiad in Informatics (IOI) is a yearly competition in which students from all around the world 
             test their competitive programming skills. It is one of the most prestigious competitions in the world of competitive programming, and to participate you have to get selected through your country's olympiad process.
@@ -719,6 +738,7 @@ awards = [
         'Gold Medal in the 2019 edition',
         'Silver Medal in the 2018 & 2020 editions',
     ], [
+        olympiad_titlecard('../images/oie/logo.jpg', 'OIE Logo', 'Spanish Olympiad in Informatics', 'Barcelona, Spain', '2018 — 2020', a('https://olimpiada-informatica.org', 'olimpiada-informatica.org')),
         p("""
             The Spanish Olympiad in Informatics (OIE) is a yearly competition in which students from all around Spain 
             participate to test their competitive programming skills.
@@ -773,6 +793,7 @@ awards = [
     Awards('awards/oicat', 'Catalan Olympiad in Informatics', 'OICat', '2019 — 2020', [
         'Gold Medal in the 2019 & 2020 editions',
     ], [
+        olympiad_titlecard('../images/oicat/logo.jpg', 'OICat Logo', 'Catalan Olympiad in Informatics', 'Barcelona, Spain', '2019 — 2020', a('https://olimpiada-informatica.cat', 'olimpiada-informatica.cat')),
         p("""
             The Catalan Olympiad in Informatics (OICat) is a yearly competition in which students from 
             Catalonia and the Valencian Community can participate. 
@@ -854,6 +875,7 @@ awards = [
         'Second Prize in the 2013 edition',
         'Reached final round in the 2014, 2015, 2016 & 2017 editions',
     ], [
+        olympiad_titlecard('../images/semcv/logo.jpg', 'SEMCV Logo', 'Valencian Olympiad in Mathematics', 'Valencian Community, Spain', '2013 — 2018', a('https://semcv.org/', 'semcv.org')),
         p("""
             Organized by the Al-Khwarizmi society, the Valencian Community's Olympiad in Mathematics (SEMCV)
             is a yearly competition in which students solve complex mathematical problems. 
@@ -872,8 +894,8 @@ awards = [
         div('big-img',
             card_img_nohover(
                 '../images/semcv/prize2018.jpg',
-                f'Receiving the Third Prize in 2018 in Viver, Valencia. {a('https://semcv.org/faseautonomica/olimpiades-autonomiques-anteriors/988-xxix-olimpiada-matematica-2018', 'Source')}',
-                'Receiving the Third Prize in 2018 in Viver, Valencia',
+                f'Receiving the Third Prize of the 2018 edition in Viver, Valencia. {a('https://semcv.org/faseautonomica/olimpiades-autonomiques-anteriors/988-xxix-olimpiada-matematica-2018', 'Source')}',
+                'Receiving the Third Prize of the 2018 edition in Viver, Valencia',
             )
         ),
         p("""

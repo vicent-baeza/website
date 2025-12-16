@@ -17,6 +17,7 @@
     --bg-hl: #FFFFFF10;
     --text: oklch(0.96 0.01 221);
     --text-muted: oklch(0.76 0.01 221);
+    --text-dim: oklch(0.6 0.01 221);
     --highlight: oklch(0.5 0.01 221);
     --border: oklch(0.4 0.01 221);
     --border-muted: oklch(0.3 0.01 221);
@@ -39,6 +40,7 @@
     --title-tabs: 600 1rem var(--font-title);
     --title: 700 1.3rem var(--font-title);
     --font-shortcut: 700 0.9rem var(--font-title);
+    --font-titlecard-subtitle: 800 0.8rem var(--font);
 
     --spm: 0.1rem;
     --sp1: 0.25rem;
@@ -71,6 +73,7 @@ body.lightmode {
     --bg-hl: #00000010;
     --text: oklch(0.15 0.01 221);
     --text-muted: oklch(0.4 0.01 221);
+    --text-muted: oklch(0.55 0.01 221);
     --highlight: oklch(1 0.01 221);
     --border: oklch(0.6 0.01 221);
     --border-muted: oklch(0.7 0.01 221);
@@ -404,7 +407,7 @@ a.crumb-text:hover {
 .card > .card-center {
     text-align: center;
     align-items: center;
-    width:100%;
+    width: 100%;
 }
 .card.no-hover {
     padding: var(--sp1);
@@ -417,6 +420,53 @@ a.crumb-text:hover {
 .no-hover:hover > * > .tag-list > .tag, .no-hover > * > .tag, .no-hover > .tag, .no-hover:hover {
     background-color: transparent !important;
 }
+
+/* Titlecard */
+.titlecard {
+    width: 100%;
+    height: 150px;
+    padding: var(--sp3);
+    border: 1px solid var(--border-muted);
+    background: var(--bg);
+    display: grid;
+    grid-template-columns: 6fr 1fr 6fr 6fr;
+    grid-template-rows: repeat(2, 1fr);
+    margin-bottom: var(--sp6);
+}
+.titlecard > img {
+    grid-row: 1 / 4;
+    grid-column: 1;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    overflow: hidden;
+    border: 1px solid var(--border-muted);
+    margin-right: var(--sp4);
+}
+.titlecard-ul, .titlecard-dl {
+    grid-column: 3;
+    margin: auto var(--sp1);
+}
+.titlecard-ur, .titlecard-dr {
+    grid-column: 4;
+    margin: auto var(--sp1);
+}
+.titlecard-ul, .titlecard-ur {
+    grid-row: 1;
+}
+.titlecard-dl, .titlecard-dr {
+    grid-row: 2;
+}
+.titlecard-subtitle {
+    font: var(--font-titlecard-subtitle);
+    color: var(--text-dim);
+    margin-bottom: var(--sp1);
+}
+.titlecard-text {
+    color: var(--text-muted)
+}
+
 
 /* Images */
 .halfs {
