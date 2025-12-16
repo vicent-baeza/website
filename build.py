@@ -212,6 +212,9 @@ def job_titlecard(image_src: str, image_alt_text: str, role: str, location: str,
 def olympiad_titlecard(image_src: str, image_alt_text: str, contest: str, location: str, period: str, website: str):
     return titlecard(image_src, image_alt_text, 'CONTEST', contest, 'LOCATION', location, 'PERIOD', period, 'WEBSITE', website)
 
+def education_titlecard(image_src: str, image_alt_text: str, institution: str, location: str, period: str, website: str):
+    return titlecard(image_src, image_alt_text, 'INSTITUTION', institution, 'LOCATION', location, 'PERIOD', period, 'WEBSITE', website)
+
 
 def section(name: str):
     return div('section', [
@@ -447,7 +450,7 @@ jobs = [
         'Single-handedly developed and maintained two full-stack web applications.',
         'Planning, design, implementation & delivery of new features from scratch.',
     ], ['PHP', 'JS', 'Vue.JS', 'SQL'], [
-
+        
     ]),
     Job('work/tutoring', 'Private Tutor', 'Self-employed', '02/2021 — 06/2022', [
         'Programming and Computer Engineering lessons.',
@@ -509,6 +512,7 @@ educations = [
         'Intensive 3-week summer course focusing computer science and advanced mathematics.',
         f'Invitation received for winning a Gold Medal in the {a('awards/oicat', 'Catalan Olympiad in Informatics')} in 2019.',
     ], [
+        education_titlecard('../images/techScouts/logo.jpg', 'Harbour Space Logo', 'Harbour Space', 'Barcelona, Spain', '07/2019', a('https://harbour.space/', 'harbour.space')),
         p(f"""The Computer Science course of Tech Scouts is an intensive 3-week summer course. 
             Although the course itself can be pricey, I managed to get it for free as part of the prize for winning a Gold Medal in the {a('awards/oicat', '2019 Catalan Olympiad in Informatics')}.
         """),
@@ -568,6 +572,7 @@ educations = [
         '4-year weekly math program for promoting and developing math and reasoning skills.',
         'Learned a lot of foundational concepts that fueled my current passion for math and computer science.',
     ], [
+        education_titlecard('../images/estalmat/logo.jpg', 'ESTALMAT CV Logo', 'Estalmat Comunitat Valenciana', 'Alicante, Valencia & Castellón', '09/2015 — 05/2019', a('https://estalmatcv.blogs.uv.es/', 'estalmatcv.blogs.uv.es')),
         p("""
             ESTALMAT is a Spanish program for the promotion and development of math and reasoning skills among children and teenagers.
             Promoted by the Spanish Royal Academy of Exact, Physical and Natural Sciences, the program offers extracurricular intensive math classes.
