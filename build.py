@@ -467,13 +467,13 @@ jobs = [
         h3("My experience at the company"),
         p(f"""
             When I first joined Compliance CMS, it was, to put it bluntly, overwhelming. 
-            Not only was it my first professional job, but I was the {it('whole')} IT team, as the company's previous programmer walked out, and didn't have any other technical person until I came aboard.
+            Not only was it my first professional job, but I was the {it('whole')} IT team, as the company's previous programmer walked out and didn't have any other developer until I came aboard.
             That meant that {it('everything')} IT-related fell on me: programming, UI & UX, databases, security..., you name it.
             To top it all off, despite it starting as a summer job, I continued working there while studying for my {a('/education/degree', 'Computer Engineering degree')}, which made it significantly more stressful and challenging.
         """),
         p("""
             Despite all that pressure, it was also extremely enriching, and I'm glad I managed to pull through. 
-            Being on my own really pushed me to grow above and beyond, making me learn a lot about subjects that I had barely scratched before.
+            Being on my own really pushed me to grow above and beyond, making me learn a lot about topics that I had barely scratched before.
             I don't know where I would be today if I hadn't had that kind of challenge early on in my professional career.
         """),
         p("""
