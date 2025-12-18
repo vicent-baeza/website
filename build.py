@@ -464,6 +464,13 @@ jobs = [
             Compliance CMS is a small Spanish consultancy firm. If offers comprehensive services in many areas of Spanish & EU law, but mainly specializes in Criminal Compliance & Corporate Risk Mitigation.
             Although the company is quite small (less than 10 employees), it manages to boast a diverse array of clients, from multinational corporations to small businesses.
         """),
+        div('big-img',
+            card_img_nohover(
+                '../images/compliance_cms/photo.jpg',
+                'Photo we did for a photoshoot (yes, I didn\'t have any other photos)',
+                'Compliance CMS members.',
+            )
+        ),
         h3("My experience at the company"),
         p(f"""
             When I first joined Compliance CMS, it was, to put it bluntly, overwhelming. 
