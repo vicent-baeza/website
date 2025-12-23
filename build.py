@@ -1,8 +1,10 @@
-# pylint: disable=C0114,C0116,C0115,C0303,W0611,R0902,W0603,C0103
+# pylint: disable=C0114,C0116,C0115,C0303,W0611,R0902,W0603,C0103,C0301
 import os
 import hashlib
+import re
 from datetime import date
 from dataclasses import dataclass
+from typing import Iterable
 from dateutil.relativedelta import relativedelta
 from minify_html import minify # pylint: disable=E0611
 from list_dict import ListDict
@@ -68,6 +70,11 @@ def hash_file(path: str, buffer_size : int = 65536) -> str:
             file_hash.update(data)
     return file_hash.hexdigest()
 
+def extract_all_ids(content: str) -> Iterable[str]:
+    pattern = re.compile(r"id=(\"|')(.*?)(\1)")
+    for match in re.finditer(pattern, content):
+        yield match.group(2)
+
 CSS_HASH = 1 #hash_file('docs/styles.css')
 JS_HASH = 1 #hash_file('docs/scripts.js')
 
@@ -78,6 +85,8 @@ warnings = ListDict[str, str]()
 tags = ListDict[str, str]()
 paths = ListDict[str, str]()
 files = ListDict[str, str]()
+all_local_paths = set[str](['/', ''])
+requested_local_paths = ListDict[str, str]()
 
 class Site:
     def __init__(self, path: str, title: str):
@@ -171,6 +180,14 @@ def img(classes: str, src: str, alt_text: str, inner_content: str | list[str] = 
     files.append(src)
     return tagc('img', classes + ' unselectable', inner_content, f'src="{src}" alt="{alt_text}" {extra_params}')
 
+def card_link_img(title: str, date_str: str, image_src: str, href: str, extra_classes: str = ''):
+    return a(href, [
+        div('card-title', title),
+        div('card-divider'),
+        div('card-date', date_str),
+        img('card-content', image_src, title),
+    ], f'card {extra_classes}')
+
 def card_img(title: str, date_str: str, image_src: str, image_fullscreen_html_content: str | list[str], extra_classes: str = ''):
     return div(f'card cursor-pointer {extra_classes}', [
         div('card-title', title),
@@ -189,13 +206,17 @@ def card_img_vw(title: str, date_str: str, image_src: str, image_fullscreen_html
         div('img-fullscreen-content', image_fullscreen_html_content),
     ])
 
-def card_img_nohover(image_src: str, image_text: str, image_alt_text: str):
+def card_img_nohover(image_src: str, image_text: str, image_alt_text: str | None = None):
+    if image_alt_text is None:
+        image_alt_text = image_text
     return div('card no-hover', [
         img('card-content', image_src, image_alt_text),
         div('card-center', image_text),
     ])
 
-def card_img_nohover_vw(image_src: str, image_text: str, image_alt_text: str, image_max_height_vw: int = 50):
+def card_img_nohover_vw(image_src: str, image_text: str, image_alt_text: str | None = None, image_max_height_vw: int = 50):
+    if image_alt_text is None:
+        image_alt_text = image_text
     return div('card no-hover', [
         img('card-content', image_src, image_alt_text, extra_params=f'style="max-height:{image_max_height_vw}vw"'),
         div('card-center', image_text),
@@ -284,7 +305,6 @@ header_tabs = [
     HeaderTabs('projects', 'Projects', 'ri-hammer-fill'),
     HeaderTabs('education', 'Education', 'ri-graduation-cap-fill'),
     HeaderTabs('awards', 'Awards', 'ri-trophy-fill'),
-    #HeaderTabs('about', 'About me', 'ri-user-3-fill'),
 ]
 
 def head(path: str, page_title: str = "", scripts: str = ""):
@@ -356,6 +376,7 @@ footer: str = """
 
 def generate(path: str, title: str, content: str | list[str], scripts: str = "", tab_title: str | None = None):
     if isinstance(content, list):
+        # check content components
         if len(content) > 0:
             if 'class="section"' in content[-1]:
                 warnings.append('Empty section')
@@ -368,9 +389,18 @@ def generate(path: str, title: str, content: str | list[str], scripts: str = "",
         
         content = "".join(content)
 
+    # check global content
     if content == '':
         warnings.append('Empty content')
         content = BR + h3('⚠️ Under construction, check back later! ⚠️')
+    elif 'TODO' in content:
+        warnings.append('TODOs found')
+
+    # extract IDs & build valid paths
+    site_ids = extract_all_ids(content)
+    all_local_paths.add(path)
+    for site_id in site_ids:
+        all_local_paths.add(f'{path}#{site_id}')
 
     if title != '':
         content = h1(title) + content
@@ -427,9 +457,6 @@ generate("index", '', [
     h1("Vicent Baeza"),
     p("Software Engineer with a passion for math and computer science."),
     p(f"Currently building automation & data scrapping tools at {a('work/facephi', 'Facephi')}."),
-])
-generate("about", 'About me', [
-
 ])
 
 
@@ -507,7 +534,8 @@ jobs = [
         p(f"""
             While working on the whistleblowing channel, improving & automating how the company assessed corporate risk.
             At the time I joined, the system for doing assessing corportate risk was a confusing, unmanageable mess of an Excel sheet.
-            It was remarkably difficult to make event the most minor of changes, let alone check that everything is correct or to justify {it('why')} a particular risk recieved the assessment that it did.
+            It was remarkably difficult to make event the most minor of changes, 
+            let alone check that everything is correct or to justify {it('why')} a particular risk recieved the assessment that it did.
         """),
         p("""
             Therefore, it was a no-brainer to try to put the system in a web application, in a similar manner to the whistleblowing channel, 
@@ -587,13 +615,136 @@ educations = [
     Education('education/master', "Master's Degree in Data Science", 'University of Alicante', '09/2024 — 06/2025', [
         'Grade: 9.05/10',
     ], [
-
+        
     ]),
     Education('education/degree', 'Degree in Computer Engineering', 'University of Alicante', '09/2020 — 06/2024', [
         'Grade: 8.81/10, including 13 honors',
         'Graduated as part of the High Academic Performance group (ARA group), with a specialization in Computing.',
         f'Received the {a('awards/computer_engineering', 'Extraordinary Award in Computer Engineering')} for outstanding performance.',
     ], [
+        education_titlecard('../images/uni/logo.jpg', 'University of Alicante Logo', 'University of Alicante', 'Alicante, Spain', '09/2020 — 06/2024', a('https://web.ua.es/en/grados/grado-en-ingenieria-informatica/', 'web.ua.es/en/grados/grado-en-ingenieria-informatica')),
+        h3("About the degree"),
+        p("""
+            The Computer Engineering Degree of the University of Alicante is one of the biggest degrees of the university, 
+            as it provides comprehensive, well-rounded education in everything related to computers and information systems.
+            The 4-year degree is taught in buildings all around the university campus, and is fully on-site. 
+        """),
+        p_no_margin("""
+            Most theoretical classes were given in the General Lecture Buildings #2 & #3, while most practical lessons were given in the many Polytechnic University Colleges scattered throughout the campus.
+        """),
+        div('halfs', [
+            card_img_nohover_vw(
+                '../images/uni/aulario2.jpg',
+                f'{a('https://maps.app.goo.gl/Qcc5nMVLtiynigZd7', 'General Lecture Building #2')}, University of Alicante',
+                'General Lecture Building #2, University of Alicante',
+            ),
+            card_img_nohover_vw(
+                '../images/uni/politecnica1.jpg',
+                f'{a('https://maps.app.goo.gl/NNCaDZYuusAsSt4c9', 'Polytechnic University College #1')}, University of Alicante',
+                'Polytechnic University College #1, University of Alicante',
+            ),
+        ]),
+        p("""
+            The degree teaches a bit of everything in the first three years, including:
+        """),
+        ul([
+            "Mathematics & Theoretical Frameworks of Computation",
+            "Statistics & Data Analysis",
+            "Programming, from low-level Assembly & C++ to high-level Java and Python",
+            "Operating System Configuraton & Programming",
+            "Multithreading & GPU programming (CUDA)",
+            "Software Development & Software Design, including SOLID & other principles",
+            "Algorithm Analysis & Data Structures",
+            "Computer & Hardware Architecture & Design",
+        ]),
+        BR,
+        p("""
+            After the third year, every student gets to choose their specialization, which determines almost all subjects for the fourth year and one for the third. 
+            Each one focuses on certain areas of computer engineering:
+        """),
+        ul([
+            f"{b('Software Engineering')}: Application development, Web development and Software Design",
+            f"{b('Computer Engineering')}: Embedded & Real-Time Systems, Robotics and Computer Hardware",
+            f"{b('Computation')}: Machine Learning, Data Analysis, Theory of Computation and Data Science",
+            f"{b('Information Systems')}: Business Administration and Process Management",
+            f"{b('Information Technology')}: Computer Networks, Cloud Computing and Cybersecurity",
+        ]),
+        BR,
+        p(f"""
+            The whole curriculum, including all specializations and subjects, can be seen in the {a('https://web.ua.es/en/grados/grado-en-ingenieria-informatica/curriculum.html#Plan-1', 'official site for the degree')}.
+        """),
+        h3("My experience"),
+        p(f"""
+            Although some courses were difficult & stressful at times, almost all were extremely fruitful and worthwhile. 
+            While I had {it('some')} computer & programming know-how before, the degree expanded & refined existing skills, while providing lots of new resources and learning opportunities. 
+        """),
+        p("""
+            I chose to specialize in Computing, which delved deep in Algorithms, Data Structures, Math & Data Analysis; and also introduced Machine Learning, Computer Vision & Compiler Programming.
+            I also took a couple courses on Networking & Cloud Computing from the Computer Networks specialization.
+        """),
+        p(f"""
+            I managed to achieve an average grade of 8.81/10, which was the 2nd highest among the 113 graduates in 2024.
+            Such a feat awarded me the {a('/awards/computer_engineering', 'Extraordinary Award in Computer Engineering')}.
+            I also recieved honors in 13 out of the 38 courses of the degree, which (to my knowledge) was the hightest number out of anyone that graduated in 2024.
+        """),
+        div('halfs limit-height', [
+            card_img('Diploma', '09/2024', '../images/uni/degree/diploma.jpg', [
+                BR,
+                p('Digital scan of the certificate (in Spanish).'),
+                p('English translation:'),
+                p('University of Alicante'),
+                p('Polytechnic School'),
+                p("AWARDS THIS"),
+                p("DIPLOMA"),
+                p("to"), 
+                p("Baeza Esteve, Vicent"),
+                p("Degree in Computer Engineering — 2010 Plan"),
+                p("Alicante, 22nd of November 2024"),
+                p("Director"),
+                p("Virgilio Gilart Iglesias"),
+            ]),
+            card_img('Official Certificate', '06/2024', '../images/uni/degree/title.jpg', [
+                BR,
+                p('Digital scan of the certificate (in Spanish).'),
+                p('Some personal details have been redacted.'),
+                p('English translation:'),
+                p('Philip the VI, King of Spain'),
+                p('and in his name the'),
+                p("President of the University of Alicante"),
+                p("In accordance with the provisions and circumstances provided for by the current legislation"),
+                p("Vicent Baeza Esteve"), 
+                p("Born on [...] in El Campello (Alicante)"),
+                p('of Spanish nationality'),
+                p('has finished in June 2024, the official university studies'),
+                p('conducent to the official university TITLE of'),
+                p('GRADUATE in Computer Engineering by the University of Alicante'),
+                p('pursuant to the Council of Ministers Agreement of the 17th of June 2011,'),
+                p('this official certificate is issued with validity whithin the whole national territory'),
+                p('which entitles the recipient to enjoy the rights'),
+                p('that this certificate grants in accordance to current provisions'),
+                p('Given in Alicante, 21st of June, 2024'),
+            ]),
+        ]),
+        h3("Computer Engineering Final Project", 'final_project'),
+        p("""
+            The Computer Engineering Degree, like many other university degrees, requires a lengthy final project as part of its graduation requirements.
+        """),
+        p("""
+            My final project, titled "Quantum Computing and its applications in Artificial Intelligence", 
+            was an exploratory project centered in the possible applications of Quantum Computing for speeding up and enhancing Machine Learning systems. 
+        """),
+        p("""
+            The complete report (in Spanish) can be seen below:
+        """),
+        div('big-img limit-height',
+            card_link_img(
+                'Computer Engineering Final Project Report',
+                '05/2024',
+                '../images/uni/degree/tfg_portada.jpg',
+                '../images/uni/degree/tfg.pdf'
+            )
+        )
+        
 
     ]),
     Education('education/tech_scouts', 'Tech Scouts: Computer Science', 'Harbour Space', '07/2019 — 07/2019', [
@@ -743,7 +894,7 @@ awards = [
         """),
         div('big-img',
             card_img_nohover(
-                '../images/degree/award/photo.jpg',
+                '../images/uni/award/photo.jpg',
                 f'Honorees of the 2024 Extraordinary Award in Computer Engineering. {a('https://eps.ua.es/es/graduacion/graduacion-2024.html', 'Source')}',
                 'Honorees of the 2024 Extraordinary Award in Computer Engineering',
             )
@@ -753,7 +904,7 @@ awards = [
             The other awarded students were Eric Ayllón Palazón and Diego Luchmun Corbalán, also pictured in the above photo.
         """),
         div('big-img',
-            card_img_vw('Certificate for the Extraordinary Award', '01/2025', '../images/degree/award/diploma.jpg', [
+            card_img_vw('Certificate for the Extraordinary Award', '01/2025', '../images/uni/award/diploma.jpg', [
                 BR,
                 p('Digital scan of the certificate (in Spanish & Catalan)'),
                 p('Some personal details have been redacted.'),
@@ -857,7 +1008,7 @@ awards = [
             which was a really memorable experience by itself.
         """),
         BR,
-         div('halfs', [
+        div('halfs limit-height', [
             card_img('2018 Diploma', '06/2018', '../images/oie/diploma2018.jpg', [
                 BR,
                 p('Digital scan of the certificate (in Spanish).'),
@@ -881,7 +1032,7 @@ awards = [
                 p("has obtained the GOLD classification"), 
                 p("Barcelona, 27th of June 2019")
             ]),
-        ])
+        ]),
     ]),
     Awards('awards/oicat', 'Catalan Olympiad in Informatics', 'OICat', '2019 — 2020', [
         'Gold Medal in the 2019 & 2020 editions',
@@ -930,7 +1081,7 @@ awards = [
             which I wouldn't have been able to attend otherwise. Overall, a very worthwhile experience!
         """),
         BR,
-        div('halfs', [
+        div('halfs limit-height', [
             card_img('2019 Diploma', '06/2019', '../images/oicat/diploma2019.jpg', [
                 BR,
                 p('Digital scan of the certificate (in Catalan).'),
@@ -1004,7 +1155,7 @@ awards = [
             "Reached the Regional Phase of the competition in the 2014, 2015, 2016, and 2017 editions",
         ]),
         BR,
-        div('halfs', [
+        div('halfs limit-height', [
             card_img('2013 Diploma', '06/2013', '../images/semcv/diploma2013.jpg', [
                 BR,
                 p('Digital scan of the certificate (in Catalan).'),
@@ -1086,12 +1237,10 @@ class Project(Site):
 
 projects : dict[str, list[Project]] = {
     'professional': [
-        Project('projects/automation', 'Automation & Data Scrapping Tools', 'Facephi', '09/2025 — Present', [
+        Project('work/facephi#automation', 'Automation & Data Scrapping Tools', 'Facephi', '09/2025 — Present', [
             'Built several automation & data scrapping tools leveraging AI agents.',
             'Extracted key information used to train production models.',
-        ], ['Python', 'LangGraph', 'GitHub Actions'], [
-
-        ]),
+        ], ['Python', 'LangGraph', 'GitHub Actions']),
         Project('work/compliance_cms#riskapp', 'RiskApp CMS', 'Compliance CMS', '12/2023 — 09/2025', [
             'Web application to automate corporate risk assessment.',
             'Design of the entire app & complete implementation from scratch.',
@@ -1102,22 +1251,16 @@ projects : dict[str, list[Project]] = {
         ], ['PHP', 'JS', 'Vue.JS', 'SQL']),
     ],
     'university': [
-        Project('projects/kan', 'Data Science Final Project', "Master's Degree in Data Science", '11/2024 — 06/2025', [
+        Project('education/master#final_project', 'Data Science Final Project', "Master's Degree in Data Science", '11/2024 — 06/2025', [
             'Exploration and testing of the Kolmogorov-Arnold architecture for neural networks.',
-        ], ['ML', 'CNNs', 'Kolmogorov-Arnold Networks'], [
-
-        ]),
-        Project('projects/quantum', 'Computer Engineering Final Project', 'Degree in Computer Engineering', '09/2023 — 05/2024', [
+        ], ['ML', 'CNNs', 'Kolmogorov-Arnold Networks']),
+        Project('education/degree#final_project', 'Computer Engineering Final Project', 'Degree in Computer Engineering', '09/2023 — 05/2024', [
             'Research project exploring the applications of Quantum Computing in ML systems.',
-        ], ['ML', 'Quantum Computing'], [
-
-        ]),
-        Project('projects/last_brew', "The Last Brew", 'Degree in Computer Engineering', '07/2023 — 09/2023', [
-            '2D game fully programmed in Z80 Assembly for the Amstrad CPC 8-bit computer.',
-            'Fluid movement, collisions, projectiles, and multiple enemy types and behaviors.',
-        ], ['Z80 Assembly', 'Amstrad CPC', 'CPCTelera'], [
-
-        ]),
+        ], ['ML', 'Quantum Computing']),
+        # Project('education/degree#last_brew', "The Last Brew", 'Degree in Computer Engineering', '07/2023 — 09/2023', [
+        #     '2D game fully programmed in Z80 Assembly for the Amstrad CPC 8-bit computer.',
+        #     'Fluid movement, collisions, projectiles, and multiple enemy types and behaviors.',
+        # ], ['Z80 Assembly', 'Amstrad CPC', 'CPCTelera']),
     ],
     'side': [
 
@@ -1138,6 +1281,8 @@ for project_type, project_type_projects in projects.items():
     for project in project_type_projects:
         if project.content is not None:
             generate(project.path, project.title, project.content)
+        else:
+            requested_local_paths.add(project.path)
 
 # -----------------
 # POST-BUILD CHECKS
@@ -1161,6 +1306,13 @@ for site, site_paths in paths.items():
 for site, link_count in site_link_counts.items():
     if link_count == 0:
         warnings[site].append("Not linked in any other site")
+
+# check requested local paths
+for requested_local_path in requested_local_paths:
+    if requested_local_path not in all_local_paths:
+        path_without_id, path_id = requested_local_path.split('#', maxsplit=1)
+        warnings.append(f"ID '{path_id}' not found")
+        warnings.add(path_without_id)
 
 # check files
 for site, site_files in files.items():

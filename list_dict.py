@@ -29,5 +29,8 @@ class ListDict(MutableMapping[K, list[V]]):
         self.pending_values.append(value)
 
     def add(self, key: K):
-        self[key] = self.pending_values
+        if key in self:
+            self[key].extend(self.pending_values)
+        else:
+            self[key] = self.pending_values
         self.pending_values = []
