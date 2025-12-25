@@ -234,12 +234,9 @@ def titlecard(image_src: str, image_alt_text: str, ul_subtitle: str, ul_text: st
     ]) + (taglist(_tags) if _tags else '')
 
 def job_titlecard(image_src: str, image_alt_text: str, role: str, location: str, period: str, company_website: str, _tags: list[str] | None = None):
-    if _tags is None:
-        return titlecard(image_src, image_alt_text, 'ROLE', role, 'LOCATION', location, 'PERIOD', period, 'COMPANY WEBSITE', company_website)
     return titlecard(image_src, image_alt_text, 'ROLE', role, 'LOCATION', location, 'PERIOD', period, 'COMPANY WEBSITE', company_website, _tags)
 def olympiad_titlecard(image_src: str, image_alt_text: str, contest: str, location: str, period: str, website: str, _tags: list[str] | None = None):
-    return titlecard(image_src, image_alt_text, 'CONTEST', contest, 'LOCATION', location, 'PERIOD', period, 'WEBSITE', website, _tags)
-
+    return titlecard(image_src, image_alt_text, 'CONTEST', contest, 'LOCATION', location, 'PERIOD', period, 'WEBSITE', website, _tags) 
 def education_titlecard(image_src: str, image_alt_text: str, institution: str, location: str, period: str, website: str, _tags: list[str] | None = None):
     return titlecard(image_src, image_alt_text, 'INSTITUTION', institution, 'LOCATION', location, 'PERIOD', period, 'WEBSITE', website, _tags)
 
@@ -615,7 +612,88 @@ educations = [
     Education('education/master', "Master's Degree in Data Science", 'University of Alicante', '09/2024 — 06/2025', [
         'Grade: 9.05/10',
     ], [
-        
+        education_titlecard('../files/uni/logo.jpg', 'University of Alicante Logo', 'University of Alicante', 'Alicante, Spain', '09/2024 — 06/2025', a('https://web.ua.es/en/masteres/ciencia-de-datos/', 'web.ua.es/masteres/ciencia-de-datos')),
+        h3("About the degree"),
+        p("""
+            The Data Science Master's Degree of the University of Alicante, as the name implies, is a master's degree that delves deep in Data Science and Machine Learning,
+            refining and expanding skills learned from related undergraduate degrees.
+            The master is only 1-year long, and it taught fully on-site.
+        """),
+        p_no_margin(f"""
+            On the 2024 to 2025 school year, almost all classes were taught in the {a('https://maps.app.goo.gl/vjyehHTWuDvQpepY6', 'Faculty of Science #6')}, affectionately called The Bunker for its distinctive, harsh concrete facade.  
+        """), 
+        div('big-img',
+            card_img_nohover_vw(
+                '../files/uni/master/ciencias6.jpg',
+                "Faculty of Science #6 aka 'The Bunker', University of Alicante",
+            )
+        ),
+        p("""
+            The master's degree delves deep into many Data Science topics, including: 
+        """),
+        ul([
+           'Math & Statistics',
+           'Data Modeling',
+           'Data Mining & Data Scrapping',
+           'Data Processing and Cleaning',
+           'Data Visualization and Plotting',
+           'Machine Learning, including CNN, RNN & Transformer architectures',
+        ]),
+        BR,
+        p(f"""
+            The whole curriculum, including compulsory and optional subjects, can be seen in the {a('https://web.ua.es/en/masteres/ciencia-de-datos/curriculum.html', "official site for the master's degree")}.
+        """),
+        h3('My experience'),
+        p("""
+            I managed to achieve an average grade of 9.05/10, and completed the entire master's degree in the educational year of 2024 to 2025.
+        """),
+        div('big-img',
+            card_img_nohover_vw(
+                '../files/uni/master/graduation.jpg',
+                f"Receiving the diploma alongside four other fellow graduates. {a('https://audiovisual.ua.es/fotoweb/archives/5014-2025-Universidad-de-Alicante/?25=TURNO%202', 'Source')}",
+                "Receiving the diploma alongside four other fellow graduates.",
+            )
+        ),
+        p(f"""
+            Altough the master's delved quite deep in many areas of Data Science and Machine Learning,
+            some lessons overlapped with the Computation specialization of the {a('/education/degree', 'University Degree in Computing Engineering')}, which I had already completed, so it was a bit of a shame to be re-taught some lessons.
+        """),
+        div('halfs limit-height', [
+            card_img('Diploma', '11/2025', '../files/uni/master/diploma.jpg', [
+                BR,
+                p('Digital scan of the certificate (in Spanish).'),
+                p('English translation:'),
+                p('University of Alicante'),
+                p('Polytechnic School'),
+                p("AWARDS THIS"),
+                p("DIPLOMA"),
+                p("to"), 
+                p("Baeza Esteve, Vicent"),
+                p("University Master's Degree in Data Science"),
+                p("Alicante, 21st of November 2025"),
+                p("Director"),
+                p("Josué Antonio Nescolarde Selva"),
+            ]),
+        ]),
+        h3('Final project', 'final_project'),
+        p("""
+            The Master's Degree in Data Science requires a final project as part of its graduation requirements, which must be done individually for every student and defended in front of a tribunal of professors.
+        """),
+        p("""
+            My final project, titled "Exploration of architectures based on Kolmogorov-Arnold Networks", explores and tests the Kolmogorov-Arnold architecture for neural networks, 
+            which was at the time a promising alternative to traditional MLPs.
+        """),
+        p("""
+            The complete report (in Spanish) can be seen below:
+        """),
+        div('big-img limit-height',
+            card_link_img(
+                'Data Science Final Project Report',
+                '06/2025',
+                '../files/uni/master/tfm_portada.jpg',
+                '../files/uni/master/tfm.pdf'
+            )
+        ),
     ]),
     Education('education/degree', 'Degree in Computer Engineering', 'University of Alicante', '09/2020 — 06/2024', [
         'Grade: 8.81/10, including 13 honors',
@@ -634,12 +712,12 @@ educations = [
         """),
         div('halfs', [
             card_img_nohover_vw(
-                '../files/uni/aulario2.jpg',
+                '../files/uni/degree/aulario2.jpg',
                 f'{a('https://maps.app.goo.gl/Qcc5nMVLtiynigZd7', 'General Lecture Building #2')}, University of Alicante',
                 'General Lecture Building #2, University of Alicante',
             ),
             card_img_nohover_vw(
-                '../files/uni/politecnica1.jpg',
+                '../files/uni/degree/politecnica1.jpg',
                 f'{a('https://maps.app.goo.gl/NNCaDZYuusAsSt4c9', 'Polytechnic University College #1')}, University of Alicante',
                 'Polytechnic University College #1, University of Alicante',
             ),
@@ -682,13 +760,20 @@ educations = [
             I chose to specialize in Computing, which delved deep in Algorithms, Data Structures, Math & Data Analysis; and also introduced Machine Learning, Computer Vision & Compiler Programming.
             I also took a couple courses on Networking & Cloud Computing from the Computer Networks specialization.
         """),
+        div('big-img',
+            card_img_nohover(
+                '../files/uni/degree/graduation.jpg',
+                f'Receiving the graduation diploma alongside both other honorees of the 2024 Extraordinary Award in Computer Engineering. {a('https://eps.ua.es/es/graduacion/graduacion-2024.html', 'Source')}',
+                'Honorees of the 2024 Extraordinary Award in Computer Engineering',
+            ),
+        ),
         p(f"""
             I managed to achieve an average grade of 8.81/10, which was the 2nd highest among the 113 graduates in 2024.
             Such a feat awarded me the {a('/awards/computer_engineering', 'Extraordinary Award in Computer Engineering')}.
             I also recieved honors in 13 out of the 38 courses of the degree, which (to my knowledge) was the hightest number out of anyone that graduated in 2024.
         """),
         div('halfs limit-height', [
-            card_img('Diploma', '09/2024', '../files/uni/degree/diploma.jpg', [
+            card_img('Diploma', '11/2024', '../files/uni/degree/diploma.jpg', [
                 BR,
                 p('Digital scan of the certificate (in Spanish).'),
                 p('English translation:'),
@@ -881,18 +966,19 @@ awards = [
     Awards('awards/computer_engineering', 'Extraordinary Award in Computer Engineering', 'University of Alicante', '11/2024', [
         f'Awarded to the three students with the highest overall grades in the {a('/education/degree', 'Degree in Computer Engineering')}',
     ], [
+        olympiad_titlecard('../files/uni/logo.jpg', 'University of Alicante Logo', 'University of Alicante Extraordinary Award', 'Alicante, Spain', '2024', a('https://www.ua.es/en/', 'ua.es')),
         p(f"""
             The Extraordinary Award ({it('Premio Extraordinario')} in Spanish) is a prestigious award given by the University of Alicante to the
             students that graduated with the highest overall grades for that school year. The award demostrates outstanding performance and commitment to academic excellence.
         """),
         p_no_margin(f"""
-            There is a separate award for each bachelor's and master's offered by the university.
+            There is a separate award for each bachelor's and master's degree offered by the university.
             For each degree, one award is given for every 50 students that graduated that year. 
             In the case of the {a('/education/degree', 'Degree in Computer Engineering')}, 3 awards were given in 2024, as more that 100 students graduated that year.
         """),
         div('big-img',
             card_img_nohover(
-                '../files/uni/award/photo.jpg',
+                '../files/uni/degree/graduation.jpg',
                 f'Honorees of the 2024 Extraordinary Award in Computer Engineering. {a('https://eps.ua.es/es/graduacion/graduacion-2024.html', 'Source')}',
                 'Honorees of the 2024 Extraordinary Award in Computer Engineering',
             )
@@ -902,7 +988,7 @@ awards = [
             The other awarded students were Eric Ayllón Palazón and Diego Luchmun Corbalán, also pictured in the above photo.
         """),
         div('big-img',
-            card_img_vw('Certificate for the Extraordinary Award', '01/2025', '../files/uni/award/diploma.jpg', [
+            card_img_vw('Certificate for the Extraordinary Award', '01/2025', '../files/uni/degree/award.jpg', [
                 BR,
                 p('Digital scan of the certificate (in Spanish & Catalan)'),
                 p('Some personal details have been redacted.'),
