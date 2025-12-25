@@ -33,9 +33,8 @@
 
     --p: 1rem var(--font);
     --b: 500 1rem var(--font);
-    --h1: 600 1.6rem var(--font-title);
-    --h2: 500 1.3rem var(--font-title);
-    --h3: 500 1.1rem var(--font-title);
+    --h1: 600 1.3rem var(--font-title);
+    --h2: 500 1.1rem var(--font-title);
     --section: 800 0.8rem var(--font);
     --title-tabs: 600 1rem var(--font-title);
     --title: 700 1.3rem var(--font-title);
@@ -282,20 +281,15 @@ ul.text-list > li {
 h1 {
     font: var(--h1);
     color: var(--text);
-    line-height: 2rem;
+    line-height: 1.5rem;
     margin-top: var(--sp2) !important;
 }
 h2 {
     font: var(--h2);
     color: var(--text);
-    line-height: 1.25rem;
+    line-height: 1.15rem;
 }
-h3 {
-    font: var(--h3);
-    color: var(--text);
-    line-height: 1.1rem;
-}
-h1, h2, h3, .section {
+h1, h2, .section {
     margin-top: var(--sp8);
     margin-bottom: var(--sp4);
 }
@@ -315,6 +309,32 @@ h1, h2, h3, .section {
     background-color: var(--border);
     height: 1px;
     flex-grow: 1;
+}
+
+/* Title Section */
+.title-section {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: var(--sp3);
+    margin-bottom: var(--sp3);
+    margin-top: var(--sp8);
+}
+.title-section > .title-section-title {
+    font: var(--h2);
+    color: var(--text);
+    line-height: 1.25rem;
+    flex-grow: 0;
+    margin-right: var(--sp2);
+}
+.title-section > .title-section-divider {
+    background-color: transparent;
+    height: 1px;
+    flex-grow: 1;
+}
+.title-section > .title-section-after {
+    flex-grow: 0;
 }
 
 /* Crumbs */
@@ -385,7 +405,7 @@ a.crumb-text:hover {
     margin-right: var(--sp1);
 }
 .card > .card-title {
-    font: var(--h3);
+    font: var(--h2);
     color: var(--text);
 }
 .card > .card-divider {

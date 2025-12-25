@@ -136,13 +136,9 @@ def h2(text: str | list[str], element_id: str | None = None):
     params = f'id="{element_id}"' if element_id else ''
     return tag('h2', text, params)
 
-def h3(text: str | list[str], element_id: str | None = None):
+def h2_nomargin_bottom(text: str | list[str], element_id: str | None = None):
     params = f'id="{element_id}"' if element_id else ''
-    return tag('h3', text, params)
-
-def h3_nomargin_bottom(text: str | list[str], element_id: str | None = None):
-    params = f'id="{element_id}"' if element_id else ''
-    return tagc('h3', 'no-margin-bottom', text, params)
+    return tagc('h2', 'no-margin-bottom', text, params)
 
 def p(text: str | list[str]):
     return tag('p', text)
@@ -246,6 +242,12 @@ def section(name: str):
         div('section-title', name),
         div('section-divider'),
     ])
+def title_section(title: str, elements: list[str], button_href : str | None = None, max_elements: int = 3, content_before_elements: str = ''):    
+    return div('title-section', [
+        div('title-section-title', title),
+        div('title-section-divider'),
+        div('title-section-after', a(button_href, 'View All' + i('ri-arrow-right-s-line crumb-divider'))) if button_href is not None else '',
+    ]) + content_before_elements + ''.join(elements[:max_elements])
 
 def taglist(tag_names: list[str]):
     return div('tag-list', [div('tag unselectable', tag_name) for tag_name in tag_names])
@@ -389,7 +391,7 @@ def generate(path: str, title: str, content: str | list[str], scripts: str = "",
     # check global content
     if content == '':
         warnings.append('Empty content')
-        content = BR + h3('⚠️ Under construction, check back later! ⚠️')
+        content = BR + h2('⚠️ Under construction, check back later! ⚠️')
     elif 'TODO' in content:
         warnings.append('TODOs found')
 
@@ -447,16 +449,6 @@ def generate(path: str, title: str, content: str | list[str], scripts: str = "",
     paths.add(path)
 
 
-# ----------
-# MAIN PAGES
-# ----------
-generate("index", '', [
-    h1("Vicent Baeza"),
-    p("Software Engineer with a passion for math and computer science."),
-    p(f"Currently building automation & data scrapping tools at {a('work/facephi', 'Facephi')}."),
-])
-
-
 # ----
 # WORK
 # ----
@@ -472,18 +464,18 @@ class Job(Site):
         self.alt_tab_title = alt_tab_title
 
 jobs = [
-    Job('work/facephi', 'AI Engineer', 'Facephi', '09/2025 — Present', [
+    job_facephi := Job('work/facephi', 'AI Engineer', 'Facephi', '09/2025 — Present', [
         'Built several automation & data scrapping tools leveraging AI agents.',
         'Extracted key information used to train production models.',
     ], ['Python', 'LangGraph', 'GitHub Actions'], [
 
     ]),
-    Job('work/compliance_cms', 'Software Engineer', 'Compliance CMS', '07/2023 — 09/2025', [
+    job_compliancecms := Job('work/compliance_cms', 'Software Engineer', 'Compliance CMS', '07/2023 — 09/2025', [
         'Single-handedly developed and maintained two full-stack web applications.',
         'Planning, design, implementation & delivery of new features from scratch.',
     ], ['PHP', 'JS', 'Vue.JS', 'SQL'], [
         job_titlecard('../files/compliance_cms/logo.jpg', 'ComplianceCMS Logo', 'Software Engineer', 'Alicante, Spain', '07/2023 — 09/2025', a('https://compliancecms.com/', 'compliancecms.com'), ['PHP', 'JS', 'Vue.JS', 'SQL']),
-        h3("About the company"),
+        h2("About the company"),
         p("""
             Compliance CMS is a small Spanish consultancy firm. If offers comprehensive services in many areas of Spanish & EU law, but mainly specializes in Criminal Compliance & Corporate Risk Mitigation.
             Although the company is quite small (less than 10 employees), it manages to boast a diverse array of clients, from multinational corporations to small businesses.
@@ -495,7 +487,7 @@ jobs = [
                 'Compliance CMS members.',
             )
         ),
-        h3("My experience at the company"),
+        h2("My experience at the company"),
         p(f"""
             When I first joined Compliance CMS, it was, to put it bluntly, overwhelming. 
             Not only was it my first professional job, but I was the {it('whole')} IT team, as the company's previous programmer walked out and didn't have any other developer until I came aboard.
@@ -510,7 +502,7 @@ jobs = [
         p("""
             It's also important to add that, despite the work itself being difficult, the people people there were everything but that. Everyone was really friendy, helpful and hard-working.
         """),
-        h3("Whistleblowing Channel", 'whistleblowing'),
+        h2("Whistleblowing Channel", 'whistleblowing'),
         p("""
             The first project I tackled was fixing and improving the company's whistleblowing channel. The channel was implemented as a Vue.JS web application, with a PHP back-end that stored the data in an SQL database in a standalone server.
             As the company was quite small, the traffic was quite limited, so this was more than enough for it to run smoothly.
@@ -527,7 +519,7 @@ jobs = [
             "Integration with a telecom service to automatically register telephone calls in the channel.",
             "A deterministic NLP system for the automatic censoring of personal data when required by law."
         ]),
-        h3("RiskApp CMS", 'riskapp'),
+        h2("RiskApp CMS", 'riskapp'),
         p(f"""
             While working on the whistleblowing channel, improving & automating how the company assessed corporate risk.
             At the time I joined, the system for doing assessing corportate risk was a confusing, unmanageable mess of an Excel sheet.
@@ -559,13 +551,13 @@ jobs = [
             "Automatic storage and display of previous assessments, having a sorted history of every previously calculated risk.",
             "Integrated audit capabilities that record in real time all changes that might affect risk calculation.",
         ]),
-        h3("Closing thoughts"),
+        h2("Closing thoughts"),
         p("""
             I remember my time at Compliance CMS really fondly. Although the work was quite overwhelming at times, it made me grow and greatly helped me refine my skills.
             The challenge of being the only developer in the whole company made me learn about many topics, further enriching my tenure at the company, and made me become the generalist I am today.
         """),
     ]),
-    Job('work/tutoring', 'Private Tutor', 'Self-employed', '02/2021 — 06/2022', [
+    job_tutoring := Job('work/tutoring', 'Private Tutor', 'Self-employed', '02/2021 — 06/2022', [
         'Programming and Computer Engineering lessons.',
         'Taught Algorithms, Data Structures, Memory Management, and many other programming concepts.',
     ], ['C++', 'Java', 'Python', 'MASM Assembly'], [
@@ -609,11 +601,11 @@ class Education(Site):
         self.content = content
 
 educations = [
-    Education('education/master', "Master's Degree in Data Science", 'University of Alicante', '09/2024 — 06/2025', [
+    education_master := Education('education/master', "Master's Degree in Data Science", 'University of Alicante', '09/2024 — 06/2025', [
         'Grade: 9.05/10',
     ], [
         education_titlecard('../files/uni/logo.jpg', 'University of Alicante Logo', 'University of Alicante', 'Alicante, Spain', '09/2024 — 06/2025', a('https://web.ua.es/en/masteres/ciencia-de-datos/', 'web.ua.es/masteres/ciencia-de-datos')),
-        h3("About the degree"),
+        h2("About the degree"),
         p("""
             The Data Science Master's Degree of the University of Alicante, as the name implies, is a master's degree that delves deep in Data Science and Machine Learning,
             refining and expanding skills learned from related undergraduate degrees.
@@ -643,7 +635,7 @@ educations = [
         p(f"""
             The whole curriculum, including compulsory and optional subjects, can be seen in the {a('https://web.ua.es/en/masteres/ciencia-de-datos/curriculum.html', "official site for the master's degree")}.
         """),
-        h3('My experience'),
+        h2('My experience'),
         p("""
             I managed to achieve an average grade of 9.05/10, and completed the entire master's degree in the educational year of 2024 to 2025.
         """),
@@ -675,7 +667,7 @@ educations = [
                 p("Josué Antonio Nescolarde Selva"),
             ]),
         ]),
-        h3('Final project', 'final_project'),
+        h2('Final project', 'final_project'),
         p("""
             The Master's Degree in Data Science requires a final project as part of its graduation requirements, which must be done individually for every student and defended in front of a tribunal of professors.
         """),
@@ -695,13 +687,13 @@ educations = [
             )
         ),
     ]),
-    Education('education/degree', 'Degree in Computer Engineering', 'University of Alicante', '09/2020 — 06/2024', [
+    education_degree := Education('education/degree', 'Degree in Computer Engineering', 'University of Alicante', '09/2020 — 06/2024', [
         'Grade: 8.81/10, including 13 honors',
         'Graduated as part of the High Academic Performance group (ARA group), with a specialization in Computing.',
         f'Received the {a('awards/computer_engineering', 'Extraordinary Award in Computer Engineering')} for outstanding performance.',
     ], [
         education_titlecard('../files/uni/logo.jpg', 'University of Alicante Logo', 'University of Alicante', 'Alicante, Spain', '09/2020 — 06/2024', a('https://web.ua.es/en/grados/grado-en-ingenieria-informatica/', 'web.ua.es/en/grados/grado-en-ingenieria-informatica')),
-        h3("About the degree"),
+        h2("About the degree"),
         p("""
             The Computer Engineering Degree of the University of Alicante is one of the biggest degrees of the university, 
             as it provides comprehensive, well-rounded education in everything related to computers and information systems.
@@ -751,7 +743,7 @@ educations = [
         p(f"""
             The whole curriculum, including all specializations and subjects, can be seen in the {a('https://web.ua.es/en/grados/grado-en-ingenieria-informatica/curriculum.html#Plan-1', 'official site for the degree')}.
         """),
-        h3("My experience"),
+        h2("My experience"),
         p(f"""
             Although some courses were difficult & stressful at times, almost all were extremely fruitful and worthwhile. 
             While I had {it('some')} computer & programming know-how before, the degree expanded & refined existing skills, while providing lots of new resources and learning opportunities. 
@@ -810,7 +802,7 @@ educations = [
                 p('Given in Alicante, 21st of June, 2024'),
             ]),
         ]),
-        h3("Computer Engineering Final Project", 'final_project'),
+        h2("Computer Engineering Final Project", 'final_project'),
         p("""
             The Computer Engineering Degree, like many other university degrees, requires a lengthy final project as part of its graduation requirements.
         """),
@@ -830,7 +822,7 @@ educations = [
             )
         ),
     ]),
-    Education('education/tech_scouts', 'Tech Scouts: Computer Science', 'Harbour Space', '07/2019 — 07/2019', [
+    education_techscouts := Education('education/tech_scouts', 'Tech Scouts: Computer Science', 'Harbour Space', '07/2019 — 07/2019', [
         'Intensive 3-week summer course focusing computer science and advanced mathematics.',
         f'Invitation received for winning a Gold Medal at the {a('awards/oicat', 'Catalan Olympiad in Informatics')} in 2019.',
     ], [
@@ -890,7 +882,7 @@ educations = [
             Overall, a great and memorable formative experience.
         """)
     ]),
-    Education('education/estalmat', 'ESTALMAT', 'Polytechnic University of Valencia', '09/2015 — 05/2019', [
+    education_estalmat := Education('education/estalmat', 'ESTALMAT', 'Polytechnic University of Valencia', '09/2015 — 05/2019', [
         '4-year weekly math program for promoting and developing math and reasoning skills.',
         'Learned a lot of foundational concepts that fueled my current passion for math and computer science.',
     ], [
@@ -958,12 +950,12 @@ class Awards(Site):
         self.content = content
 
 awards = [
-    Awards('awards/first_ascent', 'First Ascent Spain', 'Bending Spoons', '09/2025', [
+    award_first_ascent := Awards('awards/first_ascent', 'First Ascent Spain', 'Bending Spoons', '09/2025', [
         'Awarded to the top 20 participants in Spain',
     ], [
 
     ]),
-    Awards('awards/computer_engineering', 'Extraordinary Award in Computer Engineering', 'University of Alicante', '11/2024', [
+    award_computer_engineering := Awards('awards/computer_engineering', 'Extraordinary Award in Computer Engineering', 'University of Alicante', '11/2024', [
         f'Awarded to the three students with the highest overall grades in the {a('/education/degree', 'Degree in Computer Engineering')}',
     ], [
         olympiad_titlecard('../files/uni/logo.jpg', 'University of Alicante Logo', 'University of Alicante Extraordinary Award', 'Alicante, Spain', '2024', a('https://www.ua.es/en/', 'ua.es')),
@@ -1007,7 +999,7 @@ awards = [
             ], 50),
         ),
     ]),
-    Awards('awards/ioi', 'International Olympiad in Informatics', 'IOI', '08/2019', [
+    award_ioi := Awards('awards/ioi', 'International Olympiad in Informatics', 'IOI', '08/2019', [
         'Participated as part of the Spanish team',
         f'Awarded for obtaining a Gold Medal in the {a('/awards/oie', 'Spanish Olympiad in Informatics')}'
     ], [
@@ -1062,7 +1054,7 @@ awards = [
             )
         )
     ]),
-    Awards('awards/oie', 'Spanish Olympiad in Informatics', 'OIE', '2018 — 2020', [
+    award_oie := Awards('awards/oie', 'Spanish Olympiad in Informatics', 'OIE', '2018 — 2020', [
         'Gold Medal in the 2019 edition',
         'Silver Medal in the 2018 & 2020 editions',
     ], [
@@ -1118,7 +1110,7 @@ awards = [
             ]),
         ]),
     ]),
-    Awards('awards/oicat', 'Catalan Olympiad in Informatics', 'OICat', '2019 — 2020', [
+    award_oicat := Awards('awards/oicat', 'Catalan Olympiad in Informatics', 'OICat', '2019 — 2020', [
         'Gold Medal in the 2019 & 2020 editions',
     ], [
         olympiad_titlecard('../files/oicat/logo.jpg', 'OICat Logo', 'Catalan Olympiad in Informatics', 'Barcelona, Spain', '2019 — 2020', a('https://olimpiada-informatica.cat', 'olimpiada-informatica.cat')),
@@ -1198,7 +1190,7 @@ awards = [
             ]),
         ])
     ]),
-    Awards('awards/semcv', "Valencian Olympiad in Mathematics", 'SEMCV', '2013 — 2018', [
+    award_semcv := Awards('awards/semcv', "Valencian Olympiad in Mathematics", 'SEMCV', '2013 — 2018', [
         'Third Prize in the 2018 edition',
         'Second Prize in the 2013 edition',
         'Reached final round in the 2014, 2015, 2016 & 2017 editions',
@@ -1321,24 +1313,24 @@ class Project(Site):
 
 projects : dict[str, list[Project]] = {
     'professional': [
-        Project('work/facephi#automation', 'Automation & Data Scrapping Tools', 'Facephi', '09/2025 — Present', [
+        Project(f'{job_facephi.path}#automation', 'Automation & Data Scrapping Tools', 'Facephi', '09/2025 — Present', [
             'Built several automation & data scrapping tools leveraging AI agents.',
             'Extracted key information used to train production models.',
         ], ['Python', 'LangGraph', 'GitHub Actions']),
-        Project('work/compliance_cms#riskapp', 'RiskApp CMS', 'Compliance CMS', '12/2023 — 09/2025', [
+        Project(f'{job_compliancecms.path}#riskapp', 'RiskApp CMS', 'Compliance CMS', '12/2023 — 09/2025', [
             'Web application to automate corporate risk assessment.',
             'Design of the entire app & complete implementation from scratch.',
         ], ['PHP', 'JS', 'SQL']),
-        Project('work/compliance_cms#whistleblowing', 'Whistleblowing Channel', 'Compliance CMS', '07/2023 — 09/2025', [
+        Project(f'{job_compliancecms.path}#whistleblowing', 'Whistleblowing Channel', 'Compliance CMS', '07/2023 — 09/2025', [
             'Whistleblowing Channel compliant with Spanish & EU whistleblowing regulations.',
             'Planning, design, implementation & delivery of several key features.'
         ], ['PHP', 'JS', 'Vue.JS', 'SQL']),
     ],
     'university': [
-        Project('education/master#final_project', 'Data Science Final Project', "Master's Degree in Data Science", '11/2024 — 06/2025', [
+        Project(f'{education_master.path}#final_project', 'Data Science Final Project', "Master's Degree in Data Science", '11/2024 — 06/2025', [
             'Exploration and testing of the Kolmogorov-Arnold architecture for neural networks.',
         ], ['ML', 'CNNs', 'Kolmogorov-Arnold Networks']),
-        Project('education/degree#final_project', 'Computer Engineering Final Project', 'Degree in Computer Engineering', '09/2023 — 05/2024', [
+        Project(f'{education_degree.path}#final_project', 'Computer Engineering Final Project', 'Degree in Computer Engineering', '09/2023 — 05/2024', [
             'Research project exploring the applications of Quantum Computing in ML systems.',
         ], ['ML', 'Quantum Computing']),
         # Project('education/degree#last_brew', "The Last Brew", 'Degree in Computer Engineering', '07/2023 — 09/2023', [
@@ -1367,6 +1359,28 @@ for project_type, project_type_projects in projects.items():
             generate(project.path, project.title, project.content)
         else:
             requested_local_paths.add(project.path)
+
+
+# ----------
+# MAIN PAGES
+# ----------
+generate("index", '', [
+    h1("Vicent Baeza"),
+    p("Software Engineer with a passion for math and computer science."),
+    p(f"Currently building automation & data scrapping tools at {a('work/facephi', 'Facephi')}."),
+    title_section('Work', [
+            card(job.path, job.title, job.company, '', job.date, ul(job.keypoints))
+            for job in jobs
+    ], '/work', 3),
+    title_section('Education', [
+        card(education.path, education.title, education.institution, '', education.date, ul(education.keypoints))
+        for education in [education_master, education_degree]
+    ], '/work', 2),
+    title_section('Contests & Awards', [
+        card(award.path, award.title, award.institution, '', award.date, ul(award.keypoints))
+        for award in [award_computer_engineering, award_ioi, award_oie]
+    ], '/awards', 3),
+])
 
 # -----------------
 # POST-BUILD CHECKS
