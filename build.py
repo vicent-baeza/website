@@ -12,8 +12,12 @@ from list_dict import ListDict
 # -----
 # UTILS
 # -----
+
+def is_external_path(path: str) -> bool:
+    return path.startswith('http')
+
 def is_local_path(path: str) -> bool:
-    if path.startswith('http'):
+    if is_external_path(path):
         return False
     first_part = path.split('/')[0]
     return '.' not in first_part
@@ -151,7 +155,9 @@ def a(href: str, text: str | list[str], classes = ''):
         classes = f'link {classes}'
     else:
         classes = 'link'
-    return tagc('a', classes, text, f'href="{rpath(href)}"')
+
+    targetParam = 'target="_blank"' if is_external_path(href) else ''
+    return tagc('a', classes, text, f'href="{rpath(href)}" {targetParam}')
 
 def i(classes: str):
     return tagc('i', classes)
