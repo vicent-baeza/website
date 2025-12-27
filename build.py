@@ -2,6 +2,7 @@
 import os
 import hashlib
 import re
+import json
 from datetime import date
 from dataclasses import dataclass
 from typing import Iterable
@@ -9,12 +10,20 @@ from dateutil.relativedelta import relativedelta
 from minify_html import minify # pylint: disable=E0611
 from list_dict import ListDict
 
+
 # -----
 # UTILS
 # -----
 
+SEARCH_STOPWORDS = [
+    "i", "me", "my", "myself", "we", "our", "ours", "ourselves", "you", "your", "yours", "yourself", "yourselves", "he", "him", "his", "himself", "she", "her", "hers", "herself", "it", "its", "itself", "they", "them", "their", "theirs", "themselves", "what", "which", "who", "whom", "this", "that", "these", "those", "am", "is", "are", "was", "were", "be", "been", "being", "have", "has", "had", "having", "do", "does", "did", "doing", "a", "an", "the", "and", "but", "if", "or", "because", "as", "until", "while", "of", "at", "by", "for", "with", "about", "against", "between", "into", "through", "during", "before", "after", "above", "below", "to", "from", "up", "down", "in", "out", "on", "off", "over", "under", "again", "further", "then", "once", "here", "there", "when", "where", "why", "how", "all", "any", "both", "each", "few", "more", "most", "other", "some", "such", "no", "nor", "not", "only", "own", "same", "so", "than", "too", "very", "s", "t", "can", "will", "just", "don", "should", "now"
+]
+
 def is_external_path(path: str) -> bool:
     return path.startswith('http')
+
+def is_file_path(path: str) -> bool:
+    return path.startswith(('files', 'docs/files', '../files', '../../files'))
 
 def is_local_path(path: str) -> bool:
     if is_external_path(path):
@@ -79,6 +88,9 @@ def extract_all_ids(content: str) -> Iterable[str]:
     for match in re.finditer(pattern, content):
         yield match.group(2)
 
+def remove_html_tags(content: str) -> str:
+    return re.sub(r'<.*?>', ' ', content)
+
 CSS_HASH = 1 #hash_file('docs/styles.css')
 JS_HASH = 1 #hash_file('docs/scripts.js')
 
@@ -91,6 +103,9 @@ paths = ListDict[str, str]()
 files = ListDict[str, str]()
 all_local_paths = set[str](['/', ''])
 requested_local_paths = ListDict[str, str]()
+search_sites = dict[str, str]()
+word_search_scores = dict[str, dict[int, int]]()
+word_search_site_index = list[str]()
 
 class Site:
     def __init__(self, path: str, title: str):
@@ -156,7 +171,7 @@ def a(href: str, text: str | list[str], classes = ''):
     else:
         classes = 'link'
 
-    targetParam = 'target="_blank"' if is_external_path(href) else ''
+    targetParam = 'target="_blank"' if is_external_path(href) or is_file_path(href) else ''
     return tagc('a', classes, text, f'href="{rpath(href)}" {targetParam}')
 
 def i(classes: str):
@@ -378,6 +393,28 @@ footer: str = """
     </footer>
 """
 
+def build_word_search(content: str, site_index: int, word_value: int = 1):
+    content = remove_html_tags(content).lower()
+
+    # remove accents
+    content = content.replace('á', 'a').replace('à', 'a')
+    content = content.replace('é', 'e').replace('è', 'e')
+    content = content.replace('í', 'i').replace('ï', 'i')
+    content = content.replace('ó', 'o').replace('ò', 'o')
+    content = content.replace('ú', 'u').replace('ü', 'u')
+    content = content.replace('ç', 'c').replace('ñ', 'n')
+
+    words = re.split(r'[^a-zA-Z]', content)
+    for word in words:
+        if len(word) <= 2 or word in SEARCH_STOPWORDS:
+            continue
+        if word == '':
+            continue
+        if word not in word_search_scores:
+            word_search_scores[word] = {}
+        if site_index not in word_search_scores[word]:
+            word_search_scores[word][site_index] = 0
+        word_search_scores[word][site_index] += word_value
 
 def generate(path: str, title: str, content: str | list[str], scripts: str = "", tab_title: str | None = None):
     if isinstance(content, list):
@@ -406,6 +443,18 @@ def generate(path: str, title: str, content: str | list[str], scripts: str = "",
     all_local_paths.add(path)
     for site_id in site_ids:
         all_local_paths.add(f'{path}#{site_id}')
+
+    # build word search scores & paths
+    if title == '':
+        if path == '/':
+            search_sites['Home'] = path
+    else:
+        search_sites[remove_html_tags(title)] = path
+    site_index = len(word_search_site_index)
+    word_search_site_index.append(path)
+    #build_word_search(content, site_index)
+    build_word_search(title, site_index, 100)
+
 
     if title != '':
         content = h1(title) + content
@@ -669,8 +718,6 @@ educations = [
                 p("Baeza Esteve, Vicent"),
                 p("University Master's Degree in Data Science"),
                 p("Alicante, 21st of November 2025"),
-                p("Director"),
-                p("Josué Antonio Nescolarde Selva"),
             ]),
         ]),
         h2('Final project', 'final_project'),
@@ -783,8 +830,6 @@ educations = [
                 p("Baeza Esteve, Vicent"),
                 p("Degree in Computer Engineering — 2010 Plan"),
                 p("Alicante, 22nd of November 2024"),
-                p("Director"),
-                p("Virgilio Gilart Iglesias"),
             ]),
             card_img('Official Certificate', '06/2024', '../files/uni/degree/title.jpg', [
                 BR,
@@ -924,7 +969,8 @@ educations = [
                     BR,
                     p('Digital scan of the certificate (in Spanish).'),
                     p('English translation:'),
-                    p("""The President of the Royal Academy of Exact, Physical & Natural Sciences 
+                    p("""
+                        The President of the Royal Academy of Exact, Physical & Natural Sciences 
                         and in their name the Coordinator of the Project ESTALMAT - Valencian Community
                         issues the following diploma for Vicent Baeza Esteve for having participated 
                         satisfactorily in the activities proposed in the Project of Detection and 
@@ -1384,9 +1430,21 @@ generate("index", '', [
     ], '/work', 2),
     title_section('Contests & Awards', [
         card(award.path, award.title, award.institution, '', award.date, ul(award.keypoints))
-        for award in [award_computer_engineering, award_ioi, award_oie]
+        for award in awards
     ], '/awards', 3),
 ])
+
+# --------------
+# GENERATE FILES
+# --------------
+with open('docs/files/search_data.json', 'w', encoding='utf-8') as f:
+    json.dump({
+        'sites': dict(search_sites.items()),
+        'words': list(word_search_scores.keys()),
+        'scores': word_search_scores,
+        'site_index': word_search_site_index,
+    }, f, indent=4)
+
 
 # -----------------
 # POST-BUILD CHECKS

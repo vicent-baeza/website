@@ -1,0 +1,199 @@
+{
+    "sites": {
+        "Work": "work",
+        "Facephi": "work/facephi",
+        "Compliance CMS": "work/compliance_cms",
+        "Private Tutoring  C++  Java  Python  MASM Assembly  ": "work/tutoring",
+        "Education": "education",
+        "Master's Degree in Data Science": "education/master",
+        "Degree in Computer Engineering": "education/degree",
+        "Tech Scouts: Computer Science": "education/tech_scouts",
+        "ESTALMAT": "education/estalmat",
+        "Contests, Honors & Awards": "awards",
+        "First Ascent Spain": "awards/first_ascent",
+        "Extraordinary Award in Computer Engineering": "awards/computer_engineering",
+        "International Olympiad in Informatics": "awards/ioi",
+        "Spanish Olympiad in Informatics": "awards/oie",
+        "Catalan Olympiad in Informatics": "awards/oicat",
+        "Valencian Olympiad in Mathematics": "awards/semcv",
+        "Projects": "projects"
+    },
+    "words": [
+        "work",
+        "facephi",
+        "compliance",
+        "cms",
+        "private",
+        "tutoring",
+        "java",
+        "python",
+        "masm",
+        "assembly",
+        "education",
+        "master",
+        "degree",
+        "data",
+        "science",
+        "computer",
+        "engineering",
+        "tech",
+        "scouts",
+        "estalmat",
+        "contests",
+        "honors",
+        "awards",
+        "first",
+        "ascent",
+        "spain",
+        "extraordinary",
+        "award",
+        "international",
+        "olympiad",
+        "informatics",
+        "spanish",
+        "catalan",
+        "valencian",
+        "mathematics",
+        "projects"
+    ],
+    "scores": {
+        "work": {
+            "0": 100
+        },
+        "facephi": {
+            "1": 100
+        },
+        "compliance": {
+            "2": 100
+        },
+        "cms": {
+            "2": 100
+        },
+        "private": {
+            "3": 100
+        },
+        "tutoring": {
+            "3": 100
+        },
+        "java": {
+            "3": 100
+        },
+        "python": {
+            "3": 100
+        },
+        "masm": {
+            "3": 100
+        },
+        "assembly": {
+            "3": 100
+        },
+        "education": {
+            "4": 100
+        },
+        "master": {
+            "5": 100
+        },
+        "degree": {
+            "5": 100,
+            "6": 100
+        },
+        "data": {
+            "5": 100
+        },
+        "science": {
+            "5": 100,
+            "7": 100
+        },
+        "computer": {
+            "6": 100,
+            "7": 100,
+            "11": 100
+        },
+        "engineering": {
+            "6": 100,
+            "11": 100
+        },
+        "tech": {
+            "7": 100
+        },
+        "scouts": {
+            "7": 100
+        },
+        "estalmat": {
+            "8": 100
+        },
+        "contests": {
+            "9": 100
+        },
+        "honors": {
+            "9": 100
+        },
+        "awards": {
+            "9": 100
+        },
+        "first": {
+            "10": 100
+        },
+        "ascent": {
+            "10": 100
+        },
+        "spain": {
+            "10": 100
+        },
+        "extraordinary": {
+            "11": 100
+        },
+        "award": {
+            "11": 100
+        },
+        "international": {
+            "12": 100
+        },
+        "olympiad": {
+            "12": 100,
+            "13": 100,
+            "14": 100,
+            "15": 100
+        },
+        "informatics": {
+            "12": 100,
+            "13": 100,
+            "14": 100
+        },
+        "spanish": {
+            "13": 100
+        },
+        "catalan": {
+            "14": 100
+        },
+        "valencian": {
+            "15": 100
+        },
+        "mathematics": {
+            "15": 100
+        },
+        "projects": {
+            "16": 100
+        }
+    },
+    "site_index": [
+        "work",
+        "work/facephi",
+        "work/compliance_cms",
+        "work/tutoring",
+        "education",
+        "education/master",
+        "education/degree",
+        "education/tech_scouts",
+        "education/estalmat",
+        "awards",
+        "awards/first_ascent",
+        "awards/computer_engineering",
+        "awards/ioi",
+        "awards/oie",
+        "awards/oicat",
+        "awards/semcv",
+        "projects",
+        "index"
+    ]
+}
