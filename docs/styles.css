@@ -372,7 +372,7 @@ a.crumb-text:hover {
     margin-left: var(--sp1);
     margin-top: var(--sp2);
     font: var(--p);
-    color: var(--text) !important;
+    color: var(--text-dim) !important;
 }
 :hover > * > .tag-list > .tag, :hover > * > .tag, :hover > .tag, .tag:hover {
     background-color: var(--bg-hl);

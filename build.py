@@ -274,9 +274,9 @@ def education_titlecard(image_src: str, image_alt_text: str, institution: str, l
     return titlecard(image_src, image_alt_text, 'INSTITUTION', institution, 'LOCATION', location, 'PERIOD', period, 'WEBSITE', website, _tags)
 
 
-def section(name: str):
+def section(name: str, element_id: str = ''):
     return div('section', [
-        div('section-title', name),
+        div('section-title', name, '' if element_id == '' else f'id="{element_id}"'),
         div('section-divider'),
     ])
 def title_section(title: str, elements: list[str], button_href : str | None = None, max_elements: int = 3, content_before_elements: str = ''):    
@@ -362,15 +362,14 @@ def head(path: str, page_title: str = "", scripts: str = ""):
 
 
 def header(path) -> str:
-    pref = path_prefix(path)
     tabs = '\n'.join([
-        f'<a href="{pref}{rpath(tab.href)}" class="highlight"><i class="{tab.icon} ri-lg"></i> {tab.name}</a>'
+        f'<a href="{rpath(tab.href)}" class="highlight"><i class="{tab.icon} ri-lg"></i> {tab.name}</a>'
         for tab in header_tabs
     ])
     return f"""
         <header>
             <div class="content">
-                <a href="{pref if pref != '' else '/'}" class="header-title">VBaeza</a>
+                <a href="/" class="header-title">VBaeza</a>
                 <div class="header-tabs unselectable">
                     {tabs}
                 </div>
@@ -544,11 +543,11 @@ jobs = [
         'Built several automation & data scrapping tools leveraging AI agents.',
         'Extracted key information used to train production models.',
     ], ['Python', 'LangGraph', 'GitHub Actions'], [
-        job_titlecard('../files/facephi/logo.jpg', 'Facephi Logo', 'AI Engineer', 'Alicante, Spain', '09/2025 — 01/2026', a('https://facephi.com/en/', 'facephi.com'), ['Python', 'LangGraph', 'GitHub Actions']),
+        job_titlecard('../files/facephi/logo.jpg', 'Facephi Logo', 'R&D AI Engineer', 'Alicante, Spain', '09/2025 — 01/2026', a('https://facephi.com/en/', 'facephi.com'), ['Python', 'LangGraph', 'GitHub Actions']),
         h2_section('About the company', 'about', [
             p("""
                 Facephi is a biometrics company specializing in Digital Identity, Authentication & Onboarding.
-                Despite being headquartered in Alicante, Spain; the company has many international clients and connections, mainly in Latin America.
+                Despite being headquartered in Alicante, Spain; the company has many international clients and connections, primarily in Latin America.
             """),
             div('big-img',
                 card_img_nohover(
@@ -586,7 +585,7 @@ jobs = [
                 I also was entirely responsible for collecting all the scrapped images and delivering them to the Data R&D subdepartment for further processing, with the ultimate goal of using them to train and improve production models.
             """),
             p("""
-                Although my contribution to the project ended when I delivered the final batch of images, it felt quite satisfying when, , members of Data would be working with images that were extracted thanks to my application.
+                Although my contribution to the project ended when I delivered the final batch of images, it felt quite satisfying when, from time to time, I would see members of Data working with images that were extracted by my application.
             """),
         ]),
         h2_section('Closing thoughts', 'closing', [
@@ -1499,17 +1498,17 @@ generate("index", '', [
 ])
 
 generate('/career', 'Career', [
-    section('Work'),
+    section('Work', 'work'),
     *[
         card(job.path, job.title, job.company, '', job.date, ul(job.keypoints) + taglist(job.tags))
         for job in jobs
     ],
-    section('Education'),
+    section('Education', 'education'),
     *[
         card(education.path, education.title, education.institution, '', education.date, ul(education.keypoints))
         for education in educations
     ],
-    section('Awards'),
+    section('Awards', 'awards'),
     *[
         card(award.path, award.title, award.institution, '', award.date, ul(award.keypoints))
         for award in awards
