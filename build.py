@@ -8,12 +8,18 @@ from dataclasses import dataclass
 from typing import Iterable
 from dateutil.relativedelta import relativedelta
 from minify_html import minify # pylint: disable=E0611
-from list_dict import ListDict
+from utils import ListDict, WordScoreTrie
 
 
 # -----
 # UTILS
 # -----
+
+@dataclass
+class SiteSection:
+    title: str
+    element_id: str
+    content: str
 
 SEARCH_STOPWORDS = [
     "i", "me", "my", "myself", "we", "our", "ours", "ourselves", "you", "your", "yours", "yourself", "yourselves", "he", "him", "his", "himself", "she", "her", "hers", "herself", "it", "its", "itself", "they", "them", "their", "theirs", "themselves", "what", "which", "who", "whom", "this", "that", "these", "those", "am", "is", "are", "was", "were", "be", "been", "being", "have", "has", "had", "having", "do", "does", "did", "doing", "a", "an", "the", "and", "but", "if", "or", "because", "as", "until", "while", "of", "at", "by", "for", "with", "about", "against", "between", "into", "through", "during", "before", "after", "above", "below", "to", "from", "up", "down", "in", "out", "on", "off", "over", "under", "again", "further", "then", "once", "here", "there", "when", "where", "why", "how", "all", "any", "both", "each", "few", "more", "most", "other", "some", "such", "no", "nor", "not", "only", "own", "same", "so", "than", "too", "very", "s", "t", "can", "will", "just", "don", "should", "now"
@@ -75,9 +81,9 @@ def path_prefix(path: str):
 
 def hash_file(path: str, buffer_size : int = 65536) -> str:
     file_hash = hashlib.sha256()
-    with open(path, 'rb') as f:
+    with open(path, 'rb') as file_to_hash:
         while True:
-            data = f.read(buffer_size)
+            data = file_to_hash.read(buffer_size)
             if not data:
                 break
             file_hash.update(data)
@@ -88,6 +94,12 @@ def extract_all_ids(content: str) -> Iterable[str]:
     for match in re.finditer(pattern, content):
         yield match.group(2)
 
+def extract_all_sections(content: str) -> Iterable[SiteSection]:
+    content = content.replace('\n', '')
+    pattern = re.compile(r"<h2(?:.*?) id=(\"|')(.*?)(\1)>(.*?)<\/h2>(.*?)(?:(?=<h2)|$)")
+    for match in re.finditer(pattern, content):
+        yield SiteSection(match.group(4), match.group(2), match.group(5))
+
 def remove_html_tags(content: str) -> str:
     return re.sub(r'<.*?>', ' ', content)
 
@@ -97,15 +109,18 @@ JS_HASH = 1 #hash_file('docs/scripts.js')
 # -----------------
 # DYNAMIC PAGE DATA
 # -----------------
+
+# site-wide data
 warnings = ListDict[str, str]()
 tags = ListDict[str, str]()
 paths = ListDict[str, str]()
 files = ListDict[str, str]()
-all_local_paths = set[str](['/', ''])
 requested_local_paths = ListDict[str, str]()
-search_sites = dict[str, str]()
+
+# global data
+all_local_paths = set[str](['/', ''])
+search_sites = list[dict[str, str]]()
 word_search_scores = dict[str, dict[int, int]]()
-word_search_site_index = list[str]()
 
 class Site:
     def __init__(self, path: str, title: str):
@@ -151,13 +166,14 @@ def span(classes: str, content: str | list[str] = '', params: str = '') -> str:
 def h1(text: str | list[str]):
     return tag('h1', text)
 
-def h2(text: str | list[str], element_id: str | None = None):
+def h2(text: str | list[str], element_id: str | None = None, classes: str = '') -> str:
     params = f'id="{element_id}"' if element_id else ''
-    return tag('h2', text, params)
+    return tagc('h2', classes, text, params)
 
-def h2_nomargin_bottom(text: str | list[str], element_id: str | None = None):
-    params = f'id="{element_id}"' if element_id else ''
-    return tagc('h2', 'no-margin-bottom', text, params)
+def h2_section(title: str | list[str], element_id: str | None, content: str | list[str], margin_bottom = True) -> str:
+    if isinstance(content, list):
+        content = ''.join(content).strip()
+    return ''.join([h2(title, element_id, '' if margin_bottom else 'no-margin-bottom'), content])
 
 def p(text: str | list[str]):
     return tag('p', text)
@@ -267,7 +283,7 @@ def title_section(title: str, elements: list[str], button_href : str | None = No
     return div('title-section', [
         div('title-section-title', title),
         div('title-section-divider'),
-        div('title-section-after', a(button_href, 'View All' + i('ri-arrow-right-s-line crumb-divider'))) if button_href is not None else '',
+        div('title-section-after', a(button_href, 'View All' + i('ri-arrow-right-s-line crumb-divider'), 'no-underline')) if button_href is not None else '',
     ]) + content_before_elements + ''.join(elements[:max_elements])
 
 def taglist(tag_names: list[str]):
@@ -321,10 +337,8 @@ class HeaderTabs():
     icon: str
 
 header_tabs = [
-    HeaderTabs('work', 'Work', 'ri-folder-fill'),
-    HeaderTabs('projects', 'Projects', 'ri-hammer-fill'),
-    HeaderTabs('education', 'Education', 'ri-graduation-cap-fill'),
-    HeaderTabs('awards', 'Awards', 'ri-trophy-fill'),
+    HeaderTabs('/career', 'Career', 'ri-folder-line'),
+    HeaderTabs('/projects', 'Projects', 'ri-hammer-line'),
 ]
 
 def head(path: str, page_title: str = "", scripts: str = ""):
@@ -362,10 +376,13 @@ def header(path) -> str:
                 </div>
                 <div class="header-buttons">   
                     <span class="btn highlight light darkmode-button" title="Light Theme">
-                        <i class="ri-sun-fill ri-lg"></i>
+                        <i class="ri-sun-line ri-lg"></i>
                     </span>
                     <span class="btn highlight dark darkmode-button" title="Dark Theme">
-                        <i class="ri-moon-fill ri-lg"></i>
+                        <i class="ri-moon-line ri-lg"></i>
+                    </span>
+                    <span class="btn highlight" title="Search">
+                        <i class="ri-search-line ri-lg"></i>
                     </span>
                 </div>
             </div>
@@ -388,8 +405,8 @@ footer: str = """
                 <a href="https://github.com/vicent-baeza" target="_blank" class="btn highlight" title="GitHub">
                     <i class="ri-github-fill ri-lg"></i>
                 </a>
-            </div>    
-        </div>                
+            </div>
+        </div>
     </footer>
 """
 
@@ -404,56 +421,60 @@ def build_word_search(content: str, site_index: int, word_value: int = 1):
     content = content.replace('ú', 'u').replace('ü', 'u')
     content = content.replace('ç', 'c').replace('ñ', 'n')
 
-    words = re.split(r'[^a-zA-Z]', content)
-    for word in words:
-        if len(word) <= 2 or word in SEARCH_STOPWORDS:
+    search_words = re.split(r'[^a-zA-Z]', content)
+    for search_word in search_words:
+        if len(search_word) <= 2 or search_word in SEARCH_STOPWORDS:
             continue
-        if word == '':
+        if search_word == '':
             continue
-        if word not in word_search_scores:
-            word_search_scores[word] = {}
-        if site_index not in word_search_scores[word]:
-            word_search_scores[word][site_index] = 0
-        word_search_scores[word][site_index] += word_value
+        if search_word not in word_search_scores:
+            word_search_scores[search_word] = {}
+        if site_index not in word_search_scores[search_word]:
+            word_search_scores[search_word][site_index] = 0
+        word_search_scores[search_word][site_index] += word_value
 
 def generate(path: str, title: str, content: str | list[str], scripts: str = "", tab_title: str | None = None):
     if isinstance(content, list):
-        # check content components
-        if len(content) > 0:
-            if 'class="section"' in content[-1]:
-                warnings.append('Empty section')
-            if '<h1' in content[-1]:
-                warnings.append('Empty <h1>')
-            if '<h2' in content[-1]:
-                warnings.append('Empty <h2>')
-            if '<h3' in content[-1]:
-                warnings.append('Empty <h3>')
-        
         content = "".join(content)
 
     # check global content
     if content == '':
         warnings.append('Empty content')
-        content = BR + h2('⚠️ Under construction, check back later! ⚠️')
+        content = h2('⚠️ Under construction, check back later! ⚠️')
     elif 'TODO' in content:
         warnings.append('TODOs found')
 
+    # fix path & search title
+    absolute_path = path
+    search_title = title
+    if title == '':
+        if path.removeprefix('/') in ['', 'index']:
+            absolute_path = '/'
+            search_title = 'Home'
+    else:
+        search_title = remove_html_tags(tab_title or title)
+
     # extract IDs & build valid paths
     site_ids = extract_all_ids(content)
-    all_local_paths.add(path)
+    all_local_paths.add(absolute_path)
     for site_id in site_ids:
-        all_local_paths.add(f'{path}#{site_id}')
+        all_local_paths.add(f'{absolute_path}#{site_id}')
 
-    # build word search scores & paths
-    if title == '':
-        if path == '/':
-            search_sites['Home'] = path
-    else:
-        search_sites[remove_html_tags(title)] = path
-    site_index = len(word_search_site_index)
-    word_search_site_index.append(path)
-    #build_word_search(content, site_index)
+    # build word search scores
+    site_index = len(search_sites)
+    search_sites.append({'path': absolute_path, 'title': search_title})
+    build_word_search(content, site_index)
     build_word_search(title, site_index, 100)
+
+    # build section word search scores
+    all_site_sections = extract_all_sections(content)
+    for site_section in all_site_sections:
+        section_index = len(search_sites)
+        section_path = f'{absolute_path}#{site_section.element_id}'
+        section_title = f'{search_title}: {site_section.title}'
+        search_sites.append({'path': section_path, 'title': section_title})
+        build_word_search(content, section_index)
+        build_word_search(title, section_index, 20)
 
 
     if title != '':
@@ -495,8 +516,8 @@ def generate(path: str, title: str, content: str | list[str], scripts: str = "",
 
     os.makedirs(os.path.dirname(f"docs/{path}.html"), exist_ok=True)
 
-    with open(f"docs/{path}.html", "w", encoding="utf-8") as f:
-        f.write(html)
+    with open(f"docs/{path}.html", "w", encoding="utf-8") as html_file:
+        html_file.write(html)
 
     # reset dynamic data
     warnings.add(path)
@@ -519,100 +540,148 @@ class Job(Site):
         self.alt_tab_title = alt_tab_title
 
 jobs = [
-    job_facephi := Job('work/facephi', 'AI Engineer', 'Facephi', '09/2025 — Present', [
+    job_facephi := Job('/career/facephi', 'AI Engineer', 'Facephi', '09/2025 — Present', [
         'Built several automation & data scrapping tools leveraging AI agents.',
         'Extracted key information used to train production models.',
     ], ['Python', 'LangGraph', 'GitHub Actions'], [
+        job_titlecard('../files/facephi/logo.jpg', 'Facephi Logo', 'AI Engineer', 'Alicante, Spain', '09/2025 — 01/2026', a('https://facephi.com/en/', 'facephi.com'), ['Python', 'LangGraph', 'GitHub Actions']),
+        h2_section('About the company', 'about', [
+            p("""
+                Facephi is a biometrics company specializing in Digital Identity, Authentication & Onboarding.
+                Despite being headquartered in Alicante, Spain; the company has many international clients and connections, mainly in Latin America.
+            """),
+            div('big-img',
+                card_img_nohover(
+                    '../files/facephi/office.jpg',
+                    'Facephi Headquarters in Alicante, Spain',
+                )
+            ),
+        ]),
+        h2_section('My experience at the company', 'my_experience', [
+            p(f"""
+                My tenure at Facephi was quite short but really interesting nontheless. 
+                When I joined the company in late 2025, it had well over 200 employees, making it quite the jump in size over {a('/career/compliance_cms', 'my previous employer')}, which had less than 10.
+                I was also placed into R&D, one of the bigger departments of the company, which helped make this difference even more stark.
+            """),
+            p("""
+                Because R&D is such a large department, it was further split up into subdepartments, where most tasks landed. 
+                However, a small group of developers was kept to work in department-wide tasks, and as such didn't belong to any subdepartment. 
+                I found myself wrangled into said small group of developers, and although it gave me greater independence and autonomy, it also made it a bit tougher at times to coordinate with other members of R&D.
+            """),
+        ]),
+        h2_section('Automation tools', 'tools', [
+            p("""
+                While working at the company, most of my time  was spent building internal tools to speedup and automate tiresome, repetitive tasks.
+                Most tools, despite being relatively simple in concept, required multiple integrations with the company's existing systems, which complicated the implementation quite a bit.
+            """),
+            p("""
+                Building tools by myself in such a new environment right-out-of-the-gate was quite overwhelming. Despite this, and mostly thanks to my previous job, 
+                I had quite a lot of experience managing projects entirely by myself, and once I grew accustomed to Facephi's systems the development went smoothly.
+            """),
+        ]),
+        h2_section('Data scrapping project', 'scrapping', [
+            p("""
+                Another big project that I took part in was a Data Scrapping project, which was responsible for extracting suitable images for further use. 
+                Although I cannot delve into the details of the project, I fully programmed the scrapper application by myself, and was completely automated.
+                I also was entirely responsible for collecting all the scrapped images and delivering them to the Data R&D subdepartment for further processing, with the ultimate goal of using them to train and improve production models.
+            """),
+            p("""
+                Although my contribution to the project ended when I delivered the final batch of images, it felt quite satisfying when, , members of Data would be working with images that were extracted thanks to my application.
+            """),
+        ]),
+        h2_section('Closing thoughts', 'closing', [
 
+        ])
     ]),
-    job_compliancecms := Job('work/compliance_cms', 'Software Engineer', 'Compliance CMS', '07/2023 — 09/2025', [
+    job_compliancecms := Job('/career/compliance_cms', 'Software Engineer', 'Compliance CMS', '07/2023 — 09/2025', [
         'Single-handedly developed and maintained two full-stack web applications.',
         'Planning, design, implementation & delivery of new features from scratch.',
     ], ['PHP', 'JS', 'Vue.JS', 'SQL'], [
         job_titlecard('../files/compliance_cms/logo.jpg', 'ComplianceCMS Logo', 'Software Engineer', 'Alicante, Spain', '07/2023 — 09/2025', a('https://compliancecms.com/', 'compliancecms.com'), ['PHP', 'JS', 'Vue.JS', 'SQL']),
-        h2("About the company"),
-        p("""
-            Compliance CMS is a small Spanish consultancy firm. If offers comprehensive services in many areas of Spanish & EU law, but mainly specializes in Criminal Compliance & Corporate Risk Mitigation.
-            Although the company is quite small (less than 10 employees), it manages to boast a diverse array of clients, from multinational corporations to small businesses.
-        """),
-        div('big-img',
-            card_img_nohover(
-                '../files/compliance_cms/photo.jpg',
-                'Photo we did for a photoshoot (yes, I didn\'t have any other photos)',
-                'Compliance CMS members.',
-            )
-        ),
-        h2("My experience at the company"),
-        p(f"""
-            When I first joined Compliance CMS, it was, to put it bluntly, overwhelming. 
-            Not only was it my first professional job, but I was the {it('whole')} IT team, as the company's previous programmer walked out and didn't have any other developer until I came aboard.
-            That meant that {it('everything')} IT-related fell on me: programming, UI & UX, databases, security..., you name it.
-            To top it all off, despite it starting as a summer job, I continued working there while studying for my {a('/education/degree', 'Computer Engineering degree')}, which made it significantly more stressful and challenging.
-        """),
-        p("""
-            Despite all that pressure, it was also extremely enriching, and I'm glad I managed to pull through. 
-            Being on my own really pushed me to grow above and beyond, making me learn a lot about topics that I had barely scratched before.
-            I don't know where I would be today if I hadn't had that kind of challenge early on in my professional career.
-        """),
-        p("""
-            It's also important to add that, despite the work itself being difficult, the people people there were everything but that. Everyone was really friendy, helpful and hard-working.
-        """),
-        h2("Whistleblowing Channel", 'whistleblowing'),
-        p("""
-            The first project I tackled was fixing and improving the company's whistleblowing channel. The channel was implemented as a Vue.JS web application, with a PHP back-end that stored the data in an SQL database in a standalone server.
-            As the company was quite small, the traffic was quite limited, so this was more than enough for it to run smoothly.
-        """),
-        p("""
-            Most of the work that I did to improve the Whistleblowing Channel was implementing new features and general maintenance,
-            both to improve the client experience and to make it easier to manage it. It was also quite a challenge to do os while having to comply with both Spanish & EU law, as there are very stringent regulations that added tons of complexity.
-        """),
-        p("""
-            As the tool is closed-source, I will refrain from delving too much into specifics, but some key achievements were the following:
-        """),
-        ul([
-            "Automatic reminders, data blocking & data deletion in accordance with Spanish law.",
-            "Integration with a telecom service to automatically register telephone calls in the channel.",
-            "A deterministic NLP system for the automatic censoring of personal data when required by law."
+        h2_section("About the company", 'about', [
+            p("""
+                Compliance CMS is a small Spanish consultancy firm. If offers comprehensive services in many areas of Spanish & EU law, but mainly specializes in Criminal Compliance & Corporate Risk Mitigation.
+                Although the company is quite small (less than 10 employees), it manages to boast a diverse array of clients, from multinational corporations to small businesses.
+            """),
+            div('big-img',
+                card_img_nohover(
+                    '../files/compliance_cms/photo.jpg',
+                    'Photo we did for a photoshoot (yes, I didn\'t have any other photos)',
+                )
+            ),
         ]),
-        h2("RiskApp CMS", 'riskapp'),
-        p(f"""
-            While working on the whistleblowing channel, improving & automating how the company assessed corporate risk.
-            At the time I joined, the system for doing assessing corportate risk was a confusing, unmanageable mess of an Excel sheet.
-            It was remarkably difficult to make event the most minor of changes, 
-            let alone check that everything is correct or to justify {it('why')} a particular risk recieved the assessment that it did.
-        """),
-        p("""
-            Therefore, it was a no-brainer to try to put the system in a web application, in a similar manner to the whistleblowing channel, 
-            so as to greatly improve expandability, testability, audit capability, and to automate the most tedious and repetitive parts of the risk assessment process.
-            The planning, design, implementation, delivery & maintainance of this application, which eventually became known as the RiskApp CMS, fell completely on my hands.
-        """),
-        p("""
-            It  was almost-completely built using solely PHP. 
-            As it needed to be robust, performant, and be able to handle complex business logic, I decided to develop a simple-yet-effective interface, that refreshed completely everytime but didn't need to depend on complex javascript frameworks or other big dependencies.
-        """),
-        p("""
-            As a result, altough I needed to put in a bit of extra legwork at the beginning, the resulting application was really easy to expand, maintain, and understand.
-            With a bit of clever performance optimizations, it was also extremely performant, despite the complex computations and cross-referenceing of data that it needed to do.
-        """),
-        p("""
-            The only real limitation of this approach was that the interface, while extremely functional and responsive, was quite basic, with mostly static components that completely refreshed the page every time you wanted to switch.
-            Still, I'm really proud of what I managed to build in two short years, completely from scratch no less!
-        """),
-        p("""
-            As with the whistleblowing channel, I can't go into the nitty-gritty of the application, as it is also closed-source. However, here are some key features of it:
-        """),
-        ul([
-            "All risk assessments generate a human-readable explanation of the calculation, to check that the system is working as intended.",
-            "Automatic storage and display of previous assessments, having a sorted history of every previously calculated risk.",
-            "Integrated audit capabilities that record in real time all changes that might affect risk calculation.",
+        h2_section("My experience at the company", 'my_experience', [
+            p(f"""
+                When I first joined Compliance CMS, it was, to put it bluntly, overwhelming. 
+                Not only was it my first professional job, but I was the {it('whole')} IT team, as the company's previous programmer walked out and didn't have any other developer until I came aboard.
+                That meant that {it('everything')} IT-related fell on me: programming, UI & UX, databases, security..., you name it.
+                To top it all off, despite it starting as a summer job, I continued working there while studying for my {a('/career/degree', 'Computer Engineering degree')}, which made it significantly more stressful and challenging.
+            """),
+            p("""
+                Despite all that pressure, it was also extremely enriching, and I'm glad I managed to pull through. 
+                Being on my own really pushed me to grow above and beyond, making me learn a lot about topics that I had barely scratched before.
+                I don't know where I would be today if I hadn't had that kind of challenge early on in my professional career.
+            """),
+            p("""
+                It's also important to add that, despite the work itself being difficult, the people people there were everything but that. Everyone was really friendy, helpful and hard-working.
+            """),
         ]),
-        h2("Closing thoughts"),
-        p("""
-            I remember my time at Compliance CMS really fondly. Although the work was quite overwhelming at times, it made me grow and greatly helped me refine my skills.
-            The challenge of being the only developer in the whole company made me learn about many topics, further enriching my tenure at the company, and made me become the generalist I am today.
-        """),
+        h2_section("Whistleblowing Channel", 'whistleblowing', [
+                p("""
+                    The first project I tackled was fixing and improving the company's whistleblowing channel. The channel was implemented as a Vue.JS web application, with a PHP back-end that stored the data in an SQL database in a standalone server.
+                    As the company was quite small, the traffic was quite limited, so this was more than enough for it to run smoothly.
+                """),
+                p("""
+                    Most of the work that I did to improve the Whistleblowing Channel was implementing new features and general maintenance,
+                    both to improve the client experience and to make it easier to manage it. It was also quite a challenge to do os while having to comply with both Spanish & EU law, as there are very stringent regulations that added tons of complexity.
+                """),
+                p("""
+                    As the tool is closed-source, I will refrain from delving too much into specifics, but some key achievements were the following:
+                """),
+                ul([
+                    "Automatic reminders, data blocking & data deletion in accordance with Spanish law.",
+                    "Integration with a telecom service to automatically register telephone calls in the channel.",
+                    "A deterministic NLP system for the automatic censoring of personal data when required by law."
+                ]),
+            ]),
+        h2_section("RiskApp CMS", 'riskapp', [
+            p(f"""
+                At the time I joined, the system for doing assessing corportate risk was a confusing, unmanageable mess of an Excel sheet.
+                It was remarkably difficult to make event the most minor of changes, 
+                let alone check that everything is correct or to justify {it('why')} a particular risk recieved the assessment that it did.
+                It was a no-brainer to try to put the system in a web application, in a similar manner to the whistleblowing channel, 
+                so as to greatly improve expandability, testability, audit capability, and to automate the most tedious and repetitive parts of the risk assessment process.
+            """),
+            p("""
+                The planning, design, implementation, delivery & maintainance of this application, which eventually became known as the RiskApp CMS, fell completely on my hands.
+                It  was almost-completely built using solely PHP. 
+                As it needed to be robust, performant, and be able to handle complex business logic, I decided to develop a simple-yet-effective interface, that refreshed completely everytime but didn't need to depend on complex javascript frameworks or other big dependencies.
+            """),
+            p("""
+                As a result, altough I needed to put in a bit of extra legwork at the beginning, the resulting application was really easy to expand, maintain, and understand.
+                With a bit of clever performance optimizations, it was also extremely performant, despite the complex computations and cross-referenceing of data that it needed to do.
+            """),
+            p("""
+                The only real limitation of this approach was that the interface, while extremely functional and responsive, was quite basic, with mostly static components that completely refreshed the page every time you wanted to switch.
+                Still, I'm really proud of what I managed to build in two short years, completely from scratch no less!
+            """),
+            p("""
+                As with the whistleblowing channel, I can't go into the nitty-gritty of the application, as it is also closed-source. However, here are some key features of it:
+            """),
+            ul([
+                "All risk assessments generate a human-readable explanation of the calculation, to check that the system is working as intended.",
+                "Automatic storage and display of previous assessments, having a sorted history of every previously calculated risk.",
+                "Integrated audit capabilities that record in real time all changes that might affect risk calculation.",
+            ]),
+        ]),
+        h2_section("Closing thoughts", 'closing', [
+            p("""
+                I remember my time at Compliance CMS really fondly. Although the work was quite overwhelming at times, it made me grow and greatly helped me refine my skills.
+                The challenge of being the only developer in the whole company made me learn about many topics, further enriching my tenure at the company, and made me become the generalist I am today.
+            """),
+        ]),
     ]),
-    job_tutoring := Job('work/tutoring', 'Private Tutor', 'Self-employed', '02/2021 — 06/2022', [
+    job_tutoring := Job('/career/tutoring', 'Private Tutor', 'Self-employed', '02/2021 — 06/2022', [
         'Programming and Computer Engineering lessons.',
         'Taught Algorithms, Data Structures, Memory Management, and many other programming concepts.',
     ], ['C++', 'Java', 'Python', 'MASM Assembly'], [
@@ -634,15 +703,12 @@ jobs = [
         ], classes='text-list'),
         BR,
         p('Depending on the student, the lessons were given in C++, Java, Python, or a combination of the three.')
-    ], alt_title='Private Tutoring' + taglist(['C++', 'Java', 'Python', 'MASM Assembly']), alt_tab_title='Private Tutoring')
+    ], alt_title='Private Tutor' + taglist(['C++', 'Java', 'Python', 'MASM Assembly']), alt_tab_title='Private Tutor')
 ]
 
-generate('work', 'Work', [
-    card(job.path, job.title, job.company, '', job.date, ul(job.keypoints) + taglist(job.tags))
-    for job in jobs
-])
 for job in jobs:
-    generate(job.path, job.alt_title or job.company, job.content, tab_title=job.alt_tab_title or job.alt_title or job.title)
+    generate(job.path, job.alt_title or job.company, job.content, tab_title=job.alt_tab_title or job.alt_title or job.company)
+
 
 # ---------
 # EDUCATION
@@ -656,230 +722,236 @@ class Education(Site):
         self.content = content
 
 educations = [
-    education_master := Education('education/master', "Master's Degree in Data Science", 'University of Alicante', '09/2024 — 06/2025', [
+    education_master := Education('/career/master', "Master's Degree in Data Science", 'University of Alicante', '09/2024 — 06/2025', [
         'Grade: 9.05/10',
     ], [
         education_titlecard('../files/uni/logo.jpg', 'University of Alicante Logo', 'University of Alicante', 'Alicante, Spain', '09/2024 — 06/2025', a('https://web.ua.es/en/masteres/ciencia-de-datos/', 'web.ua.es/masteres/ciencia-de-datos')),
-        h2("About the degree"),
-        p("""
-            The Data Science Master's Degree of the University of Alicante, as the name implies, is a master's degree that delves deep in Data Science and Machine Learning,
-            refining and expanding skills learned from related undergraduate degrees.
-            The master is only 1-year long, and it taught fully on-site.
-        """),
-        p_no_margin(f"""
-            On the 2024 to 2025 school year, almost all classes were taught in the {a('https://maps.app.goo.gl/vjyehHTWuDvQpepY6', 'Faculty of Science #6')}, affectionately called The Bunker for its distinctive, harsh concrete facade.  
-        """), 
-        div('big-img',
-            card_img_nohover_vw(
-                '../files/uni/master/ciencias6.jpg',
-                "Faculty of Science #6 aka 'The Bunker', University of Alicante",
-            )
-        ),
-        p("""
-            The master's degree delves deep into many Data Science topics, including: 
-        """),
-        ul([
-           'Math & Statistics',
-           'Data Modeling',
-           'Data Mining & Data Scrapping',
-           'Data Processing and Cleaning',
-           'Data Visualization and Plotting',
-           'Machine Learning, including CNN, RNN & Transformer architectures',
+        h2_section("About the degree", 'about', [
+            p("""
+                The Data Science Master's Degree of the University of Alicante, as the name implies, is a master's degree that delves deep in Data Science and Machine Learning,
+                refining and expanding skills learned from related undergraduate degrees.
+                The master is only 1-year long, and it taught fully on-site.
+            """),
+            p_no_margin(f"""
+                On the 2024 to 2025 school year, almost all classes were taught in the {a('https://maps.app.goo.gl/vjyehHTWuDvQpepY6', 'Faculty of Science #6')}, affectionately called The Bunker for its distinctive, harsh concrete facade.  
+            """), 
+            div('big-img',
+                card_img_nohover_vw(
+                    '../files/uni/master/ciencias6.jpg',
+                    "Faculty of Science #6 aka 'The Bunker', University of Alicante",
+                )
+            ),
+            p("""
+                The master's degree delves deep into many Data Science topics, including: 
+            """),
+            ul([
+                'Math & Statistics',
+                'Data Modeling',
+                'Data Mining & Data Scrapping',
+                'Data Processing and Cleaning',
+                'Data Visualization and Plotting',
+                'Machine Learning, including CNN, RNN & Transformer architectures',
+            ]),
+            BR,
+            p(f"""
+                The whole curriculum, including compulsory and optional subjects, can be seen in the {a('https://web.ua.es/en/masteres/ciencia-de-datos/curriculum.html', "official site for the master's degree")}.
+            """),
         ]),
-        BR,
-        p(f"""
-            The whole curriculum, including compulsory and optional subjects, can be seen in the {a('https://web.ua.es/en/masteres/ciencia-de-datos/curriculum.html', "official site for the master's degree")}.
-        """),
-        h2('My experience'),
-        p("""
-            I managed to achieve an average grade of 9.05/10, and completed the entire master's degree in the educational year of 2024 to 2025.
-        """),
-        div('big-img',
-            card_img_nohover_vw(
-                '../files/uni/master/graduation.jpg',
-                f"Receiving the diploma alongside four other fellow graduates. {a('https://audiovisual.ua.es/fotoweb/archives/5014-2025-Universidad-de-Alicante/?25=TURNO%202', 'Source')}",
-                "Receiving the diploma alongside four other fellow graduates.",
-            )
-        ),
-        p(f"""
-            Altough the master's delved quite deep in many areas of Data Science and Machine Learning,
-            some lessons overlapped with the Computation specialization of the {a('/education/degree', 'University Degree in Computing Engineering')}, which I had already completed, so it was a bit of a shame to be re-taught some lessons.
-        """),
-        div('halfs limit-height', [
-            card_img('Diploma', '11/2025', '../files/uni/master/diploma.jpg', [
-                BR,
-                p('Digital scan of the certificate (in Spanish).'),
-                p('English translation:'),
-                p('University of Alicante'),
-                p('Polytechnic School'),
-                p("AWARDS THIS"),
-                p("DIPLOMA"),
-                p("to"), 
-                p("Baeza Esteve, Vicent"),
-                p("University Master's Degree in Data Science"),
-                p("Alicante, 21st of November 2025"),
+        h2_section('My experience', 'my_experience', [
+            p("""
+                I managed to achieve an average grade of 9.05/10, and completed the entire master's degree in the educational year of 2024 to 2025.
+            """),
+            div('big-img',
+                card_img_nohover_vw(
+                    '../files/uni/master/graduation.jpg',
+                    f"Receiving the diploma alongside four other fellow graduates. {a('https://audiovisual.ua.es/fotoweb/archives/5014-2025-Universidad-de-Alicante/?25=TURNO%202', 'Source')}",
+                    "Receiving the diploma alongside four other fellow graduates.",
+                )
+            ),
+            p(f"""
+                Altough the master's delved quite deep in many areas of Data Science and Machine Learning,
+                some lessons overlapped with the Computation specialization of the {a('/career/degree', 'University Degree in Computing Engineering')}, which I had already completed, so it was a bit of a shame to be re-taught some lessons.
+            """),
+            div('halfs limit-height', [
+                card_img('Diploma', '11/2025', '../files/uni/master/diploma.jpg', [
+                    BR,
+                    p('Digital scan of the certificate (in Spanish).'),
+                    p('English translation:'),
+                    p('University of Alicante'),
+                    p('Polytechnic School'),
+                    p("AWARDS THIS"),
+                    p("DIPLOMA"),
+                    p("to"), 
+                    p("Baeza Esteve, Vicent"),
+                    p("University Master's Degree in Data Science"),
+                    p("Alicante, 21st of November 2025"),
+                ]),
             ]),
         ]),
-        h2('Final project', 'final_project'),
-        p("""
-            The Master's Degree in Data Science requires a final project as part of its graduation requirements, which must be done individually for every student and defended in front of a tribunal of professors.
-        """),
-        p("""
-            My final project, titled "Exploration of architectures based on Kolmogorov-Arnold Networks", explores and tests the Kolmogorov-Arnold architecture for neural networks, 
-            which was at the time a promising alternative to traditional MLPs.
-        """),
-        p("""
-            The complete report (in Spanish) can be seen below:
-        """),
-        div('big-img limit-height',
-            card_link_img(
-                'Data Science Final Project Report',
-                '06/2025',
-                '../files/uni/master/tfm_portada.jpg',
-                '../files/uni/master/tfm.pdf'
-            )
-        ),
+        h2_section('Final project', 'final_project', [
+            p("""
+                The Master's Degree in Data Science requires a final project as part of its graduation requirements, which must be done individually for every student and defended in front of a tribunal of professors.
+            """),
+            p("""
+                My final project, titled "Exploration of architectures based on Kolmogorov-Arnold Networks", explores and tests the Kolmogorov-Arnold architecture for neural networks, 
+                which was at the time a promising alternative to traditional MLPs.
+            """),
+            p("""
+                The complete report (in Spanish) can be seen below:
+            """),
+            div('big-img limit-height',
+                card_link_img(
+                    'Data Science Final Project Report',
+                    '06/2025',
+                    '../files/uni/master/tfm_portada.jpg',
+                    '../files/uni/master/tfm.pdf'
+                )
+            ),
+        ]),
     ]),
-    education_degree := Education('education/degree', 'Degree in Computer Engineering', 'University of Alicante', '09/2020 — 06/2024', [
+    education_degree := Education('/career/degree', 'Degree in Computer Engineering', 'University of Alicante', '09/2020 — 06/2024', [
         'Grade: 8.81/10, including 13 honors',
         'Graduated as part of the High Academic Performance group (ARA group), with a specialization in Computing.',
-        f'Received the {a('awards/computer_engineering', 'Extraordinary Award in Computer Engineering')} for outstanding performance.',
+        f'Received the {a('/career/computer_engineering', 'Extraordinary Award in Computer Engineering')} for outstanding performance.',
     ], [
         education_titlecard('../files/uni/logo.jpg', 'University of Alicante Logo', 'University of Alicante', 'Alicante, Spain', '09/2020 — 06/2024', a('https://web.ua.es/en/grados/grado-en-ingenieria-informatica/', 'web.ua.es/en/grados/grado-en-ingenieria-informatica')),
-        h2("About the degree"),
-        p("""
-            The Computer Engineering Degree of the University of Alicante is one of the biggest degrees of the university, 
-            as it provides comprehensive, well-rounded education in everything related to computers and information systems.
-            The 4-year degree is taught in buildings all around the university campus, and is fully on-site. 
-        """),
-        p_no_margin("""
-            Most theoretical classes were given in the General Lecture Buildings #2 & #3, while most practical lessons were given in the many Polytechnic University Colleges scattered throughout the campus.
-        """),
-        div('halfs', [
-            card_img_nohover_vw(
-                '../files/uni/degree/aulario2.jpg',
-                f'{a('https://maps.app.goo.gl/Qcc5nMVLtiynigZd7', 'General Lecture Building #2')}, University of Alicante',
-                'General Lecture Building #2, University of Alicante',
-            ),
-            card_img_nohover_vw(
-                '../files/uni/degree/politecnica1.jpg',
-                f'{a('https://maps.app.goo.gl/NNCaDZYuusAsSt4c9', 'Polytechnic University College #1')}, University of Alicante',
-                'Polytechnic University College #1, University of Alicante',
-            ),
-        ]),
-        p("""
-            The degree teaches a bit of everything in the first three years, including:
-        """),
-        ul([
-            "Mathematics & Theoretical Frameworks of Computation",
-            "Statistics & Data Analysis",
-            "Programming, from low-level Assembly & C++ to high-level Java and Python",
-            "Operating System Configuraton & Programming",
-            "Multithreading & GPU programming (CUDA)",
-            "Software Development & Software Design, including SOLID & other principles",
-            "Algorithm Analysis & Data Structures",
-            "Computer & Hardware Architecture & Design",
-        ]),
-        BR,
-        p("""
-            After the third year, every student gets to choose their specialization, which determines almost all subjects for the fourth year and one for the third. 
-            Each one focuses on certain areas of computer engineering:
-        """),
-        ul([
-            f"{b('Software Engineering')}: Application development, Web development and Software Design",
-            f"{b('Computer Engineering')}: Embedded & Real-Time Systems, Robotics and Computer Hardware",
-            f"{b('Computation')}: Machine Learning, Data Analysis, Theory of Computation and Data Science",
-            f"{b('Information Systems')}: Business Administration and Process Management",
-            f"{b('Information Technology')}: Computer Networks, Cloud Computing and Cybersecurity",
-        ]),
-        BR,
-        p(f"""
-            The whole curriculum, including all specializations and subjects, can be seen in the {a('https://web.ua.es/en/grados/grado-en-ingenieria-informatica/curriculum.html#Plan-1', 'official site for the degree')}.
-        """),
-        h2("My experience"),
-        p(f"""
-            Although some courses were difficult & stressful at times, almost all were extremely fruitful and worthwhile. 
-            While I had {it('some')} computer & programming know-how before, the degree expanded & refined existing skills, while providing lots of new resources and learning opportunities. 
-        """),
-        p("""
-            I chose to specialize in Computing, which delved deep in Algorithms, Data Structures, Math & Data Analysis; and also introduced Machine Learning, Computer Vision & Compiler Programming.
-            I also took a couple courses on Networking & Cloud Computing from the Computer Networks specialization.
-        """),
-        div('big-img',
-            card_img_nohover(
-                '../files/uni/degree/graduation.jpg',
-                f'Receiving the graduation diploma alongside both other honorees of the 2024 Extraordinary Award in Computer Engineering. {a('https://eps.ua.es/es/graduacion/graduacion-2024.html', 'Source')}',
-                'Honorees of the 2024 Extraordinary Award in Computer Engineering',
-            ),
-        ),
-        p(f"""
-            I managed to achieve an average grade of 8.81/10, which was the 2nd highest among the 113 graduates in 2024.
-            Such a feat awarded me the {a('/awards/computer_engineering', 'Extraordinary Award in Computer Engineering')}.
-            I also recieved honors in 13 out of the 38 courses of the degree, which (to my knowledge) was the hightest number out of anyone that graduated in 2024.
-        """),
-        div('halfs limit-height', [
-            card_img('Diploma', '11/2024', '../files/uni/degree/diploma.jpg', [
-                BR,
-                p('Digital scan of the certificate (in Spanish).'),
-                p('English translation:'),
-                p('University of Alicante'),
-                p('Polytechnic School'),
-                p("AWARDS THIS"),
-                p("DIPLOMA"),
-                p("to"), 
-                p("Baeza Esteve, Vicent"),
-                p("Degree in Computer Engineering — 2010 Plan"),
-                p("Alicante, 22nd of November 2024"),
+        h2_section("About the degree", 'about', [
+            p("""
+                The Computer Engineering Degree of the University of Alicante is one of the biggest degrees of the university, 
+                as it provides comprehensive, well-rounded education in everything related to computers and information systems.
+                The 4-year degree is taught in buildings all around the university campus, and is fully on-site. 
+            """),
+            p_no_margin("""
+                Most theoretical classes were given in the General Lecture Buildings #2 & #3, while most practical lessons were given in the many Polytechnic University Colleges scattered throughout the campus.
+            """),
+            div('halfs', [
+                card_img_nohover_vw(
+                    '../files/uni/degree/aulario2.jpg',
+                    f'{a('https://maps.app.goo.gl/Qcc5nMVLtiynigZd7', 'General Lecture Building #2')}, University of Alicante',
+                    'General Lecture Building #2, University of Alicante',
+                ),
+                card_img_nohover_vw(
+                    '../files/uni/degree/politecnica1.jpg',
+                    f'{a('https://maps.app.goo.gl/NNCaDZYuusAsSt4c9', 'Polytechnic University College #1')}, University of Alicante',
+                    'Polytechnic University College #1, University of Alicante',
+                ),
             ]),
-            card_img('Official Certificate', '06/2024', '../files/uni/degree/title.jpg', [
-                BR,
-                p('Digital scan of the certificate (in Spanish).'),
-                p('Some personal details have been redacted.'),
-                p('English translation:'),
-                p('Philip the VI, King of Spain'),
-                p('and in his name the'),
-                p("President of the University of Alicante"),
-                p("In accordance with the provisions and circumstances provided for by the current legislation"),
-                p("Vicent Baeza Esteve"), 
-                p("Born on [...] in El Campello (Alicante)"),
-                p('of Spanish nationality'),
-                p('has finished in June 2024, the official university studies'),
-                p('conducent to the official university TITLE of'),
-                p('GRADUATE in Computer Engineering by the University of Alicante'),
-                p('pursuant to the Council of Ministers Agreement of the 17th of June 2011,'),
-                p('this official certificate is issued with validity whithin the whole national territory'),
-                p('which entitles the recipient to enjoy the rights'),
-                p('that this certificate grants in accordance to current provisions'),
-                p('Given in Alicante, 21st of June, 2024'),
+            p("""
+                The degree teaches a bit of everything in the first three years, including:
+            """),
+            ul([
+                "Mathematics & Theoretical Frameworks of Computation",
+                "Statistics & Data Analysis",
+                "Programming, from low-level Assembly & C++ to high-level Java and Python",
+                "Operating System Configuraton & Programming",
+                "Multithreading & GPU programming (CUDA)",
+                "Software Development & Software Design, including SOLID & other principles",
+                "Algorithm Analysis & Data Structures",
+                "Computer & Hardware Architecture & Design",
+            ]),
+            BR,
+            p("""
+                After the third year, every student gets to choose their specialization, which determines almost all subjects for the fourth year and one for the third. 
+                Each one focuses on certain areas of computer engineering:
+            """),
+            ul([
+                f"{b('Software Engineering')}: Application development, Web development and Software Design",
+                f"{b('Computer Engineering')}: Embedded & Real-Time Systems, Robotics and Computer Hardware",
+                f"{b('Computation')}: Machine Learning, Data Analysis, Theory of Computation and Data Science",
+                f"{b('Information Systems')}: Business Administration and Process Management",
+                f"{b('Information Technology')}: Computer Networks, Cloud Computing and Cybersecurity",
+            ]),
+            BR,
+            p(f"""
+                The whole curriculum, including all specializations and subjects, can be seen in the {a('https://web.ua.es/en/grados/grado-en-ingenieria-informatica/curriculum.html#Plan-1', 'official site for the degree')}.
+            """),
+        ]),
+        h2_section("My experience", 'my_experience', [
+            p(f"""
+                Although some courses were difficult & stressful at times, almost all were extremely fruitful and worthwhile. 
+                While I had {it('some')} computer & programming know-how before, the degree expanded & refined existing skills, while providing lots of new resources and learning opportunities. 
+            """),
+            p("""
+                I chose to specialize in Computing, which delved deep in Algorithms, Data Structures, Math & Data Analysis; and also introduced Machine Learning, Computer Vision & Compiler Programming.
+                I also took a couple courses on Networking & Cloud Computing from the Computer Networks specialization.
+            """),
+            div('big-img',
+                card_img_nohover(
+                    '../files/uni/degree/graduation.jpg',
+                    f'Receiving the graduation diploma alongside both other honorees of the 2024 Extraordinary Award in Computer Engineering. {a('https://eps.ua.es/es/graduacion/graduacion-2024.html', 'Source')}',
+                    'Honorees of the 2024 Extraordinary Award in Computer Engineering',
+                ),
+            ),
+            p(f"""
+                I managed to achieve an average grade of 8.81/10, which was the 2nd highest among the 113 graduates in 2024.
+                Such a feat awarded me the {a('/career/computer_engineering', 'Extraordinary Award in Computer Engineering')}.
+                I also recieved honors in 13 out of the 38 courses of the degree, which (to my knowledge) was the hightest number out of anyone that graduated in 2024.
+            """),
+            div('halfs limit-height', [
+                card_img('Diploma', '11/2024', '../files/uni/degree/diploma.jpg', [
+                    BR,
+                    p('Digital scan of the certificate (in Spanish).'),
+                    p('English translation:'),
+                    p('University of Alicante'),
+                    p('Polytechnic School'),
+                    p("AWARDS THIS"),
+                    p("DIPLOMA"),
+                    p("to"), 
+                    p("Baeza Esteve, Vicent"),
+                    p("Degree in Computer Engineering — 2010 Plan"),
+                    p("Alicante, 22nd of November 2024"),
+                ]),
+                card_img('Official Certificate', '06/2024', '../files/uni/degree/title.jpg', [
+                    BR,
+                    p('Digital scan of the certificate (in Spanish).'),
+                    p('Some personal details have been redacted.'),
+                    p('English translation:'),
+                    p('Philip the VI, King of Spain'),
+                    p('and in his name the'),
+                    p("President of the University of Alicante"),
+                    p("In accordance with the provisions and circumstances provided for by the current legislation"),
+                    p("Vicent Baeza Esteve"), 
+                    p("Born on [...] in El Campello (Alicante)"),
+                    p('of Spanish nationality'),
+                    p('has finished in June 2024, the official university studies'),
+                    p('conducent to the official university TITLE of'),
+                    p('GRADUATE in Computer Engineering by the University of Alicante'),
+                    p('pursuant to the Council of Ministers Agreement of the 17th of June 2011,'),
+                    p('this official certificate is issued with validity whithin the whole national territory'),
+                    p('which entitles the recipient to enjoy the rights'),
+                    p('that this certificate grants in accordance to current provisions'),
+                    p('Given in Alicante, 21st of June, 2024'),
+                ]),
             ]),
         ]),
-        h2("Computer Engineering Final Project", 'final_project'),
-        p("""
-            The Computer Engineering Degree, like many other university degrees, requires a lengthy final project as part of its graduation requirements.
-        """),
-        p("""
-            My final project, titled "Quantum Computing and its applications in Artificial Intelligence", 
-            was an exploratory project centered in the possible applications of Quantum Computing for speeding up and enhancing Machine Learning systems. 
-        """),
-        p("""
-            The complete report (in Spanish) can be seen below:
-        """),
-        div('big-img limit-height',
-            card_link_img(
-                'Computer Engineering Final Project Report',
-                '05/2024',
-                '../files/uni/degree/tfg_portada.jpg',
-                '../files/uni/degree/tfg.pdf'
-            )
-        ),
+        h2_section("Final Project", 'final_project', [
+            p("""
+                The Computer Engineering Degree, like many other university degrees, requires a lengthy final project as part of its graduation requirements.
+            """),
+            p("""
+                My final project, titled "Quantum Computing and its applications in Artificial Intelligence", 
+                was an exploratory project centered in the possible applications of Quantum Computing for speeding up and enhancing Machine Learning systems. 
+            """),
+            p("""
+                The complete report (in Spanish) can be seen below:
+            """),
+            div('big-img limit-height',
+                card_link_img(
+                    'Computer Engineering Final Project Report',
+                    '05/2024',
+                    '../files/uni/degree/tfg_portada.jpg',
+                    '../files/uni/degree/tfg.pdf'
+                )
+            ),
+        ]),
     ]),
-    education_techscouts := Education('education/tech_scouts', 'Tech Scouts: Computer Science', 'Harbour Space', '07/2019 — 07/2019', [
+    education_techscouts := Education('/career/tech_scouts', 'Tech Scouts: Computer Science', 'Harbour Space', '07/2019 — 07/2019', [
         'Intensive 3-week summer course focusing computer science and advanced mathematics.',
-        f'Invitation received for winning a Gold Medal at the {a('awards/oicat', 'Catalan Olympiad in Informatics')} in 2019.',
+        f'Invitation received for winning a Gold Medal at the {a('/career/oicat', 'Catalan Olympiad in Informatics')} in 2019.',
     ], [
         education_titlecard('../files/techScouts/logo.jpg', 'Harbour Space Logo', 'Harbour Space', 'Barcelona, Spain', '07/2019', a('https://harbour.space/', 'harbour.space')),
         p(f"""The Computer Science course of Tech Scouts is an intensive 3-week summer course. 
-            Although the course itself can be pricey, I managed to get it for free as part of the prize for winning a Gold Medal at the {a('awards/oicat', '2019 Catalan Olympiad in Informatics')}.
+            Although the course itself can be pricey, I managed to get it for free as part of the prize for winning a Gold Medal at the {a('/career/oicat', '2019 Catalan Olympiad in Informatics')}.
         """),
         p_no_margin("""
             The course, which was hosted in the St. Paul's School Campus in Barcelona, is tailored depending on your level (Beginner, Intermediate or Advanced). 
@@ -933,7 +1005,7 @@ educations = [
             Overall, a great and memorable formative experience.
         """)
     ]),
-    education_estalmat := Education('education/estalmat', 'ESTALMAT', 'Polytechnic University of Valencia', '09/2015 — 05/2019', [
+    education_estalmat := Education('/career/estalmat', 'ESTALMAT', 'Polytechnic University of Valencia', '09/2015 — 05/2019', [
         '4-year weekly math program for promoting and developing math and reasoning skills.',
         'Learned a lot of foundational concepts that fueled my current passion for math and computer science.',
     ], [
@@ -948,7 +1020,7 @@ educations = [
         """),
         p_no_margin(f"""
             I managed to qualify for the Valencian Community's ESTALMAT back in 2015, after participating in the 
-            {a('awards/semcv', 'Valencian Olympiad in Mathematics')}, which sparking my eventual passion for maths and computer science.
+            {a('/career/semcv', 'Valencian Olympiad in Mathematics')}, which sparked my eventual passion for maths and computer science.
         """),
         div('big-img',
             card_img_nohover(
@@ -982,10 +1054,6 @@ educations = [
         )
     ]),
 ]
-generate('education', 'Education', [
-    card(education.path, education.title, education.institution, '', education.date, ul(education.keypoints))
-    for education in educations
-])
 for education in educations:
     generate(education.path, education.title, education.content)
 
@@ -1002,13 +1070,13 @@ class Awards(Site):
         self.content = content
 
 awards = [
-    award_first_ascent := Awards('awards/first_ascent', 'First Ascent Spain', 'Bending Spoons', '09/2025', [
+    award_first_ascent := Awards('/career/first_ascent', 'First Ascent Spain', 'Bending Spoons', '09/2025', [
         'Awarded to the top 20 participants in Spain',
     ], [
 
     ]),
-    award_computer_engineering := Awards('awards/computer_engineering', 'Extraordinary Award in Computer Engineering', 'University of Alicante', '11/2024', [
-        f'Awarded to the three students with the highest overall grades in the {a('/education/degree', 'Degree in Computer Engineering')}',
+    award_computer_engineering := Awards('/career/computer_engineering', 'Extraordinary Award in Computer Engineering', 'University of Alicante', '11/2024', [
+        f'Awarded to the three students with the highest overall grades in the {a('/career/degree', 'Degree in Computer Engineering')}',
     ], [
         olympiad_titlecard('../files/uni/logo.jpg', 'University of Alicante Logo', 'University of Alicante Extraordinary Award', 'Alicante, Spain', '2024', a('https://www.ua.es/en/', 'ua.es')),
         p(f"""
@@ -1018,7 +1086,7 @@ awards = [
         p_no_margin(f"""
             There is a separate award for each bachelor's and master's degree offered by the university.
             For each degree, one award is given for every 50 students that graduated that year. 
-            In the case of the {a('/education/degree', 'Degree in Computer Engineering')}, 3 awards were given in 2024, as more that 100 students graduated that year.
+            In the case of the {a('/career/degree', 'Degree in Computer Engineering')}, 3 awards were given in 2024, as more that 100 students graduated that year.
         """),
         div('big-img',
             card_img_nohover(
@@ -1051,9 +1119,9 @@ awards = [
             ], 50),
         ),
     ]),
-    award_ioi := Awards('awards/ioi', 'International Olympiad in Informatics', 'IOI', '08/2019', [
+    award_ioi := Awards('/career/ioi', 'International Olympiad in Informatics', 'IOI', '08/2019', [
         'Participated as part of the Spanish team',
-        f'Awarded for obtaining a Gold Medal in the {a('/awards/oie', 'Spanish Olympiad in Informatics')}'
+        f'Awarded for obtaining a Gold Medal in the {a('/career/oie', 'Spanish Olympiad in Informatics')}'
     ], [
         olympiad_titlecard('../files/ioi/logo.jpg', 'IOI Logo', 'International Olympiad in Informatics', 'Baku, Azerbaijan', '2019', a('https://ioinformatics.org', 'ioinformatics.org')),
         p("""
@@ -1061,7 +1129,7 @@ awards = [
             test their competitive programming skills. It is one of the most prestigious competitions in the world of competitive programming, and to participate you have to get selected through your country's olympiad process.
         """),
         p(f"""
-            In Spain, in order to participate in the IOI you have to win a Gold Medal at the {a('/awards/oie', 'Spanish Olympiad in Informatics')}. 
+            In Spain, in order to participate in the IOI you have to win a Gold Medal at the {a('/career/oie', 'Spanish Olympiad in Informatics')}. 
             Despite my somewhat lackluster knowledge of algorithms and data structures at the time, I managed to win a Gold Medal in 2019 and got to participate in the IOI as part of the Spanish team.
         """),
         p_no_margin("""
@@ -1106,7 +1174,7 @@ awards = [
             )
         )
     ]),
-    award_oie := Awards('awards/oie', 'Spanish Olympiad in Informatics', 'OIE', '2018 — 2020', [
+    award_oie := Awards('/career/oie', 'Spanish Olympiad in Informatics', 'OIE', '2018 — 2020', [
         'Gold Medal in the 2019 edition',
         'Silver Medal in the 2018 & 2020 editions',
     ], [
@@ -1117,7 +1185,7 @@ awards = [
         """),
         p(f"""
             The olympiad is divided into two days, in which participants have to solve several problems. 
-            The top 4 participants across both days classify for the {a('/awards/ioi', 'International Olympiad in Informatics')},
+            The top 4 participants across both days classify for the {a('/career/ioi', 'International Olympiad in Informatics')},
             in which they represent Spain in the international stage.
         """),
         p("""
@@ -1132,7 +1200,7 @@ awards = [
             programming and competitive programming skills.
         """),
         p(f"""
-            In 2019 I managed to classify for the {a('/awards/ioi', 'International Olympiad in Informatics')}, 
+            In 2019 I managed to classify for the {a('/career/ioi', 'International Olympiad in Informatics')}, 
             which was a really memorable experience by itself.
         """),
         BR,
@@ -1162,7 +1230,7 @@ awards = [
             ]),
         ]),
     ]),
-    award_oicat := Awards('awards/oicat', 'Catalan Olympiad in Informatics', 'OICat', '2019 — 2020', [
+    award_oicat := Awards('/career/oicat', 'Catalan Olympiad in Informatics', 'OICat', '2019 — 2020', [
         'Gold Medal in the 2019 & 2020 editions',
     ], [
         olympiad_titlecard('../files/oicat/logo.jpg', 'OICat Logo', 'Catalan Olympiad in Informatics', 'Barcelona, Spain', '2019 — 2020', a('https://olimpiada-informatica.cat', 'olimpiada-informatica.cat')),
@@ -1186,7 +1254,7 @@ awards = [
             Although the olympiad is a relatively short event (as it only lasts a single day), it is a great experience, as it allows students interested in
             competitive programming to meet eachother and build friendships and connections. 
             The organization that organizes the olympiad also provides many training and educational courses on problem solving and
-            competitive programming, that can serve as learning resources and eventual preparation for the bigger {a('/awards/oie','Spanish Olympiad in Informatics')}.
+            competitive programming, that can serve as learning resources and eventual preparation for the bigger {a('/career/oie','Spanish Olympiad in Informatics')}.
         """),
         p_no_margin("""
             I managed to get a Gold Medal (the hightest prize possible) in the 2019 and the 2020 editions of the olympiad: 
@@ -1205,7 +1273,7 @@ awards = [
         ]),
         p(f"""
             Despite the short timeframe, both times I participated were very fun and memorable. 
-            I made some friends there, and it also granted me access to the 2019 {a('/education/tech_scouts', 'Harbour Space Tech Scouts')} summer course, 
+            I made some friends there, and it also granted me access to the 2019 {a('/career/tech_scouts', 'Harbour Space Tech Scouts')} summer course, 
             which I wouldn't have been able to attend otherwise. Overall, a very worthwhile experience!
         """),
         BR,
@@ -1242,7 +1310,7 @@ awards = [
             ]),
         ])
     ]),
-    award_semcv := Awards('awards/semcv', "Valencian Olympiad in Mathematics", 'SEMCV', '2013 — 2018', [
+    award_semcv := Awards('/career/semcv', "Valencian Olympiad in Mathematics", 'SEMCV', '2013 — 2018', [
         'Third Prize in the 2018 edition',
         'Second Prize in the 2013 edition',
         'Reached final round in the 2014, 2015, 2016 & 2017 editions',
@@ -1343,10 +1411,6 @@ awards = [
         ])
     ]),
 ]
-generate('awards', 'Contests, Honors & Awards', [
-    card(award.path, award.title, award.institution, '', award.date, ul(award.keypoints))
-    for award in awards
-])
 for award in awards:
     generate(award.path, award.title, award.content)
 
@@ -1365,7 +1429,7 @@ class Project(Site):
 
 projects : dict[str, list[Project]] = {
     'professional': [
-        Project(f'{job_facephi.path}#automation', 'Automation & Data Scrapping Tools', 'Facephi', '09/2025 — Present', [
+        Project(f'{job_facephi.path}#tools', 'Automation & Data Scrapping Tools', 'Facephi', '09/2025 — Present', [
             'Built several automation & data scrapping tools leveraging AI agents.',
             'Extracted key information used to train production models.',
         ], ['Python', 'LangGraph', 'GitHub Actions']),
@@ -1379,13 +1443,13 @@ projects : dict[str, list[Project]] = {
         ], ['PHP', 'JS', 'Vue.JS', 'SQL']),
     ],
     'university': [
-        Project(f'{education_master.path}#final_project', 'Data Science Final Project', "Master's Degree in Data Science", '11/2024 — 06/2025', [
+        Project(f'{education_master.path}#final_project', 'Final Project', "Master's Degree in Data Science", '11/2024 — 06/2025', [
             'Exploration and testing of the Kolmogorov-Arnold architecture for neural networks.',
         ], ['ML', 'CNNs', 'Kolmogorov-Arnold Networks']),
-        Project(f'{education_degree.path}#final_project', 'Computer Engineering Final Project', 'Degree in Computer Engineering', '09/2023 — 05/2024', [
+        Project(f'{education_degree.path}#final_project', 'Final Project', 'Degree in Computer Engineering', '09/2023 — 05/2024', [
             'Research project exploring the applications of Quantum Computing in ML systems.',
         ], ['ML', 'Quantum Computing']),
-        # Project('education/degree#last_brew', "The Last Brew", 'Degree in Computer Engineering', '07/2023 — 09/2023', [
+        # Project(f'{education_degree.path}#last_brew', "The Last Brew", 'Degree in Computer Engineering', '07/2023 — 09/2023', [
         #     '2D game fully programmed in Z80 Assembly for the Amstrad CPC 8-bit computer.',
         #     'Fluid movement, collisions, projectiles, and multiple enemy types and behaviors.',
         # ], ['Z80 Assembly', 'Amstrad CPC', 'CPCTelera']),
@@ -1403,7 +1467,7 @@ for project_type, project_type_projects in projects.items():
         projects_content.append(
             card(project.path, project.title, project.institution, '', project.date, ul(project.keypoints) + taglist(project.tags))
         )
-generate('projects', 'Projects', projects_content)
+generate('/projects', 'Projects', projects_content)
 
 for project_type, project_type_projects in projects.items():
     for project in project_type_projects:
@@ -1419,31 +1483,53 @@ for project_type, project_type_projects in projects.items():
 generate("index", '', [
     h1("Vicent Baeza"),
     p("Software Engineer with a passion for math and computer science."),
-    p(f"Currently building automation & data scrapping tools at {a('work/facephi', 'Facephi')}."),
+    p(f"Currently building automation & data scrapping tools at {a(job_facephi.path, 'Facephi')}."),
     title_section('Work', [
-            card(job.path, job.title, job.company, '', job.date, ul(job.keypoints))
-            for job in jobs
-    ], '/work', 3),
+        card(job.path, job.title, job.company, '', job.date, ul(job.keypoints))
+        for job in jobs
+    ], '/career#work', 3),
     title_section('Education', [
         card(education.path, education.title, education.institution, '', education.date, ul(education.keypoints))
         for education in [education_master, education_degree]
-    ], '/work', 2),
+    ], '/career#education', 2),
     title_section('Contests & Awards', [
         card(award.path, award.title, award.institution, '', award.date, ul(award.keypoints))
         for award in awards
-    ], '/awards', 3),
+    ], '/career#awards', 3),
+])
+
+generate('/career', 'Career', [
+    section('Work'),
+    *[
+        card(job.path, job.title, job.company, '', job.date, ul(job.keypoints) + taglist(job.tags))
+        for job in jobs
+    ],
+    section('Education'),
+    *[
+        card(education.path, education.title, education.institution, '', education.date, ul(education.keypoints))
+        for education in educations
+    ],
+    section('Awards'),
+    *[
+        card(award.path, award.title, award.institution, '', award.date, ul(award.keypoints))
+        for award in awards
+    ]
 ])
 
 # --------------
 # GENERATE FILES
 # --------------
+word_trie = WordScoreTrie()
+for word, scores in word_search_scores.items():
+    word_trie.add(word, scores)
+
+score_confs = list[list[int]]()
 with open('docs/files/search_data.json', 'w', encoding='utf-8') as f:
     json.dump({
-        'sites': dict(search_sites.items()),
-        'words': list(word_search_scores.keys()),
-        'scores': word_search_scores,
-        'site_index': word_search_site_index,
-    }, f, indent=4)
+        'sites': search_sites,
+        'score_confs': score_confs,
+        'trie': word_trie.as_dict(score_confs, 5)['C'],
+    }, f, indent=1)
 
 
 # -----------------
@@ -1461,10 +1547,12 @@ for site, site_paths in paths.items():
         path_fixed = '/' if site_path == '/' else site_path.strip('/') # remove start & end slashes, but keep them if path is '/'
         path_fixed = path_fixed.split('#', maxsplit=1)[0] # remove everything after '#': a/b#c -> a/b
         if is_local_path(path_fixed):
-            if path_fixed not in sites:
-                warnings[site].append(f"Invalid local path '{path_fixed}'")
-            else:
+            if path_fixed in sites:
                 site_link_counts[path_fixed] += 1
+            elif f'/{path_fixed}' in sites:
+                site_link_counts[f'/{path_fixed}'] += 1
+            else:
+                warnings[site].append(f"Invalid local path '{path_fixed}'")
 for site, link_count in site_link_counts.items():
     if link_count == 0:
         warnings[site].append("Not linked in any other site")
@@ -1483,6 +1571,8 @@ for site, site_files in files.items():
         if is_local_path(file_path_fixed):
             if not os.path.isfile(f'docs/{file_path_fixed}'):
                 warnings[site].append(f"Invalid local file '{file_path_fixed}'")
+
+
 # ----------------
 # CONSOLE MESSAGES
 # ----------------

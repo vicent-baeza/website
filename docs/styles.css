@@ -11,17 +11,15 @@
 }
 
 :root {
-    --bg-dark: oklch(0.15 0.005 221);
-    --bg: oklch(0.175 0.005 221);
-    --bg-light: oklch(0.2 0.005 221);
+    --bg-dark: #141414;
+    --bg-light: #1E1E1E;
     --bg-hl: #FFFFFF10;
-    --text: oklch(0.96 0.01 221);
-    --text-muted: oklch(0.76 0.01 221);
-    --text-dim: oklch(0.6 0.01 221);
+    --text: #DDDDDD;
+    --text-dim: #AAAAAA;
     --highlight: oklch(0.5 0.01 221);
     --border: oklch(0.4 0.01 221);
     --border-muted: oklch(0.3 0.01 221);
-    --primary: oklch(0.76 0.1 221);
+    --primary: #3c76ea;
     --secondary: oklch(0.76 0.1 41);
     --danger: oklch(0.7 0.05 30);
     --warning: oklch(0.7 0.05 100);
@@ -33,8 +31,8 @@
 
     --p: 1rem var(--font);
     --b: 500 1rem var(--font);
-    --h1: 600 1.3rem var(--font-title);
-    --h2: 500 1.1rem var(--font-title);
+    --h1: 600 1.35rem var(--font-title);
+    --h2: 600 1.2rem var(--font-title);
     --section: 800 0.8rem var(--font);
     --title-tabs: 600 1rem var(--font-title);
     --title: 700 1.3rem var(--font-title);
@@ -66,17 +64,15 @@
 
 /* Theme Styles (darkmode/lightmode) */
 body.lightmode {
-    --bg-dark: oklch(0.95 0.005 221);
-    --bg: oklch(0.9 0.005 221);
-    --bg-light: oklch(0.85 0.005 221);
-    --bg-hl: #00000010;
-    --text: oklch(0.15 0.01 221);
-    --text-muted: oklch(0.4 0.01 221);
-    --text-muted: oklch(0.55 0.01 221);
+    --bg-dark: #F9F9F9;
+    --bg-light: #E8E8E8;
+    --bg-hl: #00000014;
+    --text: #282B2E;
+    --text-dim: #444444;
     --highlight: oklch(1 0.01 221);
-    --border: oklch(0.6 0.01 221);
-    --border-muted: oklch(0.7 0.01 221);
-    --primary: oklch(0.65 0.2 221);
+    --border: #888888;
+    --border-muted: #CCCCCC;
+    --primary: #3C59EA;
     --secondary: oklch(0.4 0.1 41);
     --danger: oklch(0.5 0.05 30);
     --warning: oklch(0.5 0.05 100);
@@ -106,9 +102,13 @@ body * {
 a {
     text-decoration: none;
     color: var(--primary);
+    font: var(--b);
 }
 a.link:hover {
-    color: var(--text);
+    text-decoration: underline;
+}
+.no-underline {
+    text-decoration: none !important;
 }
 a, .btn {
     cursor: pointer !important;
@@ -143,7 +143,7 @@ body.loaded, body.loaded * {
     display: inline-block;
     border-radius: 2px;
     font: var(--font-shortcut);
-    color: var(--text-muted);
+    color: var(--text);
     background: var(--bg-hl);
 }
 .shortcut:hover {
@@ -165,7 +165,7 @@ body.loaded, body.loaded * {
     display: block;
     margin: auto;
     width: 60vh;
-    min-width: 1000px;
+    min-width: 800px;
     /*width: var(--content-max-width);*/
     min-height: 100%;
 }
@@ -174,7 +174,7 @@ body.loaded, body.loaded * {
 header {
     width: 100%;
     height: var(--header-height);
-    background: var(--bg);
+    background: var(--bg-light);
     border-bottom: 1px solid var(--border-muted);
     position: fixed;
     top: 0px;
@@ -219,7 +219,7 @@ footer {
     height: var(--footer-height);
     position: fixed;
     bottom: 0px;
-    background: var(--bg);
+    background: var(--bg-light);
     border-top: 1px solid var(--border-muted);
 }
 footer > .content {
@@ -232,7 +232,7 @@ footer > .content > * {
     align-content: center;
 }
 .footer-text {
-    color: var(--text-muted);
+    color: var(--text-dim);
     font: var(--p);
     text-align: center;
     cursor: default;
@@ -251,7 +251,7 @@ footer > .content > * {
     margin-top: calc(var(--content-v-margin) + var(--header-height));
     margin-bottom: calc(var(--content-v-margin) + var(--footer-height));
     font: var(--p);
-    color: var(--text-muted);
+    color: var(--text-dim);
     text-align: justify;
 }
 
@@ -277,7 +277,7 @@ ul.text-list > li {
     margin-bottom: var(--sp2);
 }
 
-/* H1, H2, H3 & sections */
+/* H1, H2 & sections */
 h1 {
     font: var(--h1);
     color: var(--text);
@@ -290,7 +290,7 @@ h2 {
     line-height: 1.15rem;
 }
 h1, h2, .section {
-    margin-top: var(--sp8);
+    margin-top: var(--sp10);
     margin-bottom: var(--sp4);
 }
 .section {
@@ -354,8 +354,8 @@ h1, h2, .section {
     padding-bottom: 1px;
 }
 a.crumb-text:hover {
-    color: var(--text);
     background-color: var(--bg-hl);
+    text-decoration: none !important;
 }
 
 /* Tag */
@@ -364,14 +364,14 @@ a.crumb-text:hover {
     flex-direction: row;
 }
 .tag {
-    background-color: var(--bg);
+    background-color: var(--bg-light);
     border: 1px solid var(--border-muted);
     padding-left: var(--sp1);
     padding-right: var(--sp1);
     margin-left: var(--sp1);
     margin-top: var(--sp2);
     font: var(--p);
-    color: var(--text-muted) !important;
+    color: var(--text) !important;
 }
 :hover > * > .tag-list > .tag, :hover > * > .tag, :hover > .tag, .tag:hover {
     background-color: var(--bg-hl);
@@ -380,7 +380,7 @@ a.crumb-text:hover {
     margin-left: 0;
 }
 .titlecard + .tag-list > .tag, h1 > .tag-list > .tag {
-    background-color: var(--bg) !important;
+    background-color: var(--bg-light) !important;
 }
 
 /* Card */
@@ -398,8 +398,8 @@ a.crumb-text:hover {
     background-color: var(--bg-light);
 }
 .card > * {
-    font: var(--text);
-    color: var(--text-muted);
+    font: var(--p);
+    color: var(--text-dim);
     flex-grow: 0;
     margin-left: var(--sp1);
     margin-right: var(--sp1);
@@ -453,7 +453,7 @@ a.crumb-text:hover {
     height: 150px;
     padding: var(--sp3);
     border: 1px solid var(--border-muted);
-    background: var(--bg);
+    background: var(--bg-light);
     display: grid;
     grid-template-columns: 6fr 1fr 6fr 6fr;
     grid-template-rows: repeat(2, 1fr);
@@ -490,7 +490,7 @@ a.crumb-text:hover {
     margin-bottom: var(--sp1);
 }
 .titlecard-text {
-    color: var(--text-muted)
+    color: var(--text)
 }
 
 
@@ -563,7 +563,7 @@ a.crumb-text:hover {
     height: 100%;
     width: 70%;
     padding-right: var(--sp2);
-    background: var(--bg);
+    background: var(--bg-light);
 }
 #fullscreen-card {
     flex-basis: 0.30;
@@ -607,7 +607,7 @@ ul.timeline:before {
     margin-top: 10px;
     height: 100%;
     left: calc(- (var(--sp4)/2.0));
-    background-color: var(--text-muted);
+    background-color: var(--text);
 }
 
 
