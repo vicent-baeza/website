@@ -301,6 +301,7 @@ h1, h2, .section {
 .section > .section-title {
     text-transform: uppercase;
     font: var(--section);
+    color: var(--text-dim);
     letter-spacing: 0.075rem;
     flex-grow: 0;
     margin-right: var(--sp2)
