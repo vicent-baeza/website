@@ -543,7 +543,7 @@ jobs = [
         'Built several automation & data scrapping tools leveraging AI agents.',
         'Extracted key information used to train production models.',
     ], ['Python', 'LangGraph', 'GitHub Actions'], [
-        job_titlecard('../files/facephi/logo.jpg', 'Facephi Logo', 'R&D AI Engineer', 'Alicante, Spain', '09/2025 — 01/2026', a('https://facephi.com/en/', 'facephi.com'), ['Python', 'LangGraph', 'GitHub Actions']),
+        job_titlecard('../files/facephi/logo.jpg', 'Facephi Logo', 'R&D AI Engineer', 'Alicante, Spain', '09/2025 — Present', a('https://facephi.com/en/', 'facephi.com'), ['Python', 'LangGraph', 'GitHub Actions']),
         h2_section('About the company', 'about', [
             p("""
                 Facephi is a biometrics company specializing in Digital Identity, Authentication & Onboarding.
@@ -574,7 +574,7 @@ jobs = [
                 Most tools, despite being relatively simple in concept, required multiple integrations with the company's existing systems, which complicated the implementation quite a bit.
             """),
             p("""
-                Building tools by myself in such a new environment right-out-of-the-gate was quite overwhelming. Despite this, and mostly thanks to my previous job, 
+                Building tools by myself in such a new environment right out of the gate was quite overwhelming. Despite this, and mostly thanks to my previous job, 
                 I had quite a lot of experience managing projects entirely by myself, and once I grew accustomed to Facephi's systems the development went smoothly.
             """),
         ]),
@@ -589,7 +589,9 @@ jobs = [
             """),
         ]),
         h2_section('Closing thoughts', 'closing', [
+            p("""
 
+            """)
         ])
     ]),
     job_compliancecms := Job('/career/compliance_cms', 'Software Engineer', 'Compliance CMS', '07/2023 — 09/2025', [

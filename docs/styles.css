@@ -20,7 +20,6 @@
     --border: oklch(0.4 0.01 221);
     --border-muted: oklch(0.3 0.01 221);
     --primary: #3c76ea;
-    --secondary: oklch(0.76 0.1 41);
     --danger: oklch(0.7 0.05 30);
     --warning: oklch(0.7 0.05 100);
     --success: oklch(0.7 0.05 160);
@@ -38,6 +37,8 @@
     --title: 700 1.3rem var(--font-title);
     --font-shortcut: 700 0.9rem var(--font-title);
     --font-titlecard-subtitle: 800 0.8rem var(--font);
+
+    --max-content-width: 800px;
 
     --spm: 0.1rem;
     --sp1: 0.25rem;
@@ -73,7 +74,6 @@ body.lightmode {
     --border: #888888;
     --border-muted: #CCCCCC;
     --primary: #3C59EA;
-    --secondary: oklch(0.4 0.1 41);
     --danger: oklch(0.5 0.05 30);
     --warning: oklch(0.5 0.05 100);
     --success: oklch(0.5 0.05 160);
@@ -165,8 +165,7 @@ body.loaded, body.loaded * {
     display: block;
     margin: auto;
     width: 60vh;
-    min-width: 800px;
-    /*width: var(--content-max-width);*/
+    min-width: var(--max-content-width);
     min-height: 100%;
 }
 
@@ -456,7 +455,7 @@ a.crumb-text:hover {
     border: 1px solid var(--border-muted);
     background: var(--bg-light);
     display: grid;
-    grid-template-columns: 6fr 1fr 6fr 6fr;
+    grid-template-columns: 6fr 0.5fr 6fr 5.5fr;
     grid-template-rows: repeat(2, 1fr);
     margin-bottom: var(--sp6);
 }
@@ -507,11 +506,11 @@ a.crumb-text:hover {
 }
 .halfs > * {
     width: 50%;
-    max-height: 400px;
+    max-height: calc(var(--max-content-width) / 2 * 260/400 + 25);
     border: 1px solid #00000000;
 }
 .halfs.limit-height > * {
-    height: 400px !important;
+    height: calc(var(--max-content-width) / 2 * 260/400 + 25) !important;
 }
 .big-img {
     width: 100%;
@@ -521,7 +520,7 @@ a.crumb-text:hover {
     margin: auto;
 }
 .big-img.limit-height > * {
-    height: 800px !important;
+    height: calc(var(--max-content-width) * 0.7) !important;
 }
 .card > img {
     width: 100%;
