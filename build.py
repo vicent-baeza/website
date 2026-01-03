@@ -361,7 +361,7 @@ def head(path: str, page_title: str = "", scripts: str = ""):
     """
 
 
-def header(path) -> str:
+def header() -> str:
     tabs = '\n'.join([
         f'<a href="{rpath(tab.href)}" class="highlight"><i class="{tab.icon} ri-lg"></i> {tab.name}</a>'
         for tab in header_tabs
@@ -486,7 +486,7 @@ def generate(path: str, title: str, content: str | list[str], scripts: str = "",
         <html lang="en">
         {head(path, tab_title or title, scripts)}
         <body>
-            {header(path)}
+            {header()}
             <div class='page-content'>
                 <div class="content">
                     {content}
