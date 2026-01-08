@@ -164,8 +164,7 @@ body.loaded, body.loaded * {
 .content {
     display: block;
     margin: auto;
-    width: 60vh;
-    min-width: var(--max-content-width);
+    width: var(--max-content-width);
     min-height: 100%;
 }
 
@@ -289,6 +288,7 @@ h2 {
     line-height: 1.15rem;
 }
 h1, h2, .section {
+    scroll-margin-top: calc(var(--sp10) + var(--header-height));
     margin-top: var(--sp10);
     margin-bottom: var(--sp4);
 }
@@ -455,7 +455,7 @@ a.crumb-text:hover {
     border: 1px solid var(--border-muted);
     background: var(--bg-light);
     display: grid;
-    grid-template-columns: 6fr 0.5fr 6fr 5.5fr;
+    grid-template-columns: 7fr 1fr 7fr 6fr;
     grid-template-rows: repeat(2, 1fr);
     margin-bottom: var(--sp6);
 }
@@ -516,7 +516,7 @@ a.crumb-text:hover {
     width: 100%;
 }
 .big-img > * {
-    width: 70%;
+    width: 80%;
     margin: auto;
 }
 .big-img.limit-height > * {

@@ -1,5 +1,6 @@
 from collections.abc import MutableMapping
 from typing import Iterator, TypeVar, Any, Iterable
+from math import log
 
 K = TypeVar("K")
 V = TypeVar("V")
@@ -40,21 +41,26 @@ class ListDict(MutableMapping[K, list[V]]):
 
 class WordScoreTrie:
     def __init__(self):
-        self.count = 0
         self.children: dict[str, WordScoreTrie] = {}
         self.leaf_scores: dict[int, int] | None = None
         self.total_scores: dict[int, int] | None = None
-        self.score_configuration_index: int | None = None
 
-    def add(self, word: str, scores: dict[int, int]):
-        self.count += 1
+    def add(self, word: str, scores: dict[int, int], total_number_of_documents):
         if len(word) == 0:
-            self.leaf_scores = {idx: score*WORD_TRIE_CONST for idx, score in scores.items()}
+            if self.leaf_scores is None:
+                self.leaf_scores = {}
+
+            adjusted_idf_term = log(total_number_of_documents / (1 + len(scores))) + 1
+            print(adjusted_idf_term)
+            for idx, score in scores.items():
+                if idx not in self.leaf_scores:
+                    self.leaf_scores[idx] = 0
+                self.leaf_scores[idx] += int(10000 * score * adjusted_idf_term * WORD_TRIE_CONST) # TF-IDF (more or less, but TF is the score)
             return
         self.total_scores = None
         if word[0] not in self.children:
             self.children[word[0]] = WordScoreTrie()
-        self.children[word[0]].add(word[1:], scores)
+        self.children[word[0]].add(word[1:], scores, total_number_of_documents)
 
     @property
     def scores(self) -> dict[int, int]:
@@ -66,7 +72,7 @@ class WordScoreTrie:
                         continue
                     if score_idx not in self.total_scores:
                         self.total_scores[score_idx] = 0
-                    self.total_scores[score_idx] += score // 2
+                    self.total_scores[score_idx] += int(score * 0.8)
         return self.total_scores
 
     def as_dict(self, score_confs: list[list[int]], max_results: int = 5) -> dict[str, Any]:
@@ -90,3 +96,25 @@ class WordScoreTrie:
             content['C'] = children_as_dict
         return content
 
+    def as_dict_cumulative(self, score_confs: list[list[int]], max_results: int = 10) -> dict[str, Any]:
+        content = {}
+
+        sorted_scores = sorted(self.scores.items(), key=lambda x: x[1], reverse=True)
+        selected_scores = [score[0] for score in sorted_scores[:max_results]]
+
+        for idx, score_conf in enumerate(score_confs):
+            if score_conf == selected_scores:
+                score_conf_idx = idx #f'{idx}: {sorted_scores}'
+                break
+        else:
+            score_conf_idx = len(score_confs) #f'{len(score_confs)}: {sorted_scores}'
+            score_confs.append(selected_scores)
+
+        if len(self.children) > 0:
+            children_as_dict = {child_letter: child.as_dict_cumulative(score_confs, max_results) for child_letter, child in self.children.items()}
+            for child_letter, child_content in children_as_dict.items():
+                for child_content_key, child_content_value in child_content.items():
+                    content[child_letter + child_content_key] = child_content_value
+
+        content[""] = score_conf_idx
+        return content

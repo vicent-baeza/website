@@ -9,7 +9,7 @@ from typing import Iterable
 from dateutil.relativedelta import relativedelta
 from minify_html import minify # pylint: disable=E0611
 from utils import ListDict, WordScoreTrie
-
+from math import log
 
 # -----
 # UTILS
@@ -121,6 +121,7 @@ requested_local_paths = ListDict[str, str]()
 all_local_paths = set[str](['/', ''])
 search_sites = list[dict[str, str]]()
 word_search_scores = dict[str, dict[int, int]]()
+word_search_documents = dict[str, int]()
 
 class Site:
     def __init__(self, path: str, title: str):
@@ -409,6 +410,13 @@ footer: str = """
     </footer>
 """
 
+def valid_search_word(word: str):
+    if len(word) <= 2:
+        return False
+    if word in SEARCH_STOPWORDS:
+        return False
+    return True
+
 def build_word_search(content: str, site_index: int, word_value: int = 1):
     content = remove_html_tags(content).lower()
 
@@ -420,12 +428,12 @@ def build_word_search(content: str, site_index: int, word_value: int = 1):
     content = content.replace('ú', 'u').replace('ü', 'u')
     content = content.replace('ç', 'c').replace('ñ', 'n')
 
-    search_words = re.split(r'[^a-zA-Z]', content)
+    search_words = [s for s in re.split(r'[^a-zA-Z]', content) if valid_search_word(s)]
+    num = len(search_words)
+    if num == 0:
+        return
+
     for search_word in search_words:
-        if len(search_word) <= 2 or search_word in SEARCH_STOPWORDS:
-            continue
-        if search_word == '':
-            continue
         if search_word not in word_search_scores:
             word_search_scores[search_word] = {}
         if site_index not in word_search_scores[search_word]:
@@ -565,8 +573,11 @@ jobs = [
             p("""
                 Because R&D is such a large department, it was further split up into subdepartments, where most tasks landed. 
                 However, a small group of developers was kept to work in department-wide tasks, and as such didn't belong to any subdepartment. 
-                I found myself wrangled into said small group of developers, and although it gave me greater independence and autonomy, it also made it a bit tougher at times to coordinate with other members of R&D.
             """),
+            p("""
+                I found myself wrangled into said small group of developers, and although it gave me greater independence and autonomy, 
+                it also made it a bit tougher at times to properly coordinate with other members of R&D.
+            """)
         ]),
         h2_section('Automation tools', 'tools', [
             p("""
@@ -577,20 +588,33 @@ jobs = [
                 Building tools by myself in such a new environment right out of the gate was quite overwhelming. Despite this, and mostly thanks to my previous job, 
                 I had quite a lot of experience managing projects entirely by myself, and once I grew accustomed to Facephi's systems the development went smoothly.
             """),
+            p(f"""
+                All tools were developed in Python, using a multitude of libraries and APIs to implement their business logic, including 
+                {a('https://github.com/gtalarico/pyairtable', 'pyAirtable')},
+                {a('https://github.com/O365/python-o365', 'Python-O365')}, and
+                {a('https://github.com/pycontribs/jira', 'Jira Python')}; among many others. 
+                The AI Agents that some tools leveraged were built using the LangGraph/LangChain framework, and most tools were automated using Github Actions.
+            """),
         ]),
         h2_section('Data scrapping project', 'scrapping', [
-            p("""
+            p(f"""
                 Another big project that I took part in was a Data Scrapping project, which was responsible for extracting suitable images for further use. 
-                Although I cannot delve into the details of the project, I fully programmed the scrapper application by myself, and was completely automated.
-                I also was entirely responsible for collecting all the scrapped images and delivering them to the Data R&D subdepartment for further processing, with the ultimate goal of using them to train and improve production models.
+                Although I cannot delve into the details of the project, I fully programmed the scrapper application by myself, and it was completely automated.
+                The scrapper made heavy use of the {a('https://github.com/asweigart/pyautogui', 'pyAutoGUI')}, for automatic interaction with GUI applications.
             """),
             p("""
-                Although my contribution to the project ended when I delivered the final batch of images, it felt quite satisfying when, from time to time, I would see members of Data working with images that were extracted by my application.
+                I also was entirely responsible for collecting all the scrapped images and delivering them to the Data R&D subdepartment for further processing, 
+                with the ultimate goal of using them to train and improve production models.
+            """),
+            p("""
+                Although my contribution to the project ended when I delivered the final batch of images, it felt quite satisfying when, from time to time,
+                I would see members of Data working with images that were extracted by my application.
             """),
         ]),
         h2_section('Closing thoughts', 'closing', [
             p("""
-
+                Despite my short stay at the company, it was quite formative, mainly because it was my first taste in working in a big company.
+                Even if it felt overwhelming at times, in retrospect I now feel quite proud of what I managed to accomplish in just a few months.
             """)
         ])
     ]),
@@ -1079,7 +1103,7 @@ awards = [
     award_computer_engineering := Awards('/career/computer_engineering', 'Extraordinary Award in Computer Engineering', 'University of Alicante', '11/2024', [
         f'Awarded to the three students with the highest overall grades in the {a('/career/degree', 'Degree in Computer Engineering')}',
     ], [
-        olympiad_titlecard('../files/uni/logo.jpg', 'University of Alicante Logo', 'University of Alicante Extraordinary Award', 'Alicante, Spain', '2024', a('https://www.ua.es/en/', 'ua.es')),
+        olympiad_titlecard('../files/uni/logo.jpg', 'University of Alicante Logo', 'University Extraordinary Award', 'Alicante, Spain', '2024', a('https://www.ua.es/en/', 'ua.es')),
         p(f"""
             The Extraordinary Award ({it('Premio Extraordinario')} in Spanish) is a prestigious award given by the University of Alicante to the
             students that graduated with the highest overall grades for that school year. The award demostrates outstanding performance and commitment to academic excellence.
@@ -1522,14 +1546,16 @@ generate('/career', 'Career', [
 # --------------
 word_trie = WordScoreTrie()
 for word, scores in word_search_scores.items():
-    word_trie.add(word, scores)
-
+    word_trie.add(word, scores, len(paths) + 1)
 score_confs = list[list[int]]()
+words = word_trie.as_dict_cumulative(score_confs, 5)
+words = {w: words[w] for w in sorted(words) if len(w) > 1}
+print(f'# of paths: {len(paths)}, corr: {log(16/(3 + 1)) + 1}')
 with open('docs/files/search_data.json', 'w', encoding='utf-8') as f:
     json.dump({
         'sites': search_sites,
         'score_confs': score_confs,
-        'trie': word_trie.as_dict(score_confs, 5)['C'],
+        'words': words,
     }, f, indent=1)
 
 
