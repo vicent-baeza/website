@@ -1,12 +1,18 @@
 from collections.abc import MutableMapping
 from typing import Iterator, TypeVar, Any, Iterable
 from math import log
+from dataclasses import dataclass
 
 K = TypeVar("K")
 V = TypeVar("V")
 
-
 WORD_TRIE_CONST = 2**16
+
+@dataclass
+class SearchSite:
+    title: str
+    path: str
+    priority: int
 
 class ListDict(MutableMapping[K, list[V]]):
     def __init__(self) -> None:
@@ -51,7 +57,6 @@ class WordScoreTrie:
                 self.leaf_scores = {}
 
             adjusted_idf_term = log(total_number_of_documents / (1 + len(scores))) + 1
-            print(adjusted_idf_term)
             for idx, score in scores.items():
                 if idx not in self.leaf_scores:
                     self.leaf_scores[idx] = 0
@@ -96,10 +101,11 @@ class WordScoreTrie:
             content['C'] = children_as_dict
         return content
 
-    def as_dict_cumulative(self, score_confs: list[list[int]], max_results: int = 10) -> dict[str, Any]:
+    def as_dict_cumulative(self, score_confs: list[list[int]], sites: list[SearchSite], max_results: int = 10) -> dict[str, Any]:
         content = {}
-
-        sorted_scores = sorted(self.scores.items(), key=lambda x: x[1], reverse=True)
+        sorted_scores = sorted(self.scores.items(), key=lambda x: sites[x[0]].title)
+        sorted_scores = sorted(sorted_scores, key=lambda x: sites[x[0]].priority)
+        sorted_scores = sorted(sorted_scores, key=lambda x: x[1], reverse=True)
         selected_scores = [score[0] for score in sorted_scores[:max_results]]
 
         for idx, score_conf in enumerate(score_confs):
@@ -111,7 +117,7 @@ class WordScoreTrie:
             score_confs.append(selected_scores)
 
         if len(self.children) > 0:
-            children_as_dict = {child_letter: child.as_dict_cumulative(score_confs, max_results) for child_letter, child in self.children.items()}
+            children_as_dict = {child_letter: child.as_dict_cumulative(score_confs, sites, max_results) for child_letter, child in self.children.items()}
             for child_letter, child_content in children_as_dict.items():
                 for child_content_key, child_content_value in child_content.items():
                     content[child_letter + child_content_key] = child_content_value

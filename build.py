@@ -8,8 +8,7 @@ from dataclasses import dataclass
 from typing import Iterable
 from dateutil.relativedelta import relativedelta
 from minify_html import minify # pylint: disable=E0611
-from utils import ListDict, WordScoreTrie
-from math import log
+from utils import ListDict, WordScoreTrie, SearchSite
 
 # -----
 # UTILS
@@ -20,10 +19,6 @@ class SiteSection:
     title: str
     element_id: str
     content: str
-
-SEARCH_STOPWORDS = [
-    "i", "me", "my", "myself", "we", "our", "ours", "ourselves", "you", "your", "yours", "yourself", "yourselves", "he", "him", "his", "himself", "she", "her", "hers", "herself", "it", "its", "itself", "they", "them", "their", "theirs", "themselves", "what", "which", "who", "whom", "this", "that", "these", "those", "am", "is", "are", "was", "were", "be", "been", "being", "have", "has", "had", "having", "do", "does", "did", "doing", "a", "an", "the", "and", "but", "if", "or", "because", "as", "until", "while", "of", "at", "by", "for", "with", "about", "against", "between", "into", "through", "during", "before", "after", "above", "below", "to", "from", "up", "down", "in", "out", "on", "off", "over", "under", "again", "further", "then", "once", "here", "there", "when", "where", "why", "how", "all", "any", "both", "each", "few", "more", "most", "other", "some", "such", "no", "nor", "not", "only", "own", "same", "so", "than", "too", "very", "s", "t", "can", "will", "just", "don", "should", "now"
-]
 
 def is_external_path(path: str) -> bool:
     return path.startswith('http')
@@ -89,6 +84,9 @@ def hash_file(path: str, buffer_size : int = 65536) -> str:
             file_hash.update(data)
     return file_hash.hexdigest()
 
+def remove_html_tags(content: str) -> str:
+    return re.sub(r'<.*?>', ' ', content)
+
 def extract_all_ids(content: str) -> Iterable[str]:
     pattern = re.compile(r"id=(\"|')(.*?)(\1)")
     for match in re.finditer(pattern, content):
@@ -96,12 +94,11 @@ def extract_all_ids(content: str) -> Iterable[str]:
 
 def extract_all_sections(content: str) -> Iterable[SiteSection]:
     content = content.replace('\n', '')
-    pattern = re.compile(r"<h2(?:.*?) id=(\"|')(.*?)(\1)>(.*?)<\/h2>(.*?)(?:(?=<h2)|$)")
+    pattern = re.compile(r"<(h2|div)(?:[^<>]*?) id=(\"|')(.*?)(\2)>(.*?)<\/\1>(.*?)(?:(?=<(h2|div)(?:[^<>]*?) id=)|$)")
     for match in re.finditer(pattern, content):
-        yield SiteSection(match.group(4), match.group(2), match.group(5))
+        yield SiteSection(remove_html_tags(match.group(5)).strip(), match.group(3), match.group(6))
 
-def remove_html_tags(content: str) -> str:
-    return re.sub(r'<.*?>', ' ', content)
+
 
 CSS_HASH = 1 #hash_file('docs/styles.css')
 JS_HASH = 1 #hash_file('docs/scripts.js')
@@ -119,7 +116,7 @@ requested_local_paths = ListDict[str, str]()
 
 # global data
 all_local_paths = set[str](['/', ''])
-search_sites = list[dict[str, str]]()
+search_sites = list[SearchSite]()
 word_search_scores = dict[str, dict[int, int]]()
 word_search_documents = dict[str, int]()
 
@@ -277,9 +274,10 @@ def education_titlecard(image_src: str, image_alt_text: str, institution: str, l
 
 def section(name: str, element_id: str = ''):
     return div('section', [
-        div('section-title', name, '' if element_id == '' else f'id="{element_id}"'),
+        div('section-title', name),
         div('section-divider'),
-    ])
+    ], '' if element_id == '' else f'id="{element_id}"')
+
 def title_section(title: str, elements: list[str], button_href : str | None = None, max_elements: int = 3, content_before_elements: str = ''):    
     return div('title-section', [
         div('title-section-title', title),
@@ -381,7 +379,7 @@ def header() -> str:
                     <span class="btn highlight dark darkmode-button" title="Dark Theme">
                         <i class="ri-moon-line ri-lg"></i>
                     </span>
-                    <span class="btn highlight" title="Search">
+                    <span id='search-button' class="btn highlight" title="Search">
                         <i class="ri-search-line ri-lg"></i>
                     </span>
                 </div>
@@ -410,12 +408,8 @@ footer: str = """
     </footer>
 """
 
-def valid_search_word(word: str):
-    if len(word) <= 2:
-        return False
-    if word in SEARCH_STOPWORDS:
-        return False
-    return True
+def valid_search_word(search_word: str):
+    return len(search_word) > 1
 
 def build_word_search(content: str, site_index: int, word_value: int = 1):
     content = remove_html_tags(content).lower()
@@ -440,7 +434,7 @@ def build_word_search(content: str, site_index: int, word_value: int = 1):
             word_search_scores[search_word][site_index] = 0
         word_search_scores[search_word][site_index] += word_value
 
-def generate(path: str, title: str, content: str | list[str], scripts: str = "", tab_title: str | None = None):
+def generate(path: str, title: str, content: str | list[str], scripts: str = "", tab_title: str | None = None, site_priority = 10):
     if isinstance(content, list):
         content = "".join(content)
 
@@ -469,8 +463,8 @@ def generate(path: str, title: str, content: str | list[str], scripts: str = "",
 
     # build word search scores
     site_index = len(search_sites)
-    search_sites.append({'path': absolute_path, 'title': search_title})
-    build_word_search(content, site_index)
+    search_sites.append(SearchSite(search_title, absolute_path, site_priority))
+    #build_word_search(content, site_index)
     build_word_search(title, site_index, 100)
 
     # build section word search scores
@@ -479,9 +473,9 @@ def generate(path: str, title: str, content: str | list[str], scripts: str = "",
         section_index = len(search_sites)
         section_path = f'{absolute_path}#{site_section.element_id}'
         section_title = f'{search_title}: {site_section.title}'
-        search_sites.append({'path': section_path, 'title': section_title})
-        build_word_search(content, section_index)
-        build_word_search(title, section_index, 20)
+        search_sites.append(SearchSite(section_title, section_path, site_priority // 10))
+        #build_word_search(content, section_index)
+        build_word_search(section_title, section_index, 20)
 
 
     if title != '':
@@ -509,7 +503,45 @@ def generate(path: str, title: str, content: str | list[str], scripts: str = "",
                 <div id='fullscreen-card' class='card card-hl'>
                     <div id='fullscreen-card-title' class="card-title">Estalmat Participation Certificate</div>
                     <div id='fullscreen-card-date' class="card-date">05/2017</div>
-                    <div id='fullscreen-card-content' class='card-content'>
+                    <div id='fullscreen-card-content' class='card-content'></div>
+                </div>
+            </div>
+            <div id='search-bg'>
+                <div id='search-div'>
+                    <input id='search-textbox' type='text' placeholder='Search for pages...'>
+                    <div id='search-separator'></div>
+                    <div id="search-options">
+                        <a class='search-option'>
+                            <div class='search-option-text'>Home</div>
+                            <div class="search-option-divider"></div>
+                            <div class="search-option-link">/</div>
+                        </a>
+                        <a class='search-option'>
+                            <div class='search-option-text'>Career: Work</div>
+                            <div class="search-option-divider"></div>
+                            <div class="search-option-link">/career#work</div>
+                        </a>
+                        <a class='search-option'>
+                            <div class='search-option-text'>Compliance CMS</div>
+                            <div class="search-option-divider"></div>
+                            <div class="search-option-link">/career/compliance_cms</div>
+                        </a>
+                        <a class='search-option'>
+                            <div class='search-option-text'>Compliance CMS: My Experience</div>
+                            <div class="search-option-divider"></div>
+                            <div class="search-option-link">/career/compliance_cms#my_experience</div>
+                        </a>
+                            <a class='search-option'>
+                            <div class='search-option-text'>Compliance CMS: My Experience</div>
+                            <div class="search-option-divider"></div>
+                            <div class="search-option-link">/career/compliance_cms#my_experience</div>
+                        </a>
+                        <a class='search-option'>
+                            <div class='search-option-text'>Compliance CMS: My Experience</div>
+                            <div class="search-option-divider"></div>
+                            <div class="search-option-link">/career/compliance_cms#my_experience</div>
+                        </a>
+                    </div>
                 </div>
             </div>
         </body>
@@ -531,6 +563,12 @@ def generate(path: str, title: str, content: str | list[str], scripts: str = "",
     tags.add(path)
     paths.add(path)
 
+build_word_search('LinkedIn', len(search_sites), 20)
+search_sites.append(SearchSite('LinkedIn', 'https://linkedin.com/in/vbaeza/', 25))
+build_word_search('Email', len(search_sites), 20)
+search_sites.append(SearchSite('Email', 'mailto:vicentbaeza7@gmail.com', 25))
+build_word_search('Github', len(search_sites), 20)
+search_sites.append(SearchSite('Github', 'https://github.com/vicent-baeza', 25))
 
 # ----
 # WORK
@@ -732,7 +770,7 @@ jobs = [
 ]
 
 for job in jobs:
-    generate(job.path, job.alt_title or job.company, job.content, tab_title=job.alt_tab_title or job.alt_title or job.company)
+    generate(job.path, job.alt_title or job.company, job.content, tab_title=job.alt_tab_title or job.alt_title or job.company, site_priority=50)
 
 
 # ---------
@@ -970,7 +1008,7 @@ educations = [
             ),
         ]),
     ]),
-    education_techscouts := Education('/career/tech_scouts', 'Tech Scouts: Computer Science', 'Harbour Space', '07/2019 — 07/2019', [
+    education_techscouts := Education('/career/tech_scouts', 'Tech Scouts Computer Science', 'Harbour Space', '07/2019 — 07/2019', [
         'Intensive 3-week summer course focusing computer science and advanced mathematics.',
         f'Invitation received for winning a Gold Medal at the {a('/career/oicat', 'Catalan Olympiad in Informatics')} in 2019.',
     ], [
@@ -1080,7 +1118,7 @@ educations = [
     ]),
 ]
 for education in educations:
-    generate(education.path, education.title, education.content)
+    generate(education.path, education.title, education.content, site_priority=20)
 
 
 # ------
@@ -1487,17 +1525,17 @@ projects_content = []
 for project_type, project_type_projects in projects.items():
     if len(project_type_projects) == 0:
         continue
-    projects_content.append(section(f'{project_type} projects'))
+    projects_content.append(section(f'{project_type} projects'.title(), project_type))
     for project in project_type_projects:
         projects_content.append(
             card(project.path, project.title, project.institution, '', project.date, ul(project.keypoints) + taglist(project.tags))
         )
-generate('/projects', 'Projects', projects_content)
+generate('/projects', 'Projects', projects_content, site_priority=90)
 
 for project_type, project_type_projects in projects.items():
     for project in project_type_projects:
         if project.content is not None:
-            generate(project.path, project.title, project.content)
+            generate(project.path, project.title, project.content, site_priority=15)
         else:
             requested_local_paths.add(project.path)
 
@@ -1521,7 +1559,7 @@ generate("index", '', [
         card(award.path, award.title, award.institution, '', award.date, ul(award.keypoints))
         for award in awards
     ], '/career#awards', 3),
-])
+], site_priority=110)
 
 generate('/career', 'Career', [
     section('Work', 'work'),
@@ -1539,21 +1577,34 @@ generate('/career', 'Career', [
         card(award.path, award.title, award.institution, '', award.date, ul(award.keypoints))
         for award in awards
     ]
-])
+], site_priority=100)
 
-# --------------
-# GENERATE FILES
-# --------------
+# --------------------
+# GENERATE SEARCH DATA
+# --------------------
+MAX_SEARCH_RESULTS = 6
+MAX_CONF_SIZE = 20
+
+# build the trie of words
 word_trie = WordScoreTrie()
 for word, scores in word_search_scores.items():
-    word_trie.add(word, scores, len(paths) + 1)
+    word_trie.add(word, scores, len(paths))
+
+# build the score confs for each word
 score_confs = list[list[int]]()
-words = word_trie.as_dict_cumulative(score_confs, 5)
-words = {w: words[w] for w in sorted(words) if len(w) > 1}
-print(f'# of paths: {len(paths)}, corr: {log(16/(3 + 1)) + 1}')
+words = word_trie.as_dict_cumulative(score_confs, search_sites, MAX_CONF_SIZE)
+words = {w: words[w] for w in sorted(words)}
+
+# add "" manually (based on site priority)
+words[''] = len(score_confs)
+search_sites_sorted = sorted(search_sites, key=lambda x: x.title)
+search_sites_sorted = sorted(search_sites_sorted, key=lambda x: x.priority, reverse=True)
+score_confs.append([search_sites.index(x) for x in search_sites_sorted[:MAX_SEARCH_RESULTS]])
+
+# save the json file
 with open('docs/files/search_data.json', 'w', encoding='utf-8') as f:
     json.dump({
-        'sites': search_sites,
+        'sites': [{'path': site.path, 'title': site.title} for site in search_sites],
         'score_confs': score_confs,
         'words': words,
     }, f, indent=1)
