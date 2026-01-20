@@ -134,10 +134,10 @@ function switch_search_visibility(e) {
 }
 search_button.onclick = switch_search_visibility
 search_bg.onclick = switch_search_visibility
-search_div.onclick = function(e) { // to not propagate the click to the BG when clicking the div
-    e.stopPropagation();
-    e.preventDefault();
-}
+// search_div.onclick = function(e) { // to not propagate the click to the BG when clicking the div
+//     e.stopPropagation();
+//     e.preventDefault();
+// }
 
 // update sites based on search string:
 function onSearchChange(e) {
