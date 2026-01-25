@@ -498,7 +498,7 @@ def generate(path: str, title: str, content: str | list[str], scripts: str = "",
             {footer}
             <div id='fullscreen'>
                 <div id='fullscreen-image'>
-                    <img src='files/estalmat/diploma.jpg' alt="Estalmat Certificate" class='card-content'>
+                    <img src='files/education/estalmat/diploma.jpg' alt="Estalmat Certificate" class='card-content'>
                 </div>
                 <div id='fullscreen-card' class='card card-hl'>
                     <div id='fullscreen-card-title' class="card-title">Estalmat Participation Certificate</div>
@@ -589,7 +589,7 @@ jobs = [
         'Built several automation & data scrapping tools leveraging AI agents.',
         'Extracted key information used to train production models.',
     ], ['Python', 'LangGraph', 'GitHub Actions'], [
-        job_titlecard('../files/facephi/logo.jpg', 'Facephi Logo', 'R&D AI Engineer', 'Alicante, Spain', '09/2025 — Present', a('https://facephi.com/en/', 'facephi.com'), ['Python', 'LangGraph', 'GitHub Actions']),
+        job_titlecard('../files/work/facephi/logo.jpg', 'Facephi Logo', 'R&D AI Engineer', 'Alicante, Spain', '09/2025 — Present', a('https://facephi.com/en/', 'facephi.com'), ['Python', 'LangGraph', 'GitHub Actions']),
         h2_section('About the company', 'about', [
             p("""
                 Facephi is a biometrics company specializing in Digital Identity, Authentication & Onboarding.
@@ -597,7 +597,7 @@ jobs = [
             """),
             div('big-img',
                 card_img_nohover(
-                    '../files/facephi/office.jpg',
+                    '../files/work/facephi/office.jpg',
                     'Facephi Headquarters in Alicante, Spain',
                 )
             ),
@@ -660,7 +660,7 @@ jobs = [
         'Single-handedly developed and maintained two full-stack web applications.',
         'Planning, design, implementation & delivery of new features from scratch.',
     ], ['PHP', 'JS', 'Vue.JS', 'SQL'], [
-        job_titlecard('../files/compliance_cms/logo.jpg', 'ComplianceCMS Logo', 'Software Engineer', 'Alicante, Spain', '07/2023 — 09/2025', a('https://compliancecms.com/', 'compliancecms.com'), ['PHP', 'JS', 'Vue.JS', 'SQL']),
+        job_titlecard('../files/work/compliance_cms/logo.jpg', 'ComplianceCMS Logo', 'Software Engineer', 'Alicante, Spain', '07/2023 — 09/2025', a('https://compliancecms.com/', 'compliancecms.com'), ['PHP', 'JS', 'Vue.JS', 'SQL']),
         h2_section("About the company", 'about', [
             p("""
                 Compliance CMS is a small Spanish consultancy firm. If offers comprehensive services in many areas of Spanish & EU law, but mainly specializes in Criminal Compliance & Corporate Risk Mitigation.
@@ -668,7 +668,7 @@ jobs = [
             """),
             div('big-img',
                 card_img_nohover(
-                    '../files/compliance_cms/photo.jpg',
+                    '../files/work/compliance_cms/photo.jpg',
                     'Photo we did for a photoshoot (yes, I didn\'t have any other photos)',
                 )
             ),
@@ -788,7 +788,7 @@ educations = [
     education_master := Education('/career/master', "Master's Degree in Data Science", 'University of Alicante', '09/2024 — 06/2025', [
         'Grade: 9.05/10',
     ], [
-        education_titlecard('../files/uni/logo.jpg', 'University of Alicante Logo', 'University of Alicante', 'Alicante, Spain', '09/2024 — 06/2025', a('https://web.ua.es/en/masteres/ciencia-de-datos/', 'web.ua.es/masteres/ciencia-de-datos')),
+        education_titlecard('../files/education/uni/logo.jpg', 'University of Alicante Logo', 'University of Alicante', 'Alicante, Spain', '09/2024 — 06/2025', a('https://web.ua.es/en/masteres/ciencia-de-datos/', 'web.ua.es/masteres/ciencia-de-datos')),
         h2_section("About the degree", 'about', [
             p("""
                 The Data Science Master's Degree of the University of Alicante, as the name implies, is a master's degree that delves deep in Data Science and Machine Learning,
@@ -800,7 +800,7 @@ educations = [
             """), 
             div('big-img',
                 card_img_nohover_vw(
-                    '../files/uni/master/ciencias6.jpg',
+                    '../files/education/uni/master/ciencias6.jpg',
                     "Faculty of Science #6 aka 'The Bunker', University of Alicante",
                 )
             ),
@@ -826,7 +826,7 @@ educations = [
             """),
             div('big-img',
                 card_img_nohover_vw(
-                    '../files/uni/master/graduation.jpg',
+                    '../files/education/uni/master/graduation.jpg',
                     f"Receiving the diploma alongside four other fellow graduates. {a('https://audiovisual.ua.es/fotoweb/archives/5014-2025-Universidad-de-Alicante/?25=TURNO%202', 'Source')}",
                     "Receiving the diploma alongside four other fellow graduates.",
                 )
@@ -836,7 +836,7 @@ educations = [
                 some lessons overlapped with the Computation specialization of the {a('/career/degree', 'University Degree in Computing Engineering')}, which I had already completed, so it was a bit of a shame to be re-taught some lessons.
             """),
             div('halfs limit-height', [
-                card_img('Diploma', '11/2025', '../files/uni/master/diploma.jpg', [
+                card_img('Diploma', '11/2025', '../files/education/uni/master/diploma.jpg', [
                     BR,
                     p('Digital scan of the certificate (in Spanish).'),
                     p('English translation:'),
@@ -866,8 +866,8 @@ educations = [
                 card_link_img(
                     'Data Science Final Project Report',
                     '06/2025',
-                    '../files/uni/master/tfm_portada.jpg',
-                    '../files/uni/master/tfm.pdf'
+                    '../files/education/uni/master/tfm_portada.jpg',
+                    '../files/education/uni/master/tfm.pdf'
                 )
             ),
         ]),
@@ -877,7 +877,7 @@ educations = [
         'Graduated as part of the High Academic Performance group (ARA group), with a specialization in Computing.',
         f'Received the {a('/career/computer_engineering', 'Extraordinary Award in Computer Engineering')} for outstanding performance.',
     ], [
-        education_titlecard('../files/uni/logo.jpg', 'University of Alicante Logo', 'University of Alicante', 'Alicante, Spain', '09/2020 — 06/2024', a('https://web.ua.es/en/grados/grado-en-ingenieria-informatica/', 'web.ua.es/en/grados/grado-en-ingenieria-informatica')),
+        education_titlecard('../files/education/uni/logo.jpg', 'University of Alicante Logo', 'University of Alicante', 'Alicante, Spain', '09/2020 — 06/2024', a('https://web.ua.es/en/grados/grado-en-ingenieria-informatica/', 'web.ua.es/en/grados/grado-en-ingenieria-informatica')),
         h2_section("About the degree", 'about', [
             p("""
                 The Computer Engineering Degree of the University of Alicante is one of the biggest degrees of the university, 
@@ -889,12 +889,12 @@ educations = [
             """),
             div('halfs', [
                 card_img_nohover_vw(
-                    '../files/uni/degree/aulario2.jpg',
+                    '../files/education/uni/degree/aulario2.jpg',
                     f'{a('https://maps.app.goo.gl/Qcc5nMVLtiynigZd7', 'General Lecture Building #2')}, University of Alicante',
                     'General Lecture Building #2, University of Alicante',
                 ),
                 card_img_nohover_vw(
-                    '../files/uni/degree/politecnica1.jpg',
+                    '../files/education/uni/degree/politecnica1.jpg',
                     f'{a('https://maps.app.goo.gl/NNCaDZYuusAsSt4c9', 'Polytechnic University College #1')}, University of Alicante',
                     'Polytechnic University College #1, University of Alicante',
                 ),
@@ -940,7 +940,7 @@ educations = [
             """),
             div('big-img',
                 card_img_nohover(
-                    '../files/uni/degree/graduation.jpg',
+                    '../files/education/uni/degree/graduation.jpg',
                     f'Receiving the graduation diploma alongside both other honorees of the 2024 Extraordinary Award in Computer Engineering. {a('https://eps.ua.es/es/graduacion/graduacion-2024.html', 'Source')}',
                     'Honorees of the 2024 Extraordinary Award in Computer Engineering',
                 ),
@@ -951,7 +951,7 @@ educations = [
                 I also recieved honors in 13 out of the 38 courses of the degree, which (to my knowledge) was the hightest number out of anyone that graduated in 2024.
             """),
             div('halfs limit-height', [
-                card_img('Diploma', '11/2024', '../files/uni/degree/diploma.jpg', [
+                card_img('Diploma', '11/2024', '../files/education/uni/degree/diploma.jpg', [
                     BR,
                     p('Digital scan of the certificate (in Spanish).'),
                     p('English translation:'),
@@ -964,7 +964,7 @@ educations = [
                     p("Degree in Computer Engineering — 2010 Plan"),
                     p("Alicante, 22nd of November 2024"),
                 ]),
-                card_img('Official Certificate', '06/2024', '../files/uni/degree/title.jpg', [
+                card_img('Official Certificate', '06/2024', '../files/education/uni/degree/title.jpg', [
                     BR,
                     p('Digital scan of the certificate (in Spanish).'),
                     p('Some personal details have been redacted.'),
@@ -1002,8 +1002,8 @@ educations = [
                 card_link_img(
                     'Computer Engineering Final Project Report',
                     '05/2024',
-                    '../files/uni/degree/tfg_portada.jpg',
-                    '../files/uni/degree/tfg.pdf'
+                    '../files/education/uni/degree/tfg_portada.jpg',
+                    '../files/education/uni/degree/tfg.pdf'
                 )
             ),
         ]),
@@ -1012,7 +1012,7 @@ educations = [
         'Intensive 3-week summer course focusing computer science and advanced mathematics.',
         f'Invitation received for winning a Gold Medal at the {a('/career/oicat', 'Catalan Olympiad in Informatics')} in 2019.',
     ], [
-        education_titlecard('../files/techScouts/logo.jpg', 'Harbour Space Logo', 'Harbour Space', 'Barcelona, Spain', '07/2019', a('https://harbour.space/', 'harbour.space')),
+        education_titlecard('../files/education/tech_scouts/logo.jpg', 'Harbour Space Logo', 'Harbour Space', 'Barcelona, Spain', '07/2019', a('https://harbour.space/', 'harbour.space')),
         p(f"""The Computer Science course of Tech Scouts is an intensive 3-week summer course. 
             Although the course itself can be pricey, I managed to get it for free as part of the prize for winning a Gold Medal at the {a('/career/oicat', '2019 Catalan Olympiad in Informatics')}.
         """),
@@ -1023,7 +1023,7 @@ educations = [
         """),
         div('big-img',
             card_img_nohover(
-                '../files/techScouts/campus.jpg',
+                '../files/education/tech_scouts/campus.jpg',
                 f'St Paul\'s School Campus, Barcelona. {a('https://www.stpauls.es/ca/', 'Source')}',
                 'St Paul\'s School Campus, Barcelona',
             )
@@ -1035,7 +1035,7 @@ educations = [
         """),
         div('big-img',
             card_img_nohover(
-                '../files/techScouts/inauguration.jpg',
+                '../files/education/tech_scouts/inauguration.jpg',
                 f'Tech Scouts 2019 inauguration. {a('https://www.youtube.com/watch?v=ubKpdt0o-Vc', 'Source')}',
                 'Tech Scouts 2019 inauguration',
             )
@@ -1072,7 +1072,7 @@ educations = [
         '4-year weekly math program for promoting and developing math and reasoning skills.',
         'Learned a lot of foundational concepts that fueled my current passion for math and computer science.',
     ], [
-        education_titlecard('../files/estalmat/logo.jpg', 'ESTALMAT CV Logo', 'Estalmat Comunitat Valenciana', 'Alicante, Valencia & Castellón', '09/2015 — 05/2019', a('https://estalmatcv.blogs.uv.es/', 'estalmatcv.blogs.uv.es')),
+        education_titlecard('../files/education/estalmat/logo.jpg', 'ESTALMAT CV Logo', 'Estalmat Comunitat Valenciana', 'Alicante, Valencia & Castellón', '09/2015 — 05/2019', a('https://estalmatcv.blogs.uv.es/', 'estalmatcv.blogs.uv.es')),
         p("""
             ESTALMAT is a Spanish program for the promotion and development of math and reasoning skills among children and teenagers.
             Promoted by the Spanish Royal Academy of Exact, Physical and Natural Sciences, the program offers extracurricular intensive math classes.
@@ -1087,7 +1087,7 @@ educations = [
         """),
         div('big-img',
             card_img_nohover(
-                '../files/estalmat/reunion.jpg',
+                '../files/education/estalmat/reunion.jpg',
                 f'Some members of ESTALMAT 2015-2019, reunited. {a('https://semcv.org/faseautonomica/olimpiades-autonomiques-anteriors/988-xxix-olimpiada-matematica-2018', 'Source')}',
                 'ESTALMAT 2015-2019 reunion.',
             )
@@ -1099,7 +1099,7 @@ educations = [
             card_img(
                 'ESTALMAT Participation Certificate',
                 '05/2017',
-                '../files/estalmat/diploma.jpg',
+                '../files/education/estalmat/diploma.jpg',
                 [
                     BR,
                     p('Digital scan of the certificate (in Spanish).'),
@@ -1141,7 +1141,7 @@ awards = [
     award_computer_engineering := Awards('/career/computer_engineering', 'Extraordinary Award in Computer Engineering', 'University of Alicante', '11/2024', [
         f'Awarded to the three students with the highest overall grades in the {a('/career/degree', 'Degree in Computer Engineering')}',
     ], [
-        olympiad_titlecard('../files/uni/logo.jpg', 'University of Alicante Logo', 'University Extraordinary Award', 'Alicante, Spain', '2024', a('https://www.ua.es/en/', 'ua.es')),
+        olympiad_titlecard('../files/education/uni/logo.jpg', 'University of Alicante Logo', 'University Extraordinary Award', 'Alicante, Spain', '2024', a('https://www.ua.es/en/', 'ua.es')),
         p(f"""
             The Extraordinary Award ({it('Premio Extraordinario')} in Spanish) is a prestigious award given by the University of Alicante to the
             students that graduated with the highest overall grades for that school year. The award demostrates outstanding performance and commitment to academic excellence.
@@ -1153,7 +1153,7 @@ awards = [
         """),
         div('big-img',
             card_img_nohover(
-                '../files/uni/degree/graduation.jpg',
+                '../files/education/uni/degree/graduation.jpg',
                 f'Honorees of the 2024 Extraordinary Award in Computer Engineering. {a('https://eps.ua.es/es/graduacion/graduacion-2024.html', 'Source')}',
                 'Honorees of the 2024 Extraordinary Award in Computer Engineering',
             )
@@ -1163,7 +1163,7 @@ awards = [
             The other awarded students were Eric Ayllón Palazón and Diego Luchmun Corbalán, also pictured in the above photo.
         """),
         div('big-img',
-            card_img_vw('Certificate for the Extraordinary Award', '01/2025', '../files/uni/degree/award.jpg', [
+            card_img_vw('Certificate for the Extraordinary Award', '01/2025', '../files/education/uni/degree/award.jpg', [
                 BR,
                 p('Digital scan of the certificate (in Spanish & Catalan)'),
                 p('Some personal details have been redacted.'),
@@ -1186,7 +1186,7 @@ awards = [
         'Participated as part of the Spanish team',
         f'Awarded for obtaining a Gold Medal in the {a('/career/oie', 'Spanish Olympiad in Informatics')}'
     ], [
-        olympiad_titlecard('../files/ioi/logo.jpg', 'IOI Logo', 'International Olympiad in Informatics', 'Baku, Azerbaijan', '2019', a('https://ioinformatics.org', 'ioinformatics.org')),
+        olympiad_titlecard('../files/contests/ioi/logo.jpg', 'IOI Logo', 'International Olympiad in Informatics', 'Baku, Azerbaijan', '2019', a('https://ioinformatics.org', 'ioinformatics.org')),
         p("""
             The International Olympiad in Informatics (IOI) is a yearly competition in which students from all around the world 
             test their competitive programming skills. It is one of the most prestigious competitions in the world of competitive programming, and to participate you have to get selected through your country's olympiad process.
@@ -1201,7 +1201,7 @@ awards = [
         """),
         div('big-img',
             card_img_nohover(
-                '../files/ioi/stadium.jpg',
+                '../files/contests/ioi/stadium.jpg',
                 f'National Gymnastics Arena in Baku, Azerbaijan. {a('https://olimpiada-informatica.org/content/resultados-ioi-2019-en-bak%C3%BA-azerbaiy%C3%A1n', 'Source')}',
                 'National Gymnastics Arena in Baku, Azerbaijan',
             )
@@ -1211,7 +1211,7 @@ awards = [
         """),
         div('big-img',
             card_img_nohover(
-                '../files/ioi/village.jpg',
+                '../files/contests/ioi/village.jpg',
                 f'Athletes\' Village in Baku, Azerbaijan. {a('https://bakuathletesvillage.com/', 'Source')}',
                 'Athletes\' Village in Baku, Azerbaijan',
             )
@@ -1228,7 +1228,7 @@ awards = [
             card_img_vw(
                 'IOI Participation Certificate',
                 '08/2019',
-                '../files/ioi/diploma.jpg',
+                '../files/contests/ioi/diploma.jpg',
                 [
                     BR,
                     p('Digital scan of the certificate.')
@@ -1241,7 +1241,7 @@ awards = [
         'Gold Medal in the 2019 edition',
         'Silver Medal in the 2018 & 2020 editions',
     ], [
-        olympiad_titlecard('../files/oie/logo.jpg', 'OIE Logo', 'Spanish Olympiad in Informatics', 'Barcelona, Spain', '2018 — 2020', a('https://olimpiada-informatica.org', 'olimpiada-informatica.org')),
+        olympiad_titlecard('../files/contests/oie/logo.jpg', 'OIE Logo', 'Spanish Olympiad in Informatics', 'Barcelona, Spain', '2018 — 2020', a('https://olimpiada-informatica.org', 'olimpiada-informatica.org')),
         p("""
             The Spanish Olympiad in Informatics (OIE) is a yearly competition in which students from all around Spain 
             participate to test their competitive programming skills.
@@ -1268,7 +1268,7 @@ awards = [
         """),
         BR,
         div('halfs limit-height', [
-            card_img('2018 Diploma', '06/2018', '../files/oie/diploma2018.jpg', [
+            card_img('2018 Diploma', '06/2018', '../files/contests/oie/diploma2018.jpg', [
                 BR,
                 p('Digital scan of the certificate (in Spanish).'),
                 p('English translation:'),
@@ -1280,7 +1280,7 @@ awards = [
                 p("in the 2018 Spanish Olympiad in Informatics"),
                 p("Barcelona, 16th of June 2018")
             ]),
-            card_img('2019 Diploma', '04/2019', '../files/oie/diploma2019.jpg', [
+            card_img('2019 Diploma', '04/2019', '../files/contests/oie/diploma2019.jpg', [
                 BR,
                 p('Digital scan of the certificate (in Spanish).'),
                 p('English translation:'),
@@ -1296,7 +1296,7 @@ awards = [
     award_oicat := Awards('/career/oicat', 'Catalan Olympiad in Informatics', 'OICat', '2019 — 2020', [
         'Gold Medal in the 2019 & 2020 editions',
     ], [
-        olympiad_titlecard('../files/oicat/logo.jpg', 'OICat Logo', 'Catalan Olympiad in Informatics', 'Barcelona, Spain', '2019 — 2020', a('https://olimpiada-informatica.cat', 'olimpiada-informatica.cat')),
+        olympiad_titlecard('../files/contests/oicat/logo.jpg', 'OICat Logo', 'Catalan Olympiad in Informatics', 'Barcelona, Spain', '2019 — 2020', a('https://olimpiada-informatica.cat', 'olimpiada-informatica.cat')),
         p("""
             The Catalan Olympiad in Informatics (OICat) is a yearly competition in which students from 
             Catalonia and the Valencian Community can participate. 
@@ -1308,7 +1308,7 @@ awards = [
         """),
         div('big-img',
             card_img_nohover(
-                '../files/oicat/photo2019.jpg',
+                '../files/contests/oicat/photo2019.jpg',
                 f'Participants (including me!) solving problems in the 2019 OICat. {a('https://olimpiada-informatica.cat/oicat-2019/', 'Source')}',
                 'OICat participants solving problems',
             )
@@ -1324,12 +1324,12 @@ awards = [
         """),
         div('halfs', [
             card_img_nohover_vw(
-                '../files/oicat/winners2019.jpg',
+                '../files/contests/oicat/winners2019.jpg',
                 f'2019 OICat winners. {a('https://olimpiada-informatica.cat/oicat-2019/', 'Source')}',
                 '2019 OICat winners',
             ),
             card_img_nohover_vw(
-                '../files/oicat/winners2020.jpg',
+                '../files/contests/oicat/winners2020.jpg',
                 f'2020 OICat winners. {a('https://olimpiada-informatica.cat/oicat-2020/', 'Source')}',
                 '2020 OICat winners',
             )
@@ -1341,7 +1341,7 @@ awards = [
         """),
         BR,
         div('halfs limit-height', [
-            card_img('2019 Diploma', '06/2019', '../files/oicat/diploma2019.jpg', [
+            card_img('2019 Diploma', '06/2019', '../files/contests/oicat/diploma2019.jpg', [
                 BR,
                 p('Digital scan of the certificate (in Catalan).'),
                 p('English translation:'),
@@ -1352,11 +1352,11 @@ awards = [
                 p("has been awarded the GOLD MEDAL in the final of the 2019 Catalan Olympiad in Informatics"), 
                 p("Barcelona, 15th of June 2019"),
             ]),
-            card_img('2019 Gold Medal', '06/2019', '../files/oicat/medal2019.jpg', [
+            card_img('2019 Gold Medal', '06/2019', '../files/contests/oicat/medal2019.jpg', [
                 BR,
                 p('Photo of the Gold Medal')
             ]),
-            card_img('2020 Diploma', '09/2020', '../files/oicat/diploma2020.jpg', [
+            card_img('2020 Diploma', '09/2020', '../files/contests/oicat/diploma2020.jpg', [
                 BR,
                 p('Digital scan of the certificate (in Catalan).'),
                 p('English translation:'),
@@ -1367,7 +1367,7 @@ awards = [
                 p("has been awarded the GOLD MEDAL in the final of the 2020 Catalan Olympiad in Informatics"), 
                 p("Barcelona, 5th of September 2020"),
             ]),
-            card_img('2020 Gold Medal', '09/2020', '../files/oicat/medal2020.jpg', [
+            card_img('2020 Gold Medal', '09/2020', '../files/contests/oicat/medal2020.jpg', [
                 BR,
                 p('Photo of the Gold Medal')
             ]),
@@ -1378,7 +1378,7 @@ awards = [
         'Second Prize in the 2013 edition',
         'Reached final round in the 2014, 2015, 2016 & 2017 editions',
     ], [
-        olympiad_titlecard('../files/semcv/logo.jpg', 'SEMCV Logo', 'Valencian Olympiad in Mathematics', 'Valencian Community, Spain', '2013 — 2018', a('https://semcv.org/', 'semcv.org')),
+        olympiad_titlecard('../files/contests/semcv/logo.jpg', 'SEMCV Logo', 'Valencian Olympiad in Mathematics', 'Valencian Community, Spain', '2013 — 2018', a('https://semcv.org/', 'semcv.org')),
         p("""
             Organized by the Al-Khwarizmi society, the Valencian Community's Olympiad in Mathematics (SEMCV)
             is a yearly competition in which students solve complex mathematical problems. 
@@ -1396,7 +1396,7 @@ awards = [
         """),
         div('big-img',
             card_img_nohover(
-                '../files/semcv/prize2018.jpg',
+                '../files/contests/semcv/prize2018.jpg',
                 f'Receiving the Third Prize of the 2018 edition in Viver, Valencia. {a('https://semcv.org/faseautonomica/olimpiades-autonomiques-anteriors/988-xxix-olimpiada-matematica-2018', 'Source')}',
                 'Receiving the Third Prize of the 2018 edition in Viver, Valencia',
             )
@@ -1415,7 +1415,7 @@ awards = [
         ]),
         BR,
         div('halfs limit-height', [
-            card_img('2013 Diploma', '06/2013', '../files/semcv/diploma2013.jpg', [
+            card_img('2013 Diploma', '06/2013', '../files/contests/semcv/diploma2013.jpg', [
                 BR,
                 p('Digital scan of the certificate (in Catalan).'),
                 p('English translation:'),
@@ -1425,7 +1425,7 @@ awards = [
                 p("Benidorm, 8th of June 2013"), 
                 p("Provincial Coordinator"),
             ]),
-            card_img('2014 Diploma', '06/2014', '../files/semcv/diploma2014.jpg', [
+            card_img('2014 Diploma', '06/2014', '../files/contests/semcv/diploma2014.jpg', [
                 BR,
                 p('Digital scan of the certificate (in Catalan).'),
                 p('English translation:'),
@@ -1438,7 +1438,7 @@ awards = [
                 p("Xest Educational Complex, 1st of June 2014"),
                 p("General Manager of the SEMCV"),
             ]),
-            card_img('2016 Diploma', '05/2016', '../files/semcv/diploma2016.jpg', [
+            card_img('2016 Diploma', '05/2016', '../files/contests/semcv/diploma2016.jpg', [
                 BR,
                 p('Digital scan of the certificate (in Catalan).'),
                 p('English translation:'),
@@ -1448,7 +1448,7 @@ awards = [
                 p("Alicante, 29th of May 2016"),
                 p("Provincial Coordinator"),
             ]),
-            card_img('2017 Diploma', '05/2017', '../files/semcv/diploma2017.jpg', [
+            card_img('2017 Diploma', '05/2017', '../files/contests/semcv/diploma2017.jpg', [
                 BR,
                 p('Digital scan of the certificate (in Catalan).'),
                 p('English translation:'),
@@ -1461,7 +1461,7 @@ awards = [
                 p("Xest Educational Complex, 28th of March 2017"),
                 p("The Provincial Coordinators"),
             ]),
-            card_img('2018 Diploma', '06/2018', '../files/semcv/diploma2018.jpg', [
+            card_img('2018 Diploma', '06/2018', '../files/contests/semcv/diploma2018.jpg', [
                 BR,
                 p('Digital scan of the certificate (in Catalan).'),
                 p('English translation:'),
@@ -1544,9 +1544,21 @@ for project_type, project_type_projects in projects.items():
 # MAIN PAGES
 # ----------
 generate("index", '', [
-    h1("Vicent Baeza"),
-    p("Software Engineer with a passion for math and computer science."),
-    p(f"Currently building automation & data scrapping tools at {a(job_facephi.path, 'Facephi')}."),
+    div('profile', [
+        img('profile-photo', 'files/photo.jpg', 'Profile Photo'),
+        div('profile-text', [
+            h1('Vicent Baeza'),
+            p("""
+                Software Engineer with a passion for math and Computer Science.
+            """),
+            p(f"""
+                Based in Alicante, Spain, with a {a(education_degree.path, education_degree.title)} and a {a(education_master.path, education_master.title)}.
+            """),
+            f"""
+                Currently building automation & data scrapping tools at {a(job_facephi.path, job_facephi.company)}.
+            """,
+        ])
+    ]),
     title_section('Work', [
         card(job.path, job.title, job.company, '', job.date, ul(job.keypoints))
         for job in jobs

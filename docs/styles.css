@@ -4,6 +4,11 @@
     src: url('fonts/space/SpaceGrotesk-VariableFont_wght.ttf');
 }
 
+@font-face {
+    font-family: 'Exo2';
+    src: url('fonts/exo2/Exo2-VariableFont_wght.ttf');
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -32,11 +37,11 @@
     --b: 500 1rem var(--font);
     --h1: 600 1.35rem var(--font-title);
     --h2: 600 1.2rem var(--font-title);
-    --section: 800 0.8rem var(--font);
+    --section: 800 0.8rem var(--font-title);
     --title-tabs: 600 1rem var(--font-title);
     --title: 700 1.3rem var(--font-title);
     --font-shortcut: 700 0.9rem var(--font-title);
-    --font-titlecard-subtitle: 800 0.8rem var(--font);
+    --font-titlecard-subtitle: 800 0.8rem var(--font-title);
 
     --max-content-width: 800px;
 
@@ -158,7 +163,7 @@ body.loaded, body.loaded * {
     text-align: center;
 }
 
-/** Selection */
+/* Selection */
 *::selection {
   background: var(--primary);
   color: white;
@@ -348,6 +353,23 @@ h1, h2, .section {
 .title-section > .title-section-after {
     flex-grow: 0;
 }
+
+/* Profile */
+.profile {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding-top: var(--sp4);
+    padding-bottom: var(--sp4);
+}
+.profile-photo {
+    min-width: 25%;
+    width: 25%;
+    margin-right: var(--sp8);
+    border: 1px solid var(--border-muted);
+    border-radius: 100%;
+}
+
 
 /* Crumbs */
 .crumbs {
