@@ -16,9 +16,9 @@
     --bg-hl: #FFFFFF10;
     --text: #DDDDDD;
     --text-dim: #AAAAAA;
-    --highlight: oklch(0.5 0.01 221);
-    --border: oklch(0.4 0.01 221);
-    --border-muted: oklch(0.3 0.01 221);
+    --highlight: #5D6567;
+    --border: #42494b;
+    --border-muted: #292f31;
     --primary: #3c76ea;
     --danger: oklch(0.7 0.05 30);
     --warning: oklch(0.7 0.05 100);
@@ -70,7 +70,7 @@ body.lightmode {
     --bg-hl: #00000014;
     --text: #282B2E;
     --text-dim: #444444;
-    --highlight: oklch(1 0.01 221);
+    --highlight: #ffffff;
     --border: #888888;
     --border-muted: #CCCCCC;
     --primary: #3C59EA;
@@ -114,8 +114,7 @@ a, .btn {
     cursor: pointer !important;
 }
 body.loaded, body.loaded * {
-    transition: color 0.25s linear !important;
-    transition: background-color 0.25s linear !important;
+    transition: color 0.2s, background-color 0.2s, border-color 0.2s !important;
 }
 .unselectable, .symbol {
     -webkit-touch-callout: none;
