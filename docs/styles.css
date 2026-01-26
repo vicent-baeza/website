@@ -42,6 +42,7 @@
     --title: 700 1.3rem var(--font-title);
     --font-shortcut: 700 0.9rem var(--font-title);
     --font-titlecard-subtitle: 800 0.8rem var(--font-title);
+    --font-bigquote: 900 2rem var(--font-title);
 
     --max-content-width: 800px;
 
@@ -368,6 +369,25 @@ h1, h2, .section {
     margin-right: var(--sp8);
     border: 1px solid var(--border-muted);
     border-radius: 100%;
+}
+
+/* Quote */
+.quote {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+.quote-open, .quote-close {
+    font: var(--font-bigquote);
+    align-content: center;
+}
+.quote-open {
+    align-self: start;
+    margin-right: var(--sp3);
+}
+.quote-close {
+    align-self: end;
+    margin-left: var(--sp3);
 }
 
 

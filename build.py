@@ -322,6 +322,13 @@ def crumbs(path: str) -> str:
     content.append(div('crumb-text', parts[-1]))
     return div('crumbs', content)
 
+def quote(quote_text: str | list[str]):
+    return div('quote', [
+        div('quote-open', '“'),
+        div('quote-text', quote_text),
+        div('quote-close', '”'),
+    ])
+
 
 BR = "<br/>"
 
@@ -736,6 +743,40 @@ jobs = [
                 "Automatic storage and display of previous assessments, having a sorted history of every previously calculated risk.",
                 "Integrated audit capabilities that record in real time all changes that might affect risk calculation.",
             ]),
+        ]),
+        h2_section("Recommendation", 'recommendation', [
+            p(f"""
+                From the CEO of Compliance CMS, {a('https://www.linkedin.com/in/guillermobutlerhalter/', 'Guillermo Butler Halter')}, and translated from Spanish:
+            """),
+            quote([
+                p("""
+                    I am pleased to recommend the Computer Engineer Vicent Baeza Esteve, 
+                    who worked in Compliance Management Systems, S.L. as a Computer Engineer / Software Developer from July 2023 to September 2025.
+                """),
+                p("""
+                    During the two years that he was part of our team, Vicent demonstrated a high level of professionalism, commitment, and technical capacity.
+                    He participated actively in the design, development and implementation of two software solutions that added significant value to the company.
+                """),
+                ul([
+                    "Whistleblowing Channel, which recieves notifications from companies about legal infractions",
+                    "RiskApp CMS, which is focused in the control, evaluation and monitoring of legal risks of businesses",
+                ]),
+                BR,
+                p("""
+                    Likewise, he participated actively in the advising of businesses in the design and implementation of 
+                    Artificial Intelligence Management Systems, in accordance with the ISO 42001 standard.
+                """),
+                p("""
+                    Vicent Baeza shines for his analytical skills, his ability to quickly learn new technologies, and for his ability to work well in a team.
+                    Moreover, he showed a proactive attitude in problem solving and a notable focus on quality and continuous improvement.
+                """),
+                p("""
+                    I am sure that his talent and work ethics will be a valuable contribution to any organization that decides to count with his services.
+                """)
+            ]),
+            p(f"""
+                The original, untranslated recommendation is available in Spanish in my {a('https://www.linkedin.com/in/vbaeza', 'LinkedIn')}\'s recommendations section.
+            """)
         ]),
         h2_section("Closing thoughts", 'closing', [
             p("""
