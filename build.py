@@ -481,14 +481,15 @@ def generate(path: str, title: str, content: str | list[str], scripts: str = "",
     build_word_search(title, site_index, 100)
 
     # build section word search scores
-    all_site_sections = extract_all_sections(content)
-    for site_section in all_site_sections:
-        section_index = len(search_sites)
-        section_path = f'{absolute_path}#{site_section.element_id}'
-        section_title = f'{search_title}: {site_section.title}'
-        search_sites.append(SearchSite(section_title, section_path, site_priority // 10))
-        #build_word_search(content, section_index)
-        build_word_search(section_title, section_index, 20)
+    if not path.startswith('/skills/'):
+        all_site_sections = extract_all_sections(content)
+        for site_section in all_site_sections:
+            section_index = len(search_sites)
+            section_path = f'{absolute_path}#{site_section.element_id}'
+            section_title = f'{search_title}: {site_section.title}'
+            search_sites.append(SearchSite(section_title, section_path, site_priority // 10))
+            #build_word_search(content, section_index)
+            build_word_search(section_title, section_index, 20)
 
 
     if title != '':

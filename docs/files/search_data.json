@@ -149,208 +149,72 @@
    "title": "Python"
   },
   {
-   "path": "/skills/python#jobs",
-   "title": "Python: Jobs"
-  },
-  {
-   "path": "/skills/python#projects",
-   "title": "Python: Projects"
-  },
-  {
-   "path": "/skills/python#education",
-   "title": "Python: Education"
-  },
-  {
-   "path": "/skills/python#awards",
-   "title": "Python: Contests & Awards"
-  },
-  {
    "path": "/skills/langgraph",
    "title": "LangGraph"
-  },
-  {
-   "path": "/skills/langgraph#jobs",
-   "title": "LangGraph: Jobs"
-  },
-  {
-   "path": "/skills/langgraph#projects",
-   "title": "LangGraph: Projects"
   },
   {
    "path": "/skills/github_actions",
    "title": "GitHub Actions"
   },
   {
-   "path": "/skills/github_actions#jobs",
-   "title": "GitHub Actions: Jobs"
-  },
-  {
-   "path": "/skills/github_actions#projects",
-   "title": "GitHub Actions: Projects"
-  },
-  {
    "path": "/skills/php",
    "title": "PHP"
-  },
-  {
-   "path": "/skills/php#jobs",
-   "title": "PHP: Jobs"
-  },
-  {
-   "path": "/skills/php#projects",
-   "title": "PHP: Projects"
   },
   {
    "path": "/skills/js",
    "title": "JavaScript"
   },
   {
-   "path": "/skills/js#jobs",
-   "title": "JavaScript: Jobs"
-  },
-  {
-   "path": "/skills/js#projects",
-   "title": "JavaScript: Projects"
-  },
-  {
    "path": "/skills/vue",
    "title": "Vue"
-  },
-  {
-   "path": "/skills/vue#jobs",
-   "title": "Vue: Jobs"
-  },
-  {
-   "path": "/skills/vue#projects",
-   "title": "Vue: Projects"
   },
   {
    "path": "/skills/sql",
    "title": "SQL"
   },
   {
-   "path": "/skills/sql#jobs",
-   "title": "SQL: Jobs"
-  },
-  {
-   "path": "/skills/sql#projects",
-   "title": "SQL: Projects"
-  },
-  {
    "path": "/skills/cpp",
    "title": "C++"
-  },
-  {
-   "path": "/skills/cpp#jobs",
-   "title": "C++: Jobs"
-  },
-  {
-   "path": "/skills/cpp#education",
-   "title": "C++: Education"
-  },
-  {
-   "path": "/skills/cpp#awards",
-   "title": "C++: Contests & Awards"
   },
   {
    "path": "/skills/java",
    "title": "Java"
   },
   {
-   "path": "/skills/java#jobs",
-   "title": "Java: Jobs"
-  },
-  {
-   "path": "/skills/java#education",
-   "title": "Java: Education"
-  },
-  {
-   "path": "/skills/java#awards",
-   "title": "Java: Contests & Awards"
-  },
-  {
    "path": "/skills/masm",
    "title": "MASM Assembly"
-  },
-  {
-   "path": "/skills/masm#jobs",
-   "title": "MASM Assembly: Jobs"
   },
   {
    "path": "/skills/data_analysis",
    "title": "Data Analysis"
   },
   {
-   "path": "/skills/data_analysis#education",
-   "title": "Data Analysis: Education"
-  },
-  {
    "path": "/skills/algorithms",
    "title": "Algorithms"
-  },
-  {
-   "path": "/skills/algorithms#education",
-   "title": "Algorithms: Education"
-  },
-  {
-   "path": "/skills/algorithms#awards",
-   "title": "Algorithms: Contests & Awards"
   },
   {
    "path": "/skills/data_structures",
    "title": "Data Structures"
   },
   {
-   "path": "/skills/data_structures#education",
-   "title": "Data Structures: Education"
-  },
-  {
-   "path": "/skills/data_structures#awards",
-   "title": "Data Structures: Contests & Awards"
-  },
-  {
    "path": "/skills/math",
    "title": "Math"
-  },
-  {
-   "path": "/skills/math#education",
-   "title": "Math: Education"
-  },
-  {
-   "path": "/skills/math#awards",
-   "title": "Math: Contests & Awards"
   },
   {
    "path": "/skills/ml",
    "title": "Machine Learning"
   },
   {
-   "path": "/skills/ml#projects",
-   "title": "Machine Learning: Projects"
-  },
-  {
    "path": "/skills/cnns",
    "title": "Convolutional Neural Networks"
-  },
-  {
-   "path": "/skills/cnns#projects",
-   "title": "Convolutional Neural Networks: Projects"
   },
   {
    "path": "/skills/kan",
    "title": "Kolmogorov-Arnold Networks"
   },
   {
-   "path": "/skills/kan#projects",
-   "title": "Kolmogorov-Arnold Networks: Projects"
-  },
-  {
    "path": "/skills/qc",
    "title": "Quantum Computing"
-  },
-  {
-   "path": "/skills/qc#projects",
-   "title": "Quantum Computing: Projects"
   },
   {
    "path": "/",
@@ -389,36 +253,30 @@
    32,
    21,
    29,
-   67,
-   84,
-   47,
-   56,
-   53,
-   82,
-   11,
-   9,
-   69,
-   44
+   52,
+   45,
+   39,
+   42,
+   41,
+   51,
+   38,
+   46,
+   49,
+   11
   ],
   [
-   80,
-   41,
-   0,
-   81,
-   42,
-   43
+   50,
+   37,
+   0
   ],
   [
    0
   ],
   [
-   41,
-   42,
-   43
+   37
   ],
   [
-   80,
-   81
+   50
   ],
   [
    26,
@@ -426,14 +284,7 @@
    1,
    21,
    23,
-   72,
-   61,
-   70,
-   75,
-   65,
-   78,
-   39,
-   92,
+   58,
    19,
    11,
    5,
@@ -470,19 +321,10 @@
    26
   ],
   [
-   72,
-   61,
-   70,
-   75,
-   65,
-   78,
-   39,
-   92
+   58
   ],
   [
-   44,
-   45,
-   46,
+   38,
    2
   ],
   [
@@ -519,24 +361,20 @@
   [
    28,
    27,
-   84,
-   44,
-   69,
-   67,
+   52,
+   38,
+   46,
+   45,
    16,
    11,
    5,
-   71,
-   73,
+   47,
+   59,
    22,
    18,
    10,
    4,
-   85,
-   45,
-   46,
-   62,
-   76
+   6
   ],
   [
    22,
@@ -553,51 +391,31 @@
   ],
   [
    27,
-   67,
-   16,
-   68
+   45,
+   16
   ],
   [
-   67,
-   16,
-   68
+   45,
+   16
   ],
   [
    28,
-   73,
-   62,
-   76,
-   66,
-   79,
-   40,
-   93
+   59
   ],
   [
-   73,
-   62,
-   76,
-   66,
-   79,
-   40,
-   93
+   59
   ],
   [
-   44,
-   45,
+   38
+  ],
+  [
    46
   ],
   [
-   69,
-   70
+   47
   ],
   [
-   71,
-   73,
-   72
-  ],
-  [
-   84,
-   85
+   52
   ],
   [
    25,
@@ -643,10 +461,10 @@
   [
    9,
    31,
-   90,
+   56,
    13,
+   53,
    12,
-   86,
    15,
    28,
    21,
@@ -654,38 +472,35 @@
    10,
    11,
    14,
-   82,
-   93,
-   92,
-   91,
+   51,
+   59,
+   58,
+   57,
    8,
    4,
    5
   ],
   [
-   86,
+   53,
    28,
    21,
    25,
    9,
-   82,
+   51,
    10,
    11,
    4,
    5,
-   87,
-   73,
-   62,
-   76,
-   66,
-   79,
-   40,
    22,
    24,
-   23
+   23,
+   15,
+   14,
+   13,
+   12
   ],
   [
-   86,
+   53,
    28,
    21,
    25,
@@ -694,7 +509,6 @@
    11,
    4,
    5,
-   87,
    22,
    24,
    23,
@@ -719,16 +533,7 @@
    12
   ],
   [
-   86,
-   28,
-   21,
-   25,
-   87,
-   22,
-   24,
-   23
-  ],
-  [
+   53,
    28,
    21,
    25,
@@ -737,30 +542,18 @@
    23
   ],
   [
-   86,
-   87
+   28,
+   21,
+   25,
+   22,
+   24,
+   23
   ],
   [
-   82,
-   73,
-   62,
-   76,
-   66,
-   79,
-   40,
-   83
+   53
   ],
   [
-   73,
-   62,
-   76,
-   66,
-   79,
-   40
-  ],
-  [
-   82,
-   83
+   51
   ],
   [
    9,
@@ -776,58 +569,49 @@
   ],
   [
    31,
-   90,
-   93,
-   92,
-   91
+   56,
+   59,
+   58,
+   57
   ],
   [
    31
   ],
   [
-   90,
-   93,
-   92,
-   91
+   56,
+   59,
+   58,
+   57
   ],
   [
-   67,
-   77,
+   49,
+   45,
    16,
+   50,
    17,
-   80,
    19,
    23,
    11,
    5,
    32,
-   68,
-   79,
-   78,
    18,
-   20,
-   81
+   20
   ],
   [
-   67,
-   77,
+   49,
+   45,
    16,
+   50,
    17,
-   80,
    32,
-   68,
-   79,
-   78,
    18,
    20,
-   19,
-   81
+   19
   ],
   [
-   67,
+   45,
    16,
    17,
-   68,
    18,
    20,
    19
@@ -839,37 +623,29 @@
    19
   ],
   [
-   77,
-   32,
-   79,
-   78
+   49,
+   32
   ],
   [
    32
   ],
   [
    17,
-   69,
-   74,
+   46,
+   48,
    21,
    18,
    20,
    19,
    22,
-   70,
-   76,
-   75,
    7,
    24,
    23
   ],
   [
-   69,
-   74,
+   46,
+   48,
    17,
-   70,
-   76,
-   75,
    18,
    20,
    19,
@@ -886,21 +662,17 @@
    19
   ],
   [
-   56,
+   42,
    25,
    27,
-   89,
+   55,
    30,
    17,
-   74,
-   57,
-   58,
+   48,
    18,
    20,
    19,
-   7,
-   76,
-   75
+   7
   ],
   [
    25,
@@ -928,136 +700,63 @@
    30
   ],
   [
-   56,
-   57,
-   58
+   42
   ],
   [
-   74,
-   76,
-   75
+   48
   ],
   [
-   89
+   55
   ],
   [
-   47,
+   39,
    16,
    36,
-   49,
-   48,
    33,
-   38,
    34,
-   40,
-   39,
-   37,
+   35,
    24,
    20,
-   7,
-   35,
-   83,
-   46,
-   52,
-   85,
-   43
+   7
   ],
   [
    16,
    33,
    34,
+   35,
    24,
    20,
-   7,
-   35,
-   83,
-   46,
-   52,
-   85,
-   43,
-   81,
-   49,
-   38,
-   87,
-   58,
-   55
-  ],
-  [
-   33,
-   34,
-   24,
-   20,
-   7,
-   35,
-   83,
-   46,
-   52,
-   85,
-   43,
-   81,
-   49,
-   38,
-   87,
-   58,
-   55
-  ],
-  [
-   33,
-   24,
-   20,
-   7,
-   34,
-   35,
-   83,
-   46,
-   52,
-   85,
-   43,
-   81,
-   49,
-   38,
-   87,
-   58,
-   55
+   7
   ],
   [
    33,
    34,
    35,
-   83,
-   46,
-   52,
-   85,
-   43,
-   81,
-   49,
-   38,
-   87,
-   58,
-   55
+   24,
+   20,
+   7
+  ],
+  [
+   33,
+   34,
+   35
   ],
   [
    34
   ],
   [
    36,
-   16,
-   40,
-   39,
-   37,
-   38
+   16
   ],
   [
-   47,
-   48,
-   49
+   39
   ],
   [
-   91,
+   57,
    12
   ],
   [
-   91
+   57
   ],
   [
    13,
@@ -1070,49 +769,12 @@
    14
   ],
   [
-   63,
+   44,
    16,
-   64,
-   50,
-   51,
-   66,
-   65,
-   60,
-   45,
-   42,
-   68,
-   48,
-   37,
-   57,
-   54,
-   52
+   40
   ],
   [
-   63,
-   16,
-   50,
-   66,
-   65,
-   64,
-   51,
-   52
-  ],
-  [
-   50,
-   51,
-   52
-  ],
-  [
-   60,
-   45,
-   64,
-   51,
-   42,
-   68,
-   48,
-   37,
-   57,
-   54
+   40
   ],
   [
    29,
@@ -1144,36 +806,30 @@
    32
   ],
   [
-   53,
-   32,
-   54,
-   55
+   41,
+   32
   ],
   [
-   53,
-   54,
-   55
+   41
   ],
   [
    35
   ],
   [
-   82,
-   84,
-   83,
-   85
+   51,
+   52
   ],
   [
-   88,
-   90,
+   54,
+   56,
    33,
-   89,
+   55,
    9,
    3
   ]
  ],
  "words": {
-  "": 96,
+  "": 91,
   "a": 19,
   "ab": 20,
   "abo": 20,
@@ -1233,30 +889,30 @@
   "award": 25,
   "awards": 26,
   "c": 37,
-  "ca": 50,
-  "car": 52,
-  "care": 52,
-  "caree": 52,
-  "career": 52,
-  "cat": 51,
-  "cata": 51,
-  "catal": 51,
-  "catala": 51,
-  "catalan": 51,
-  "ch": 49,
-  "cha": 49,
-  "chan": 49,
-  "chann": 49,
-  "channe": 49,
-  "channel": 49,
+  "ca": 48,
+  "car": 50,
+  "care": 50,
+  "caree": 50,
+  "career": 50,
+  "cat": 49,
+  "cata": 49,
+  "catal": 49,
+  "catala": 49,
+  "catalan": 49,
+  "ch": 47,
+  "cha": 47,
+  "chan": 47,
+  "chann": 47,
+  "channe": 47,
+  "channel": 47,
   "cl": 34,
   "clo": 34,
   "clos": 34,
   "closi": 34,
   "closin": 34,
   "closing": 34,
-  "cm": 48,
-  "cms": 48,
+  "cm": 46,
+  "cms": 46,
   "co": 38,
   "com": 39,
   "comp": 39,
@@ -1277,30 +933,25 @@
   "computin": 44,
   "computing": 44,
   "con": 45,
-  "cont": 46,
-  "conte": 46,
-  "contes": 46,
-  "contest": 46,
-  "contests": 46,
-  "conv": 47,
-  "convo": 47,
-  "convol": 47,
-  "convolu": 47,
-  "convolut": 47,
-  "convoluti": 47,
-  "convolutio": 47,
-  "convolution": 47,
-  "convolutiona": 47,
-  "convolutional": 47,
-  "d": 59,
-  "da": 60,
-  "dat": 60,
-  "data": 60,
-  "de": 61,
-  "deg": 61,
-  "degr": 61,
-  "degre": 61,
-  "degree": 61,
+  "conv": 45,
+  "convo": 45,
+  "convol": 45,
+  "convolu": 45,
+  "convolut": 45,
+  "convoluti": 45,
+  "convolutio": 45,
+  "convolution": 45,
+  "convolutiona": 45,
+  "convolutional": 45,
+  "d": 57,
+  "da": 58,
+  "dat": 58,
+  "data": 58,
+  "de": 59,
+  "deg": 59,
+  "degr": 59,
+  "degre": 59,
+  "degree": 59,
   "e": 5,
   "ed": 12,
   "edu": 12,
@@ -1371,41 +1022,38 @@
   "gith": 13,
   "githu": 13,
   "github": 13,
-  "i": 88,
-  "in": 88,
-  "inf": 90,
-  "info": 90,
-  "infor": 90,
-  "inform": 90,
-  "informa": 90,
-  "informat": 90,
-  "informati": 90,
-  "informatic": 90,
-  "informatics": 90,
-  "int": 89,
-  "inte": 89,
-  "inter": 89,
-  "intern": 89,
-  "interna": 89,
-  "internat": 89,
-  "internati": 89,
-  "internatio": 89,
-  "internation": 89,
-  "internationa": 89,
-  "international": 89,
-  "j": 84,
-  "ja": 85,
-  "jav": 85,
-  "java": 85,
-  "javas": 86,
-  "javasc": 86,
-  "javascr": 86,
-  "javascri": 86,
-  "javascrip": 86,
-  "javascript": 86,
-  "jo": 87,
-  "job": 87,
-  "jobs": 87,
+  "i": 83,
+  "in": 83,
+  "inf": 85,
+  "info": 85,
+  "infor": 85,
+  "inform": 85,
+  "informa": 85,
+  "informat": 85,
+  "informati": 85,
+  "informatic": 85,
+  "informatics": 85,
+  "int": 84,
+  "inte": 84,
+  "inter": 84,
+  "intern": 84,
+  "interna": 84,
+  "internat": 84,
+  "internati": 84,
+  "internatio": 84,
+  "internation": 84,
+  "internationa": 84,
+  "international": 84,
+  "j": 81,
+  "ja": 81,
+  "jav": 81,
+  "java": 81,
+  "javas": 82,
+  "javasc": 82,
+  "javascr": 82,
+  "javascri": 82,
+  "javascrip": 82,
+  "javascript": 82,
   "k": 30,
   "ko": 30,
   "kol": 30,
@@ -1439,77 +1087,77 @@
   "linked": 2,
   "linkedi": 2,
   "linkedin": 2,
-  "m": 53,
-  "ma": 54,
+  "m": 51,
+  "ma": 52,
   "mac": 4,
   "mach": 4,
   "machi": 4,
   "machin": 4,
   "machine": 4,
-  "mas": 55,
+  "mas": 53,
   "masm": 24,
-  "mast": 56,
-  "maste": 56,
-  "master": 56,
-  "mat": 57,
-  "math": 57,
-  "mathe": 58,
-  "mathem": 58,
-  "mathema": 58,
-  "mathemat": 58,
-  "mathemati": 58,
-  "mathematic": 58,
-  "mathematics": 58,
+  "mast": 54,
+  "maste": 54,
+  "master": 54,
+  "mat": 55,
+  "math": 55,
+  "mathe": 56,
+  "mathem": 56,
+  "mathema": 56,
+  "mathemat": 56,
+  "mathemati": 56,
+  "mathematic": 56,
+  "mathematics": 56,
   "my": 8,
-  "n": 95,
-  "ne": 95,
-  "net": 95,
-  "netw": 95,
-  "netwo": 95,
-  "networ": 95,
-  "network": 95,
-  "networks": 95,
-  "neu": 47,
-  "neur": 47,
-  "neura": 47,
-  "neural": 47,
-  "o": 91,
-  "ol": 91,
-  "oly": 91,
-  "olym": 91,
-  "olymp": 91,
-  "olympi": 91,
-  "olympia": 91,
-  "olympiad": 91,
-  "p": 71,
-  "ph": 78,
-  "php": 78,
-  "pr": 72,
+  "n": 90,
+  "ne": 90,
+  "net": 90,
+  "netw": 90,
+  "netwo": 90,
+  "networ": 90,
+  "network": 90,
+  "networks": 90,
+  "neu": 45,
+  "neur": 45,
+  "neura": 45,
+  "neural": 45,
+  "o": 86,
+  "ol": 86,
+  "oly": 86,
+  "olym": 86,
+  "olymp": 86,
+  "olympi": 86,
+  "olympia": 86,
+  "olympiad": 86,
+  "p": 69,
+  "ph": 75,
+  "php": 75,
+  "pr": 70,
   "pri": 35,
   "priv": 35,
   "priva": 35,
   "privat": 35,
   "private": 35,
-  "pro": 73,
-  "prof": 76,
-  "profe": 76,
-  "profes": 76,
-  "profess": 76,
-  "professi": 76,
-  "professio": 76,
-  "profession": 76,
-  "professiona": 76,
-  "professional": 76,
-  "proj": 74,
-  "proje": 74,
-  "projec": 74,
-  "project": 74,
-  "projects": 75,
-  "py": 77,
-  "pyt": 77,
-  "pyth": 77,
-  "pytho": 77,
-  "python": 77,
+  "pro": 71,
+  "prof": 73,
+  "profe": 73,
+  "profes": 73,
+  "profess": 73,
+  "professi": 73,
+  "professio": 73,
+  "profession": 73,
+  "professiona": 73,
+  "professional": 73,
+  "proj": 71,
+  "proje": 71,
+  "projec": 71,
+  "project": 71,
+  "projects": 72,
+  "py": 74,
+  "pyt": 74,
+  "pyth": 74,
+  "pytho": 74,
+  "python": 74,
   "q": 44,
   "qu": 44,
   "qua": 44,
@@ -1517,68 +1165,68 @@
   "quant": 44,
   "quantu": 44,
   "quantum": 44,
-  "r": 81,
-  "re": 83,
-  "rec": 83,
-  "reco": 83,
-  "recom": 83,
-  "recomm": 83,
-  "recomme": 83,
-  "recommen": 83,
-  "recommend": 83,
-  "recommenda": 83,
-  "recommendat": 83,
-  "recommendati": 83,
-  "recommendatio": 83,
-  "recommendation": 83,
-  "ri": 82,
-  "ris": 82,
-  "risk": 82,
-  "riska": 82,
-  "riskap": 82,
-  "riskapp": 82,
-  "s": 62,
-  "sc": 63,
-  "sci": 65,
-  "scie": 65,
-  "scien": 65,
-  "scienc": 65,
-  "science": 65,
+  "r": 78,
+  "re": 80,
+  "rec": 80,
+  "reco": 80,
+  "recom": 80,
+  "recomm": 80,
+  "recomme": 80,
+  "recommen": 80,
+  "recommend": 80,
+  "recommenda": 80,
+  "recommendat": 80,
+  "recommendati": 80,
+  "recommendatio": 80,
+  "recommendation": 80,
+  "ri": 79,
+  "ris": 79,
+  "risk": 79,
+  "riska": 79,
+  "riskap": 79,
+  "riskapp": 79,
+  "s": 60,
+  "sc": 61,
+  "sci": 63,
+  "scie": 63,
+  "scien": 63,
+  "scienc": 63,
+  "science": 63,
   "sco": 36,
   "scou": 36,
   "scout": 36,
   "scouts": 36,
-  "scr": 64,
-  "scra": 64,
-  "scrap": 64,
-  "scrapp": 64,
-  "scrappi": 64,
-  "scrappin": 64,
-  "scrapping": 64,
-  "sk": 70,
-  "ski": 70,
-  "skil": 70,
-  "skill": 70,
-  "skills": 70,
-  "sp": 66,
-  "spa": 66,
+  "scr": 62,
+  "scra": 62,
+  "scrap": 62,
+  "scrapp": 62,
+  "scrappi": 62,
+  "scrappin": 62,
+  "scrapping": 62,
+  "sk": 68,
+  "ski": 68,
+  "skil": 68,
+  "skill": 68,
+  "skills": 68,
+  "sp": 64,
+  "spa": 64,
   "spai": 18,
   "spain": 18,
-  "span": 67,
-  "spani": 67,
-  "spanis": 67,
-  "spanish": 67,
-  "sq": 68,
-  "sql": 68,
-  "st": 69,
-  "str": 69,
-  "stru": 69,
-  "struc": 69,
-  "struct": 69,
-  "structu": 69,
-  "structur": 69,
-  "structure": 69,
-  "structures": 69,
+  "span": 65,
+  "spani": 65,
+  "spanis": 65,
+  "spanish": 65,
+  "sq": 66,
+  "sql": 66,
+  "st": 67,
+  "str": 67,
+  "stru": 67,
+  "struc": 67,
+  "struct": 67,
+  "structu": 67,
+  "structur": 67,
+  "structure": 67,
+  "structures": 67,
   "t": 31,
   "te": 36,
   "tec": 36,
@@ -1599,43 +1247,43 @@
   "tut": 35,
   "tuto": 35,
   "tutor": 35,
-  "u": 94,
-  "un": 94,
-  "uni": 94,
-  "univ": 94,
-  "unive": 94,
-  "univer": 94,
-  "univers": 94,
-  "universi": 94,
-  "universit": 94,
-  "university": 94,
-  "v": 92,
-  "va": 58,
-  "val": 58,
-  "vale": 58,
-  "valen": 58,
-  "valenc": 58,
-  "valenci": 58,
-  "valencia": 58,
-  "valencian": 58,
-  "vu": 93,
-  "vue": 93,
-  "w": 79,
-  "wh": 49,
-  "whi": 49,
-  "whis": 49,
-  "whist": 49,
-  "whistl": 49,
-  "whistle": 49,
-  "whistleb": 49,
-  "whistlebl": 49,
-  "whistleblo": 49,
-  "whistleblow": 49,
-  "whistleblowi": 49,
-  "whistleblowin": 49,
-  "whistleblowing": 49,
-  "wo": 80,
-  "wor": 80,
-  "work": 80
+  "u": 89,
+  "un": 89,
+  "uni": 89,
+  "univ": 89,
+  "unive": 89,
+  "univer": 89,
+  "univers": 89,
+  "universi": 89,
+  "universit": 89,
+  "university": 89,
+  "v": 87,
+  "va": 56,
+  "val": 56,
+  "vale": 56,
+  "valen": 56,
+  "valenc": 56,
+  "valenci": 56,
+  "valencia": 56,
+  "valencian": 56,
+  "vu": 88,
+  "vue": 88,
+  "w": 76,
+  "wh": 47,
+  "whi": 47,
+  "whis": 47,
+  "whist": 47,
+  "whistl": 47,
+  "whistle": 47,
+  "whistleb": 47,
+  "whistlebl": 47,
+  "whistleblo": 47,
+  "whistleblow": 47,
+  "whistleblowi": 47,
+  "whistleblowin": 47,
+  "whistleblowing": 47,
+  "wo": 77,
+  "wor": 77,
+  "work": 77
  }
 }
