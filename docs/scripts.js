@@ -131,6 +131,7 @@ function switch_search_visibility(e) {
         search_textbox.focus()
         onSearchChange()
     }
+    e.stopPropagation()
 }
 search_button.onclick = switch_search_visibility
 search_bg.onclick = switch_search_visibility
