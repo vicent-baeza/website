@@ -109,7 +109,6 @@ JS_HASH = 1 #hash_file('docs/scripts.js')
 
 # site-wide data
 warnings = ListDict[str, str]()
-tags = ListDict[str, str]()
 paths = ListDict[str, str]()
 files = ListDict[str, str]()
 requested_local_paths = ListDict[str, str]()
@@ -121,11 +120,16 @@ word_search_scores = dict[str, dict[int, int]]()
 word_search_documents = dict[str, int]()
 
 class Site:
-    def __init__(self, path: str, title: str):
+    def __init__(self, path: str, title: str, site_tags: list[str] | None):
         files.add(path)
         self.path = path
         self.title = title
+        self.tags = site_tags
 
+tags = dict[str, list[Site]]()
+tags_full_name = {
+    'JS': 'JavaScript'
+}
 
 def rpath(path: str) -> str:
     """Adds paths to the paths ListDict.
@@ -285,7 +289,9 @@ def title_section(title: str, elements: list[str], button_href : str | None = No
         div('title-section-after', a(button_href, 'View All' + i('ri-arrow-right-s-line crumb-divider'), 'no-underline')) if button_href is not None else '',
     ]) + content_before_elements + ''.join(elements[:max_elements])
 
-def taglist(tag_names: list[str]):
+def taglist(tag_names: list[str] | None):
+    if tag_names is None:
+        return ''
     return div('tag-list', [div('tag unselectable', tag_name) for tag_name in tag_names])
 
 def card(href: str, title: str, subtitle: str, datetext: str, date_str: str, content: str = '', divider: bool = True):
@@ -567,8 +573,16 @@ def generate(path: str, title: str, content: str | list[str], scripts: str = "",
 
     # reset dynamic data
     warnings.add(path)
-    tags.add(path)
     paths.add(path)
+
+def add_site_tags(_site: Site):
+    if _site.tags is None:
+        return
+    for _tag in _site.tags:
+        if _tag not in tags:
+            tags[_tag] = []
+        tags[_tag].append(_site)
+        
 
 build_word_search('LinkedIn', len(search_sites), 20)
 search_sites.append(SearchSite('LinkedIn', 'https://linkedin.com/in/vbaeza/', 25))
@@ -582,11 +596,10 @@ search_sites.append(SearchSite('Github', 'https://github.com/vicent-baeza', 25))
 # ----
 class Job(Site):
     def __init__(self, path: str, title: str, company: str, job_date: str, keypoints: list[str], job_tags: list[str], content: str | list[str], alt_title: str | None = None, alt_tab_title: str | None = None):
-        super().__init__(path, title)
+        super().__init__(path, title, job_tags)
         self.company = company
         self.date = job_date
         self.keypoints = keypoints
-        self.tags = job_tags
         self.content = content
         self.alt_title = alt_title
         self.alt_tab_title = alt_tab_title
@@ -666,8 +679,8 @@ jobs = [
     job_compliancecms := Job('/career/compliance_cms', 'Software Engineer', 'Compliance CMS', '07/2023 — 09/2025', [
         'Single-handedly developed and maintained two full-stack web applications.',
         'Planning, design, implementation & delivery of new features from scratch.',
-    ], ['PHP', 'JS', 'Vue.JS', 'SQL'], [
-        job_titlecard('../files/work/compliance_cms/logo.jpg', 'ComplianceCMS Logo', 'Software Engineer', 'Alicante, Spain', '07/2023 — 09/2025', a('https://compliancecms.com/', 'compliancecms.com'), ['PHP', 'JS', 'Vue.JS', 'SQL']),
+    ], ['PHP', 'JS', 'Vue', 'SQL'], [
+        job_titlecard('../files/work/compliance_cms/logo.jpg', 'ComplianceCMS Logo', 'Software Engineer', 'Alicante, Spain', '07/2023 — 09/2025', a('https://compliancecms.com/', 'compliancecms.com'), ['PHP', 'JS', 'Vue', 'SQL']),
         h2_section("About the company", 'about', [
             p("""
                 Compliance CMS is a small Spanish consultancy firm. If offers comprehensive services in many areas of Spanish & EU law, but mainly specializes in Criminal Compliance & Corporate Risk Mitigation.
@@ -812,14 +825,14 @@ jobs = [
 
 for job in jobs:
     generate(job.path, job.alt_title or job.company, job.content, tab_title=job.alt_tab_title or job.alt_title or job.company, site_priority=50)
-
+    add_site_tags(job)
 
 # ---------
 # EDUCATION
 # ---------
 class Education(Site):
-    def __init__(self, path: str, title: str, institution: str, _date: str, keypoints: list[str], content: str | list[str]):
-        super().__init__(path, title)
+    def __init__(self, path: str, title: str, institution: str, _date: str, keypoints: list[str], content: str | list[str], _tags: list[str] | None = None):
+        super().__init__(path, title, _tags)
         self.institution = institution
         self.date = _date
         self.keypoints = keypoints
@@ -912,7 +925,7 @@ educations = [
                 )
             ),
         ]),
-    ]),
+    ], ['Python', 'Data Analysis']),
     education_degree := Education('/career/degree', 'Degree in Computer Engineering', 'University of Alicante', '09/2020 — 06/2024', [
         'Grade: 8.81/10, including 13 honors',
         'Graduated as part of the High Academic Performance group (ARA group), with a specialization in Computing.',
@@ -1048,7 +1061,7 @@ educations = [
                 )
             ),
         ]),
-    ]),
+    ], ['C++', 'Java', 'Python', 'Algorithms', 'Data Structures']),
     education_techscouts := Education('/career/tech_scouts', 'Tech Scouts Computer Science', 'Harbour Space', '07/2019 — 07/2019', [
         'Intensive 3-week summer course focusing computer science and advanced mathematics.',
         f'Invitation received for winning a Gold Medal at the {a('/career/oicat', 'Catalan Olympiad in Informatics')} in 2019.',
@@ -1108,7 +1121,7 @@ educations = [
         p("""
             Overall, a great and memorable formative experience.
         """)
-    ]),
+    ], ['Math', 'Algorithms', 'Data Structures', 'C++']),
     education_estalmat := Education('/career/estalmat', 'ESTALMAT', 'Polytechnic University of Valencia', '09/2015 — 05/2019', [
         '4-year weekly math program for promoting and developing math and reasoning skills.',
         'Learned a lot of foundational concepts that fueled my current passion for math and computer science.',
@@ -1156,18 +1169,18 @@ educations = [
                 ],
             )
         )
-    ]),
+    ], ['Math']),
 ]
 for education in educations:
     generate(education.path, education.title, education.content, site_priority=20)
-
+    add_site_tags(education)
 
 # ------
 # AWARDS
 # ------
 class Awards(Site):
-    def __init__(self, path: str, title: str, institution: str, _date: str, keypoints: list[str], content: str | list[str]):
-        super().__init__(path, title)
+    def __init__(self, path: str, title: str, institution: str, _date: str, keypoints: list[str], content: str | list[str], _tags: list[str] | None = None):
+        super().__init__(path, title, _tags)
         self.institution = institution
         self.date = _date
         self.keypoints = keypoints
@@ -1222,7 +1235,7 @@ awards = [
                 p('Whereupon to all extent and consequence, I hereby issue this certificate, in Alicante, January 28th 2025'),
             ], 50),
         ),
-    ]),
+    ], ['C++', 'Java', 'Python']),
     award_ioi := Awards('/career/ioi', 'International Olympiad in Informatics', 'IOI', '08/2019', [
         'Participated as part of the Spanish team',
         f'Awarded for obtaining a Gold Medal in the {a('/career/oie', 'Spanish Olympiad in Informatics')}'
@@ -1277,7 +1290,7 @@ awards = [
                 50
             )
         )
-    ]),
+    ], ['C++', 'Data Structures', 'Algorithms']),
     award_oie := Awards('/career/oie', 'Spanish Olympiad in Informatics', 'OIE', '2018 — 2020', [
         'Gold Medal in the 2019 edition',
         'Silver Medal in the 2018 & 2020 editions',
@@ -1333,7 +1346,7 @@ awards = [
                 p("Barcelona, 27th of June 2019")
             ]),
         ]),
-    ]),
+    ], ['C++', 'Data Structures', 'Algorithms']),
     award_oicat := Awards('/career/oicat', 'Catalan Olympiad in Informatics', 'OICat', '2019 — 2020', [
         'Gold Medal in the 2019 & 2020 editions',
     ], [
@@ -1413,7 +1426,7 @@ awards = [
                 p('Photo of the Gold Medal')
             ]),
         ])
-    ]),
+    ], ['C++', 'Python', 'Data Structures', 'Algorithms']),
     award_semcv := Awards('/career/semcv', "Valencian Olympiad in Mathematics", 'SEMCV', '2013 — 2018', [
         'Third Prize in the 2018 edition',
         'Second Prize in the 2013 edition',
@@ -1513,18 +1526,18 @@ awards = [
                 p("Al-Khwarizmi Society for the Mathematical Education of the Valencian Community (SEMCV)"),
             ]),
         ])
-    ]),
+    ], ['Math']),
 ]
 for award in awards:
     generate(award.path, award.title, award.content)
-
+    add_site_tags(award)
 
 # --------
 # PROJECTS
 # --------
 class Project(Site):
     def __init__(self, path: str, title: str, institution: str, _date: str, keypoints: list[str], _tags: list[str], content: str | list[str] | None = None):
-        super().__init__(path, title)
+        super().__init__(path, title, _tags)
         self.institution = institution
         self.date = _date
         self.keypoints = keypoints
@@ -1544,7 +1557,7 @@ projects : dict[str, list[Project]] = {
         Project(f'{job_compliancecms.path}#whistleblowing', 'Whistleblowing Channel', 'Compliance CMS', '07/2023 — 09/2025', [
             'Whistleblowing Channel compliant with Spanish & EU whistleblowing regulations.',
             'Planning, design, implementation & delivery of several key features.'
-        ], ['PHP', 'JS', 'Vue.JS', 'SQL']),
+        ], ['PHP', 'JS', 'Vue', 'SQL']),
     ],
     'university': [
         Project(f'{education_master.path}#final_project', 'Final Project', "Master's Degree in Data Science", '11/2024 — 06/2025', [
@@ -1579,7 +1592,117 @@ for project_type, project_type_projects in projects.items():
             generate(project.path, project.title, project.content, site_priority=15)
         else:
             requested_local_paths.add(project.path)
+        add_site_tags(project)
 
+
+# ------------------
+# SITE TAGS (SKILLS)
+# ------------------
+TAG_PATHS = {
+    'c++': 'cpp',
+    'kolmogorov_arnold_networks': 'kan',
+    'masm_assembly': 'masm',
+    'quantum_computing': 'qc'
+}
+TAG_TITLES = {
+    'js': 'JavaScript',
+    'ml': 'Machine Learning',
+    'cnns': 'Convolutional Neural Networks',
+}
+@dataclass
+class Tag:
+    name: str
+    title: str
+    priority: int
+    summary: str
+    path: str
+
+tags_data = list[Tag]()
+for site_tag, tag_sites in tags.items():
+    tag_description = list[str]()
+    tag_content = list[str]()
+    tag_priority = 0
+
+    # tag jobs
+    tag_jobs = [site for site in tag_sites if isinstance(site, Job)]
+    tag_priority += len(tag_jobs) * 100
+    if tag_jobs:
+        tag_content.extend([
+            section('Jobs', 'jobs'),
+            *[
+                card(job.path, job.title, job.company, '', job.date, ul(job.keypoints) + taglist(job.tags))
+                for job in tag_jobs
+            ]
+        ])
+        if len(tag_jobs) > 1:
+            tag_description.append(f'{len(tag_jobs)} jobs')
+        else:
+            tag_description.append('1 job')
+
+
+    # tag projects
+    tag_projects = [site for site in tag_sites if isinstance(site, Project)]
+    tag_priority += len(tag_projects) * 50
+    if tag_projects:
+        tag_content.extend([
+            section('Projects', 'projects'),
+            *[
+                card(project.path, project.title, project.institution, '', project.date, ul(project.keypoints) + taglist(project.tags))
+                for project in tag_projects
+            ]
+        ])
+        if len(tag_projects) > 1:
+            tag_description.append(f'{len(tag_projects)} projects')
+        else:
+            tag_description.append('1 project')
+    
+    # tag educations
+    tag_educations = [site for site in tag_sites if isinstance(site, Education)]
+    tag_priority += len(tag_educations) * 25
+    if tag_educations:
+        tag_content.extend([
+            section('Education', 'education'),
+            *[
+                card(education.path, education.title, education.institution, '', education.date, ul(education.keypoints))
+                for education in tag_educations
+            ],
+        ])
+        if len(tag_educations) > 1:
+            tag_description.append(f'{len(tag_educations)} educations')
+        else:
+            tag_description.append('1 education')      
+
+    # tag awards
+    tag_awards = [site for site in tag_sites if isinstance(site, Awards)]
+    tag_priority += len(tag_awards) * 25
+    if tag_awards:
+        tag_content.extend([
+            section('Contests & Awards', 'awards'),
+            *[
+                card(award.path, award.title, award.institution, '', award.date, ul(award.keypoints))
+                for award in tag_awards
+            ]
+        ])
+        if len(tag_awards) > 1:
+            tag_description.append(f'{len(tag_awards)} awards')
+        else:
+            tag_description.append('1 award')
+    
+    # generate tag
+    if len(tag_description) == 0:
+        warnings.add_value(site_tag, 'No related jobs/educations/awards/projects')
+        continue
+    if len(tag_description) <= 2:
+        tag_summary = ' & '.join(tag_description)
+    else:
+        tag_summary = ', '.join(tag_description[:2]) + f' & {len(tag_description[2:])} more'
+    
+    tag_lower = site_tag.lower().replace(' ', '_').replace('.', '_').replace('-', '_')        
+    tag_path = f'/skills/{TAG_PATHS[tag_lower] if tag_lower in TAG_PATHS else tag_lower}'
+    tag_title = TAG_TITLES[tag_lower] if tag_lower in TAG_TITLES else site_tag
+    tags_data.append(Tag(site_tag, tag_title, tag_priority, tag_summary, tag_path))
+    generate(tag_path, tag_title, tag_content)
+tags_data = sorted(tags_data, key=lambda x: x.priority, reverse=True)
 
 # ----------
 # MAIN PAGES
@@ -1612,7 +1735,18 @@ generate("index", '', [
         card(award.path, award.title, award.institution, '', award.date, ul(award.keypoints))
         for award in awards
     ], '/career#awards', 3),
+    title_section('Skills', [
+        card(tag.path, tag.title, '', '', tag.summary)
+        for tag in tags_data
+    ], '/skills', 5),
 ], site_priority=110)
+
+generate('/skills', 'Skills', [
+    *[
+        card(tag.path, tag.title, '', '', tag.summary)
+        for tag in tags_data
+    ],
+], site_priority=90)
 
 generate('/career', 'Career', [
     section('Work', 'work'),
@@ -1631,6 +1765,7 @@ generate('/career', 'Career', [
         for award in awards
     ]
 ], site_priority=100)
+
 
 # --------------------
 # GENERATE SEARCH DATA

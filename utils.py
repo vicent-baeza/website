@@ -1,5 +1,5 @@
 from collections.abc import MutableMapping
-from typing import Iterator, TypeVar, Any, Iterable
+from typing import Iterator, TypeVar, Any
 from math import log
 from dataclasses import dataclass
 
@@ -44,6 +44,12 @@ class ListDict(MutableMapping[K, list[V]]):
             self[key] = self.pending_values
         self.pending_values = []
 
+    def add_value(self, key: K, value: V):
+        """Adds a value to a key WITHOUT changing the 'pending values' of this listdict."""
+        if key in self:
+            self[key].append(value)
+        else:
+            self[key] = [value]
 
 class WordScoreTrie:
     def __init__(self):
