@@ -1388,8 +1388,6 @@ awards = [
             p_no_margin("""
                 I participated in the olympiad in the 2019 and 2020 editions. I managed to get a Gold Medal, the highest prize possible, in both editions.
             """),
-            p(f"""
-            """),
             div('halfs', [
                 card_img_nohover_vw(
                     '../files/contests/oicat/winners2019.jpg',
