@@ -508,7 +508,7 @@ a.crumb-text:hover {
     border: 1px solid var(--border-muted);
     background: var(--bg-light);
     display: grid;
-    grid-template-columns: 7fr 1fr 7fr 6fr;
+    grid-template-columns: 6fr 1fr 7fr 6fr;
     grid-template-rows: repeat(2, 1fr);
     margin-bottom: var(--sp6);
 }
@@ -564,6 +564,9 @@ a.crumb-text:hover {
 }
 .halfs.limit-height > * {
     height: calc(var(--max-content-width) / 2 * 260/400 + 25) !important;
+}
+.halfs.limit-height img {
+    height: calc(var(--max-content-width) / 2 * 260/400) !important;
 }
 .big-img {
     width: 100%;
