@@ -1245,7 +1245,7 @@ awards = [
         'Participated as part of the Spanish team',
         f'Awarded for obtaining a Gold Medal in the {a('/career/oie', 'Spanish Olympiad in Informatics')}'
     ], [
-        olympiad_titlecard('../files/contests/ioi/logo.jpg', 'IOI Logo', 'International Olympiad in Informatics', 'Baku, Azerbaijan', '2019', a('https://ioinformatics.org', 'ioinformatics.org')),
+        olympiad_titlecard('../files/contests/ioi/logo.jpg', 'IOI Logo', 'IOI', 'Baku, Azerbaijan', '2019', a('https://ioinformatics.org', 'ioinformatics.org')),
         p("""
             The International Olympiad in Informatics (IOI) is a yearly competition in which students from all around the world 
             test their competitive programming skills. It is one of the most prestigious competitions in the world of competitive programming, and to participate you have to get selected through your country's olympiad process.
@@ -1266,7 +1266,7 @@ awards = [
             )
         ),
         p_no_margin("""
-            During the whole week, we were housed in the Athlete's Village, a very large aparment complex completely booked for the IOI.
+            During the whole week we were housed in the Athlete's Village, a very large aparment complex completely booked for the IOI.
         """),
         div('big-img',
             card_img_nohover(
@@ -1355,7 +1355,7 @@ awards = [
     award_oicat := Awards('/career/oicat', 'Catalan Olympiad in Informatics', 'OICat', '2019 — 2020', [
         'Gold Medal in the 2019 & 2020 editions',
     ], [
-        olympiad_titlecard('../files/contests/oicat/logo.jpg', 'OICat Logo', 'Catalan Olympiad in Informatics', 'Barcelona, Spain', '2019 — 2020', a('https://olimpiada-informatica.cat', 'olimpiada-informatica.cat')),
+        olympiad_titlecard('../files/contests/oicat/logo.jpg', 'OICat Logo', 'Catalan Olympiad in Informatics', 'Barcelona, Spain', '2019 — 2020', a('https://olimpiada-informatica.cat', 'olimpiada-informatica.cat'), ['C++', 'Python', 'Data Structures', 'Algorithms']),
         p("""
             The Catalan Olympiad in Informatics (OICat) is a yearly competition in which students from 
             Catalonia and the Valencian Community can participate. 
