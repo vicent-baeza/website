@@ -843,15 +843,16 @@ educations = [
     education_master := Education('/career/master', "Master's Degree in Data Science", 'University of Alicante', '09/2024 — 06/2025', [
         'Grade: 9.05/10',
     ], [
-        education_titlecard('../files/education/uni/logo.jpg', 'University of Alicante Logo', 'University of Alicante', 'Alicante, Spain', '09/2024 — 06/2025', a('https://web.ua.es/en/masteres/ciencia-de-datos/', 'web.ua.es/masteres/ciencia-de-datos')),
+        education_titlecard('../files/education/uni/logo.jpg', 'University of Alicante Logo', 'University of Alicante', 'Alicante, Spain', '09/2024 — 06/2025', a('https://web.ua.es/en/masteres/ciencia-de-datos/', 'Official Website')),
         h2_section("About the degree", 'about', [
             p("""
                 The Data Science Master's Degree of the University of Alicante, as the name implies, is a master's degree that delves deep in Data Science and Machine Learning,
                 refining and expanding skills learned from related undergraduate degrees.
                 The master is only 1-year long, and it taught fully on-site.
             """),
-            p_no_margin(f"""
-                On the 2024 to 2025 school year, almost all classes were taught in the {a('https://maps.app.goo.gl/vjyehHTWuDvQpepY6', 'Faculty of Science #6')}, affectionately called The Bunker for its distinctive, harsh concrete facade.  
+            p_no_margin("""
+                On the 2024 to 2025 school year, almost all classes were taught in the Faculty of Science #6, 
+                affectionately called The Bunker for its distinctive, harsh concrete facade.  
             """), 
             div('big-img',
                 card_img_nohover_vw(
@@ -932,7 +933,7 @@ educations = [
         'Graduated as part of the High Academic Performance group (ARA group), with a specialization in Computing.',
         f'Received the {a('/career/computer_engineering', 'Extraordinary Award in Computer Engineering')} for outstanding performance.',
     ], [
-        education_titlecard('../files/education/uni/logo.jpg', 'University of Alicante Logo', 'University of Alicante', 'Alicante, Spain', '09/2020 — 06/2024', a('https://web.ua.es/en/grados/grado-en-ingenieria-informatica/', 'web.ua.es/en/grados/grado-en-ingenieria-informatica')),
+        education_titlecard('../files/education/uni/logo.jpg', 'University of Alicante Logo', 'University of Alicante', 'Alicante, Spain', '09/2020 — 06/2024', a('https://web.ua.es/en/grados/grado-en-ingenieria-informatica/', 'Official Website')),
         h2_section("About the degree", 'about', [
             p("""
                 The Computer Engineering Degree of the University of Alicante is one of the biggest degrees of the university, 
@@ -945,12 +946,10 @@ educations = [
             div('halfs', [
                 card_img_nohover_vw(
                     '../files/education/uni/degree/aulario2.jpg',
-                    f'{a('https://maps.app.goo.gl/Qcc5nMVLtiynigZd7', 'General Lecture Building #2')}, University of Alicante',
                     'General Lecture Building #2, University of Alicante',
                 ),
                 card_img_nohover_vw(
                     '../files/education/uni/degree/politecnica1.jpg',
-                    f'{a('https://maps.app.goo.gl/NNCaDZYuusAsSt4c9', 'Polytechnic University College #1')}, University of Alicante',
                     'Polytechnic University College #1, University of Alicante',
                 ),
             ]),

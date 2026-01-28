@@ -113,7 +113,7 @@ a {
 a.link:hover {
     text-decoration: underline;
 }
-.no-underline {
+.no-underline, .card:hover {
     text-decoration: none !important;
 }
 a, .btn {
