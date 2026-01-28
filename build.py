@@ -1658,7 +1658,7 @@ for site_tag, tag_sites in tags.items():
     tag_priority += len(tag_jobs) * 100
     if tag_jobs:
         tag_content.extend([
-            section('Jobs', 'jobs'),
+            section('Work', 'work'),
             *[
                 card(job.path, job.title, job.company, '', job.date, ul(job.keypoints) + taglist(job.tags))
                 for job in tag_jobs
