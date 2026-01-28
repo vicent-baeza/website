@@ -190,8 +190,9 @@ def a(href: str, text: str | list[str], classes = ''):
         classes = 'link'
     
     is_external = is_external_path(href) or is_file_path(href)
-    if is_external and '<' not in text and '>' not in text:
+    if is_external and isinstance(text, str) and '<' not in text and '>' not in text:
         text += ' ' + ICON_EXTERNAL
+        print(text)
 
     targetParam = 'target="_blank"' if is_external else ''
     return tagc('a', classes, text, f'href="{rpath(href)}" {targetParam}')
