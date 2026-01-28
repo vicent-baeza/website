@@ -143,6 +143,30 @@ def rpath(path: str) -> str:
     paths.append(path)
     return path
 
+# tags data & functions
+TAG_PATHS = {
+    'c++': 'cpp',
+    'kolmogorov_arnold_networks': 'kan',
+    'masm_assembly': 'masm',
+    'quantum_computing': 'qc'
+}
+TAG_TITLES = {
+    'js': 'JavaScript',
+    'ml': 'Machine Learning',
+    'cnns': 'Convolutional Neural Networks',
+}
+def tag_id(tag_name: str) -> str:
+    return tag_name.lower().replace(' ', '_').replace('.', '_').replace('-', '_')        
+
+def tag_path(tag_name: str) -> str:
+    id_of_tag = tag_id(tag_name)
+    tag_filename = TAG_PATHS[id_of_tag] if id_of_tag in TAG_PATHS else id_of_tag
+    return f'/skills/{tag_filename}'
+
+def tag_title(tag_name: str) -> str:
+    id_of_tag = tag_id(tag_name)
+    return TAG_TITLES[id_of_tag] if id_of_tag in TAG_TITLES else tag_name
+
 
 # --------
 # ELEMENTS
@@ -192,7 +216,6 @@ def a(href: str, text: str | list[str], classes = ''):
     is_external = is_external_path(href) or is_file_path(href)
     if is_external and isinstance(text, str) and '<' not in text and '>' not in text:
         text += ' ' + ICON_EXTERNAL
-        print(text)
 
     targetParam = 'target="_blank"' if is_external else ''
     return tagc('a', classes, text, f'href="{rpath(href)}" {targetParam}')
@@ -294,10 +317,10 @@ def title_section(title: str, elements: list[str], button_href : str | None = No
         div('title-section-after', a(button_href, 'View All' + i('ri-arrow-right-s-line crumb-divider'), 'no-underline')) if button_href is not None else '',
     ]) + content_before_elements + ''.join(elements[:max_elements])
 
-def taglist(tag_names: list[str] | None):
+def taglist(tag_names: list[str] | None):        
     if tag_names is None:
         return ''
-    return div('tag-list', [div('tag unselectable', tag_name) for tag_name in tag_names])
+    return div('tag-list', [a(tag_path(tag_name), tag_name, 'tag unselectable') for tag_name in tag_names])
 
 def card(href: str, title: str, subtitle: str, datetext: str, date_str: str, content: str = '', divider: bool = True):
     if datetext == 'auto': # Automatic datetext calculation (as duration):
@@ -849,7 +872,7 @@ educations = [
     education_master := Education('/career/master', "Master's Degree in Data Science", 'University of Alicante', '09/2024 — 06/2025', [
         'Grade: 9.05/10',
     ], [
-        education_titlecard('../files/education/uni/logo.jpg', 'University of Alicante Logo', 'University of Alicante', 'Alicante, Spain', '09/2024 — 06/2025', a('https://web.ua.es/en/masteres/ciencia-de-datos/', 'Official Website')),
+        education_titlecard('../files/education/uni/logo.jpg', 'University of Alicante Logo', 'University of Alicante', 'Alicante, Spain', '09/2024 — 06/2025', a('https://web.ua.es/en/masteres/ciencia-de-datos/', 'Official Website'), ['Python', 'Data Analysis']),
         h2_section("About the degree", 'about', [
             p("""
                 The Data Science Master's Degree of the University of Alicante, as the name implies, is a master's degree that delves deep in Data Science and Machine Learning,
@@ -895,7 +918,7 @@ educations = [
             ),
             p(f"""
                 Altough the master's delved quite deep in many areas of Data Science and Machine Learning,
-                some lessons overlapped with the Computation specialization of the {a('/career/degree', 'University Degree in Computing Engineering')}, which I had already completed, so it was a bit of a shame to be re-taught some lessons.
+                some lessons overlapped with the Computation specialization of the {a('/career/degree', 'University Degree in Computer Engineering')}, which I had already completed, so it was a bit of a shame to be re-taught some lessons.
             """),
             div('halfs limit-height', [
                 card_img('Diploma', '11/2025', '../files/education/uni/master/diploma.jpg', [
@@ -939,7 +962,7 @@ educations = [
         'Graduated as part of the High Academic Performance group (ARA group), with a specialization in Computing.',
         f'Received the {a('/career/computer_engineering', 'Extraordinary Award in Computer Engineering')} for outstanding performance.',
     ], [
-        education_titlecard('../files/education/uni/logo.jpg', 'University of Alicante Logo', 'University of Alicante', 'Alicante, Spain', '09/2020 — 06/2024', a('https://web.ua.es/en/grados/grado-en-ingenieria-informatica/', 'Official Website')),
+        education_titlecard('../files/education/uni/logo.jpg', 'University of Alicante Logo', 'University of Alicante', 'Alicante, Spain', '09/2020 — 06/2024', a('https://web.ua.es/en/grados/grado-en-ingenieria-informatica/', 'Official Website'), ['C++', 'Java', 'Python', 'Algorithms', 'Data Structures']),
         h2_section("About the degree", 'about', [
             p("""
                 The Computer Engineering Degree of the University of Alicante is one of the biggest degrees of the university, 
@@ -1616,17 +1639,6 @@ for project_type, project_type_projects in projects.items():
 # ------------------
 # SITE TAGS (SKILLS)
 # ------------------
-TAG_PATHS = {
-    'c++': 'cpp',
-    'kolmogorov_arnold_networks': 'kan',
-    'masm_assembly': 'masm',
-    'quantum_computing': 'qc'
-}
-TAG_TITLES = {
-    'js': 'JavaScript',
-    'ml': 'Machine Learning',
-    'cnns': 'Convolutional Neural Networks',
-}
 @dataclass
 class Tag:
     name: str
@@ -1715,12 +1727,10 @@ for site_tag, tag_sites in tags.items():
     else:
         tag_summary = ', '.join(tag_description[:2]) + f' & {len(tag_description[2:])} more'
     
-    tag_lower = site_tag.lower().replace(' ', '_').replace('.', '_').replace('-', '_')        
-    tag_path = f'/skills/{TAG_PATHS[tag_lower] if tag_lower in TAG_PATHS else tag_lower}'
-    tag_title = TAG_TITLES[tag_lower] if tag_lower in TAG_TITLES else site_tag
-    tags_data.append(Tag(site_tag, tag_title, tag_priority, tag_summary, tag_path))
-    generate(tag_path, tag_title, tag_content)
+    tags_data.append(Tag(site_tag, tag_title(site_tag), tag_priority, tag_summary, tag_path(site_tag)))
+    generate(tag_path(site_tag), tag_title(site_tag), tag_content)
 tags_data = sorted(tags_data, key=lambda x: x.priority, reverse=True)
+
 
 # ----------
 # MAIN PAGES
