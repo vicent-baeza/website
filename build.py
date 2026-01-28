@@ -1275,12 +1275,12 @@ awards = [
                 'Athletes\' Village in Baku, Azerbaijan',
             )
         ),
-        p("""
+        p(f"""
             Although I did not perform very well, primarily due to my aforementioned weak problem-solving skills at the time, it was a very enriching and memorable experience.
             Even after all these years, I vividly remember certain parts of the experience, 
             such a game of Giant Tetris being played in the hall of the Village, 
             the Japanese team trying to hand out stapleless staplers to every participant, 
-            or playing One Night Ultimate Werewolf at the airport at midnight with the Swiss team while waiting to catch our return flight.
+            or playing {a('https://boardgamegeek.com/boardgame/147949/one-night-ultimate-werewolf', 'One Night Ultimate Werewolf')} at the airport at midnight with the Swiss team while waiting to catch our return flight.
             A great time indeed.
         """),
         div('big-img',
@@ -1356,181 +1356,195 @@ awards = [
         'Gold Medal in the 2019 & 2020 editions',
     ], [
         olympiad_titlecard('../files/contests/oicat/logo.jpg', 'OICat Logo', 'Catalan Olympiad in Informatics', 'Barcelona, Spain', '2019 — 2020', a('https://olimpiada-informatica.cat', 'olimpiada-informatica.cat'), ['C++', 'Python', 'Data Structures', 'Algorithms']),
-        p("""
-            The Catalan Olympiad in Informatics (OICat) is a yearly competition in which students from 
-            Catalonia and the Valencian Community can participate. 
-        """),
-        p_no_margin("""
-            The olympiad features a wide range of problems, from purely logical problems to algorithmic and programming challenges.
-            The programming challenges are mostly done in C++, although C, Java and Python are also accepted programming languages. 
-            Some challenges require image processing, and those can only be done in Python.
-        """),
-        div('big-img',
-            card_img_nohover(
-                '../files/contests/oicat/photo2019.jpg',
-                f'Participants (including me!) solving problems in the 2019 OICat. {a('https://olimpiada-informatica.cat/oicat-2019/', 'Source')}',
-                'OICat participants solving problems',
-            )
-        ),
-        p(f"""
-            Although the olympiad is a relatively short event (as it only lasts a single day), it is a great experience, as it allows students interested in
-            competitive programming to meet eachother and build friendships and connections. 
-            The organization that organizes the olympiad also provides many training and educational courses on problem solving and
-            competitive programming, that can serve as learning resources and eventual preparation for the bigger {a('/career/oie','Spanish Olympiad in Informatics')}.
-        """),
-        p_no_margin("""
-            I managed to get a Gold Medal (the hightest prize possible) in the 2019 and the 2020 editions of the olympiad: 
-        """),
-        div('halfs', [
-            card_img_nohover_vw(
-                '../files/contests/oicat/winners2019.jpg',
-                f'2019 OICat winners. {a('https://olimpiada-informatica.cat/oicat-2019/', 'Source')}',
-                '2019 OICat winners',
+        h2_section('About the contest', 'about', [
+            p("""
+                The Catalan Olympiad in Informatics (OICat) is a yearly competition in which students from 
+                Catalonia and the Valencian Community can participate. 
+            """),
+            p_no_margin(f"""
+                The olympiad features a wide range of problems, from purely logical problems to algorithmic and programming challenges.
+                Most programming challenges are done in C++, although Java and Python are also accepted programming languages. 
+                Some challenges require image processing, and those could only be done in Python using {a('https://pypi.org/project/pillow/', 'Pillow')}.
+            """),
+            div('big-img',
+                card_img_nohover(
+                    '../files/contests/oicat/photo2019.jpg',
+                    f'Participants (including me!) solving problems in the 2019 OICat. {a('https://olimpiada-informatica.cat/oicat-2019/', 'Source')}',
+                    'OICat participants solving problems',
+                )
             ),
-            card_img_nohover_vw(
-                '../files/contests/oicat/winners2020.jpg',
-                f'2020 OICat winners. {a('https://olimpiada-informatica.cat/oicat-2020/', 'Source')}',
-                '2020 OICat winners',
-            )
+            p(f"""
+                Although the olympiad is a relatively short event (as it only lasts a single day), it is a great experience, as it allows students interested in
+                competitive programming to meet eachother and build friendships and connections. 
+                The organization that organizes the olympiad also provides many training and educational courses on problem solving and
+                competitive programming, that can serve as learning resources and eventual preparation for the bigger {a('/career/oie','Spanish Olympiad in Informatics')}.
+            """),
+            p(f"""
+                The olympiad used {a('https://jutge.org/', 'Jutge.org')}, a site for hosting computer science contests & exams widely used in Catalonia and among Catalan institutions. 
+                The exact points that every participant scored can be found in the corresponding jutge.org page for the {a('https://contest.jutge.org/watch/Jutge:oicat_2019_g', 'OICat 2019 results')} and the {a('https://contest.jutge.org/watch/Jutge:FinalOIcat2020', 'OICat 2020 results')}.
+            """),
         ]),
-        p(f"""
-            Despite the short timeframe, both times I participated were very fun and memorable. 
-            I made some friends there, and it also granted me access to the 2019 {a('/career/tech_scouts', 'Harbour Space Tech Scouts')} summer course, 
-            which I wouldn't have been able to attend otherwise. Overall, a very worthwhile experience!
-        """),
-        BR,
-        div('halfs limit-height', [
-            card_img('2019 Diploma', '06/2019', '../files/contests/oicat/diploma2019.jpg', [
-                BR,
-                p('Digital scan of the certificate (in Catalan).'),
-                p('English translation:'),
-                p("Catalan Olympiad in Informatics 2019"),
-                p("Certificate"),
-                p("This document certifies that"),
-                p("Vicent Baeza Esteve"), 
-                p("has been awarded the GOLD MEDAL in the final of the 2019 Catalan Olympiad in Informatics"), 
-                p("Barcelona, 15th of June 2019"),
+        h2_section('My experience', 'experience', [
+            p_no_margin("""
+                I participated in the olympiad in the 2019 and 2020 editions. I managed to get a Gold Medal, the highest prize possible, in both editions.
+            """),
+            p(f"""
+            """),
+            div('halfs', [
+                card_img_nohover_vw(
+                    '../files/contests/oicat/winners2019.jpg',
+                    f'OICat 2019 gold medalists. {a('https://olimpiada-informatica.cat/oicat-2019/', 'Source')}',
+                    'OICat 2019 gold medalists',
+                ),
+                card_img_nohover_vw(
+                    '../files/contests/oicat/winners2020.jpg',
+                    f'OICat 2020 gold medalists. {a('https://olimpiada-informatica.cat/oicat-2020/', 'Source')}',
+                    'OICat 2020 gold medalists',
+                )
             ]),
-            card_img('2019 Gold Medal', '06/2019', '../files/contests/oicat/medal2019.jpg', [
-                BR,
-                p('Photo of the Gold Medal')
+            p(f"""
+                Despite the short timeframe, both times I participated were very fun and memorable. 
+                I made some friends there, and it also granted me access to the 2019 {a('/career/tech_scouts', 'Harbour Space Tech Scouts')} summer course, 
+                which I wouldn't have been able to attend otherwise. Overall, a very worthwhile experience!
+            """),
+            BR,
+            div('halfs limit-height', [
+                card_img('2019 Diploma', '06/2019', '../files/contests/oicat/diploma2019.jpg', [
+                    BR,
+                    p('Digital scan of the certificate (in Catalan).'),
+                    p('English translation:'),
+                    p("Catalan Olympiad in Informatics 2019"),
+                    p("Certificate"),
+                    p("This document certifies that"),
+                    p("Vicent Baeza Esteve"), 
+                    p("has been awarded the GOLD MEDAL in the final of the 2019 Catalan Olympiad in Informatics"), 
+                    p("Barcelona, 15th of June 2019"),
+                ]),
+                card_img('2019 Gold Medal', '06/2019', '../files/contests/oicat/medal2019.jpg', [
+                    BR,
+                    p('Photo of the Gold Medal')
+                ]),
+                card_img('2020 Diploma', '09/2020', '../files/contests/oicat/diploma2020.jpg', [
+                    BR,
+                    p('Digital scan of the certificate (in Catalan).'),
+                    p('English translation:'),
+                    p("Catalan Olympiad in Informatics 2020"),
+                    p("Certificate"),
+                    p("This document certifies that"),
+                    p("Vicent Baeza Esteve"), 
+                    p("has been awarded the GOLD MEDAL in the final of the 2020 Catalan Olympiad in Informatics"), 
+                    p("Barcelona, 5th of September 2020"),
+                ]),
+                card_img('2020 Gold Medal', '09/2020', '../files/contests/oicat/medal2020.jpg', [
+                    BR,
+                    p('Photo of the Gold Medal')
+                ]),
             ]),
-            card_img('2020 Diploma', '09/2020', '../files/contests/oicat/diploma2020.jpg', [
-                BR,
-                p('Digital scan of the certificate (in Catalan).'),
-                p('English translation:'),
-                p("Catalan Olympiad in Informatics 2020"),
-                p("Certificate"),
-                p("This document certifies that"),
-                p("Vicent Baeza Esteve"), 
-                p("has been awarded the GOLD MEDAL in the final of the 2020 Catalan Olympiad in Informatics"), 
-                p("Barcelona, 5th of September 2020"),
-            ]),
-            card_img('2020 Gold Medal', '09/2020', '../files/contests/oicat/medal2020.jpg', [
-                BR,
-                p('Photo of the Gold Medal')
-            ]),
-        ])
+        ]),
     ], ['C++', 'Python', 'Data Structures', 'Algorithms']),
     award_semcv := Awards('/career/semcv', "Valencian Olympiad in Mathematics", 'SEMCV', '2013 — 2018', [
         'Third Prize in the 2018 edition',
         'Second Prize in the 2013 edition',
         'Reached final round in the 2014, 2015, 2016 & 2017 editions',
     ], [
-        olympiad_titlecard('../files/contests/semcv/logo.jpg', 'SEMCV Logo', 'Valencian Olympiad in Mathematics', 'Valencian Community, Spain', '2013 — 2018', a('https://semcv.org/', 'semcv.org')),
-        p("""
-            Organized by the Al-Khwarizmi society, the Valencian Community's Olympiad in Mathematics (SEMCV)
-            is a yearly competition in which students solve complex mathematical problems. 
-            Any Valencian student in 5th or 6th grade of primary education or in secondary education can participate.
-        """),
-        p("""
-            The competition is organized in 3 phases (Local, Provincial and Regional) and 3 levels depending on age. The Local phase is the first, and just consists of a advanced math test. 
-            This is the phase that by far gets the most participation, with thousands of students enrolling each year. 
-            After that, the top 30 students of each level for each province (Alacant, València and Castelló) participate in the Provincial phase, 
-            and the top 8 students for each level from each province go through to the Regional phase.
-        """),
-        p_no_margin("""
-            Although the first phase is really short and simple (just a 2-hour exam), both the Provincial and Regional phases are much more drawn out,
-            having many activities, several individual and team tests, lasting multiple days each.
-        """),
-        div('big-img',
-            card_img_nohover(
-                '../files/contests/semcv/prize2018.jpg',
-                f'Receiving the Third Prize of the 2018 edition in Viver, Valencia. {a('https://semcv.org/faseautonomica/olimpiades-autonomiques-anteriors/988-xxix-olimpiada-matematica-2018', 'Source')}',
-                'Receiving the Third Prize of the 2018 edition in Viver, Valencia',
-            )
-        ),
-        p("""
-            This competition, despite being relatively unknown at the time, was my very first experience with extracurricular math activities, 
-            and helped steered my trajectory and made me realize my passion for mathematics and, eventually, computer science. 
-            I remember these competitions very fondly, not only because of the competitions themselves, 
-            but also because of the many friends and colleagues that I was able to meet thanks to them.
-        """),
-        p("I participated from 2013 through to 2018, managing to achieve the following:"),
-        ul([
-            "Second Prize in the 2013 edition",
-            "Third Prize in the 2018 edition",
-            "Reached the Regional Phase of the competition in the 2014, 2015, 2016, and 2017 editions",
+        olympiad_titlecard('../files/contests/semcv/logo.jpg', 'SEMCV Logo', 'Valencian Maths Olympiad', 'Valencian Community, Spain', '2013 — 2018', a('https://semcv.org/', 'semcv.org'), ['Math']),
+        h2_section('About the contest', 'about', [
+            p("""
+                Organized by the Al-Khwarizmi society, the Valencian Community's Olympiad in Mathematics (SEMCV)
+                is a yearly competition in which students solve complex mathematical problems. 
+                Any Valencian student in 5th or 6th grade of primary education or in secondary education can participate.
+            """),
+            p("""
+                The competition is organized in 3 phases (Local, Provincial and Regional) and 3 levels depending on age. The Local phase is the first, and just consists of an advanced math test. 
+                This is the phase that by far gets the most participation, with thousands of students enrolling each year. 
+                After that, the top 30 students of each level for each province (Alacant, València and Castelló) participate in the Provincial phase, 
+                and the top 8 students for each level from each province go through to the Regional phase.
+            """),
+            p_no_margin("""
+                Although the first phase is really short and simple (just a 2-hour exam), both the Provincial and Regional phases are much more drawn out,
+                having many activities, several individual and team tests, lasting multiple days each.
+            """),
         ]),
-        BR,
-        div('halfs limit-height', [
-            card_img('2013 Diploma', '06/2013', '../files/contests/semcv/diploma2013.jpg', [
-                BR,
-                p('Digital scan of the certificate (in Catalan).'),
-                p('English translation:'),
-                p("Olympiad in Mathematics"),
-                p("Al-Khwarizmi Society for the Mathematical Education of the Valencian Community"),
-                p("Diploma to Vicent Baeza Esteve for their participation in the Olympiad in Mathematics. Regional Phase"),
-                p("Benidorm, 8th of June 2013"), 
-                p("Provincial Coordinator"),
+        h2_section('My experience', 'experience', [
+            p("""
+                This competition, despite being relatively unknown at the time, was my very first experience with extracurricular math activities, 
+                and helped steered my trajectory and made me realize my passion for mathematics and, eventually, computer science. 
+                I remember these competitions very fondly, not only because of the competitions themselves, 
+                but also because of the many friends and colleagues that I was able to meet thanks to them.
+            """),
+            div('big-img',
+                card_img_nohover(
+                    '../files/contests/semcv/prize2018.jpg',
+                    f'Receiving the Third Prize of the 2018 edition in Viver, Valencia. {a('https://semcv.org/faseautonomica/olimpiades-autonomiques-anteriors/988-xxix-olimpiada-matematica-2018', 'Source')}',
+                    'Receiving the Third Prize of the 2018 edition in Viver, Valencia',
+                )
+            ),
+            p("I participated from 2013 through to 2018, managing to achieve the following:"),
+            ul([
+                "Second Prize in the 2013 edition",
+                "Third Prize in the 2018 edition",
+                "Reached the Regional Phase of the competition in the 2014, 2015, 2016, and 2017 editions",
             ]),
-            card_img('2014 Diploma', '06/2014', '../files/contests/semcv/diploma2014.jpg', [
-                BR,
-                p('Digital scan of the certificate (in Catalan).'),
-                p('English translation:'),
-                p("Olympiad in Mathematics"),
-                p("The Al-Khwarizmi Society for the Mathematical Education of the Valencian Community grants the following"),
-                p("Diploma"),
-                p("To: VICENT BAEZA ESTEVE"),
-                p("Of the school: CEIP PLA DE BARRAQUES (EL CAMPELLO)"),
-                p("For their participation in the regional phase of the XXV Valencian Olympiad in Mathematics"),
-                p("Xest Educational Complex, 1st of June 2014"),
-                p("General Manager of the SEMCV"),
-            ]),
-            card_img('2016 Diploma', '05/2016', '../files/contests/semcv/diploma2016.jpg', [
-                BR,
-                p('Digital scan of the certificate (in Catalan).'),
-                p('English translation:'),
-                p("Olympiad in Mathematics"),
-                p("Al-Khwarizmi Society for the Mathematical Education of the Valencian Community"),
-                p("Diploma to Vicent Baeza Esteve for their participation in the Olympiad in Mathematics. Regional Phase"),
-                p("Alicante, 29th of May 2016"),
-                p("Provincial Coordinator"),
-            ]),
-            card_img('2017 Diploma', '05/2017', '../files/contests/semcv/diploma2017.jpg', [
-                BR,
-                p('Digital scan of the certificate (in Catalan).'),
-                p('English translation:'),
-                p("Olympiad in Mathematics"),
-                p("The Al-Khwarizmi Society for the Mathematical Education of the Valencian Community grants the following"),
-                p("DIPLOMA"),
-                p("To: VICENT BAEZA ESTEVE"),
-                p("Of the school: ENRIC VALOR - EL CAMPELLO"),
-                p("For their participation in the Regional Phase of the XXVIII Valencian Olympiad in Mathematics"),
-                p("Xest Educational Complex, 28th of March 2017"),
-                p("The Provincial Coordinators"),
-            ]),
-            card_img('2018 Diploma', '06/2018', '../files/contests/semcv/diploma2018.jpg', [
-                BR,
-                p('Digital scan of the certificate (in Catalan).'),
-                p('English translation:'),
-                p("2018 Olympiad in Mathematics"),
-                p("Regional Phase"),
-                p("DIPLOMA"),
-                p("On behalf of: VICENT BAEZA ESTEVE"),
-                p("Al-Khwarizmi Society for the Mathematical Education of the Valencian Community (SEMCV)"),
-            ]),
-        ])
+            BR,
+            div('halfs limit-height', [
+                card_img('2013 Diploma', '06/2013', '../files/contests/semcv/diploma2013.jpg', [
+                    BR,
+                    p('Digital scan of the certificate (in Catalan).'),
+                    p('English translation:'),
+                    p("Olympiad in Mathematics"),
+                    p("Al-Khwarizmi Society for the Mathematical Education of the Valencian Community"),
+                    p("Diploma to Vicent Baeza Esteve for their participation in the Olympiad in Mathematics. Regional Phase"),
+                    p("Benidorm, 8th of June 2013"), 
+                    p("Provincial Coordinator"),
+                ]),
+                card_img('2014 Diploma', '06/2014', '../files/contests/semcv/diploma2014.jpg', [
+                    BR,
+                    p('Digital scan of the certificate (in Catalan).'),
+                    p('English translation:'),
+                    p("Olympiad in Mathematics"),
+                    p("The Al-Khwarizmi Society for the Mathematical Education of the Valencian Community grants the following"),
+                    p("Diploma"),
+                    p("To: VICENT BAEZA ESTEVE"),
+                    p("Of the school: CEIP PLA DE BARRAQUES (EL CAMPELLO)"),
+                    p("For their participation in the regional phase of the XXV Valencian Olympiad in Mathematics"),
+                    p("Xest Educational Complex, 1st of June 2014"),
+                    p("General Manager of the SEMCV"),
+                ]),
+                card_img('2016 Diploma', '05/2016', '../files/contests/semcv/diploma2016.jpg', [
+                    BR,
+                    p('Digital scan of the certificate (in Catalan).'),
+                    p('English translation:'),
+                    p("Olympiad in Mathematics"),
+                    p("Al-Khwarizmi Society for the Mathematical Education of the Valencian Community"),
+                    p("Diploma to Vicent Baeza Esteve for their participation in the Olympiad in Mathematics. Regional Phase"),
+                    p("Alicante, 29th of May 2016"),
+                    p("Provincial Coordinator"),
+                ]),
+                card_img('2017 Diploma', '05/2017', '../files/contests/semcv/diploma2017.jpg', [
+                    BR,
+                    p('Digital scan of the certificate (in Catalan).'),
+                    p('English translation:'),
+                    p("Olympiad in Mathematics"),
+                    p("The Al-Khwarizmi Society for the Mathematical Education of the Valencian Community grants the following"),
+                    p("DIPLOMA"),
+                    p("To: VICENT BAEZA ESTEVE"),
+                    p("Of the school: ENRIC VALOR - EL CAMPELLO"),
+                    p("For their participation in the Regional Phase of the XXVIII Valencian Olympiad in Mathematics"),
+                    p("Xest Educational Complex, 28th of March 2017"),
+                    p("The Provincial Coordinators"),
+                ]),
+                card_img('2018 Diploma', '06/2018', '../files/contests/semcv/diploma2018.jpg', [
+                    BR,
+                    p('Digital scan of the certificate (in Catalan).'),
+                    p('English translation:'),
+                    p("2018 Olympiad in Mathematics"),
+                    p("Regional Phase"),
+                    p("DIPLOMA"),
+                    p("On behalf of: VICENT BAEZA ESTEVE"),
+                    p("Al-Khwarizmi Society for the Mathematical Education of the Valencian Community (SEMCV)"),
+                ]),
+            ])
+        ]),
     ], ['Math']),
 ]
 for award in awards:
